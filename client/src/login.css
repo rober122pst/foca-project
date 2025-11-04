@@ -294,7 +294,7 @@
 }
 
 .input-label .visible {
-    display: none;
+    display: block;
     color: var(--color-items-primary);
 }
 
@@ -329,6 +329,7 @@ input:-webkit-autofill {
     max-width: 150px;
     margin: auto;
     
+    
     /* padding: .8rem; */
     margin-top: 20px;
     border-radius: 0.5rem;
@@ -338,6 +339,10 @@ input:-webkit-autofill {
     background: var(--bg-second);
 }
 
+.input-button:disabled {
+    cursor: not-allowed;
+}
+
 .progress-fill{
     color: var(--text-light);
     font-family: "Nunito", sans-serif;
@@ -345,6 +350,7 @@ input:-webkit-autofill {
     font-weight: 800;
     text-decoration: none;
     line-height: 100%;
+    
 
     position: relative;
     width: 0%;
@@ -425,7 +431,7 @@ input:-webkit-autofill {
     z-index: 1000;
 }
 
-.sign-up-button span {
+.sign-up-button svg {
     font-size: 3rem;
     font-weight: 800;
     transition: transform 0.5s ease-in-out;
@@ -451,7 +457,7 @@ input:-webkit-autofill {
     animation: shake 0.5s ease-in-out;
 }
 
-.wrapper-login.active .sign-up-button span {
+.wrapper-login.active .sign-up-button svg {
     transform: rotate(180deg);
 }
 
@@ -553,7 +559,7 @@ input:-webkit-autofill {
         opacity: 0;
     }
 
-    .wrapper-login.active .sign-up-button span{
+    .wrapper-login.active .sign-up-button svg{
         transform: rotate(-90deg);
     }
 

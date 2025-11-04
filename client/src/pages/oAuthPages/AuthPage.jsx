@@ -3,14 +3,58 @@ import { FaChevronRight } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 export default function AuthPage() {
-    const wrapperLogin = useRef(null)
+    const [searchParams] = useSearchParams();
+    const [isVisibleLogin, setIsVisibleLogin] = useState(false);
+    const [formLogin, setFormLogin] = useState({
+        email: '',
+        password: ''
+    });
+    const [loginError, setLoginError] = useState('');
+
+    const wrapperLogin = useRef(null);
 
     const toggleForm = () => {
         wrapperLogin.current.classList.toggle("active");
     };
+
+    const togglePasswordLogin = () => {
+        setIsVisibleLogin(!isVisibleLogin);
+    }
+
+    const handleChangeLogin = (e) => {
+        setFormLogin({
+            ...formLogin,
+            [e.target.name]: e.target.value
+        })
+    }
+
+    const calculateLoginProgress = () => {
+        let percent = 0;
+        if (formLogin.email) percent += 50;
+        if (formLogin.password) percent += 50;
+        return percent;
+    }
+    
+    const handleSubmitLogin = (e) => {
+        e.preventDefault();
+
+        if (formLogin.email === 'admin' && formLogin.password === 'admin') {
+            alert(`Email: ${formLogin.email}\nPassword: ${formLogin.password}`);
+        }else {
+            setLoginError('Invalid email or password');
+        }
+    }
+    
+    useEffect(() => {
+        const isRegister = searchParams.get('register');
+        if (isRegister === 'true') {
+            wrapperLogin.current.classList.add("active");
+        }
+    }, []);
 
     return (
         <>
@@ -88,7 +132,7 @@ export default function AuthPage() {
                                 </h1>
                             </div>
                         </div>
-                        <form className="form-content" onsubmit="submitLogin()" id="form-signin">
+                        <form className="form-content" onSubmit={handleSubmitLogin} id="form-signin">
                             <img src="/logos/foca_logo.svg" alt=""/>
                             <h1>Login</h1>
                             <div className="social-icons">
@@ -96,29 +140,29 @@ export default function AuthPage() {
                                 <a href="#" className="social-icon"><FaFacebook /></a>
                             </div>
                             <div className="input-form email">
-                                <input type="email" className="input-field" id="email-login" placeholder=" " />
+                                <input name='email' onChange={handleChangeLogin} value={formLogin.email} type="text" className="input-field" id="email-login" placeholder=" " />
                                 <label className="input-label">
                                     <span className="label-name">Email</span>
                                     <span className="underline"></span>
                                 </label>
                             </div>
                             <div className="input-form password">
-                                <input type="password" className="input-field" id="senha-login" placeholder=" " />
+                                <input name='password' onChange={handleChangeLogin} value={formLogin.password} type={isVisibleLogin ? 'text' : 'password'} className="input-field" id="senha-login" placeholder=" " />
                                 <label className="input-label">
                                     <span className="label-name">Senha</span>
                                     <span className="underline"></span>
-                                    <span className="visible material-symbols-rounded visibility" onClick={() => {}}><FaRegEye /></span>
-                                    <span className="invisible material-symbols-rounded visibility-off" onClick={() => {}}><FaRegEyeSlash /></span>
+                                    {isVisibleLogin ? <span className="visible visibility" onClick={togglePasswordLogin}><FaRegEye /></span> :
+                                    <span className="invisible visibility-off" onClick={togglePasswordLogin}><FaRegEyeSlash /></span>}
                                 </label>
                             </div>
-                            <h3 id="response-login"></h3>
+                            <span id="response-login">{loginError}</span>
                             <div className="input-form check">
                                 <label className="input-check"><input type="checkbox" className="remember" id="remember-me"/> Manter logado</label>
                             </div>
                             <div className="input-form">
-                                <button disabled className="input-button login-button" type="submit">
-                                    <div className="progress-fill">
-                                        <div className="progress-fill-text">Entrar</div>
+                                <button disabled={calculateLoginProgress() < 100} className="input-button login-button" type="submit">
+                                    <div className={`progress-fill ${calculateLoginProgress() === 100 && 'complete'}`} style={{ width: `${calculateLoginProgress()}%` }}>
+                                        <div className="progress-fill-text" style={{ width: `${calculateLoginProgress()}%` }}>Entrar</div>
                                     </div>
                                 </button>
                             </div>
