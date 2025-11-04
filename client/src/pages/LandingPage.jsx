@@ -85,7 +85,7 @@ function LandingPage() {
                 </nav>
             </div>
             <div className="cta-container">
-                <a href="/auth?register=true" className="signup-button cta-button invert"></a>
+                <Link to="/auth?register=true" className="signup-button cta-button invert"></Link>
             </div>     
         </section>
         
