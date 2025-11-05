@@ -341,6 +341,20 @@ input:-webkit-autofill {
 
 .input-button:disabled {
     cursor: not-allowed;
+    & .progress-fill {
+        cursor: not-allowed;
+    }
+    & .progress-fill-text {
+        cursor: not-allowed;
+    }
+    & .progress-fill.complete {
+        cursor: not-allowed;
+        &:hover {
+            &::after{
+                height: 0%;
+            }
+        }
+    }
 }
 
 .progress-fill{

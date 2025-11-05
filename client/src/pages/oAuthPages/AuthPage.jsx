@@ -5,13 +5,23 @@ import { FaFacebook, FaGoogle } from "react-icons/fa";
 import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Ring } from 'ldrs/react'
+import 'ldrs/react/Ring.css'
 
 export default function AuthPage() {
     const [searchParams] = useSearchParams();
+    const [isLoading, setIsLoading] = useState(false);
     const [isVisibleLogin, setIsVisibleLogin] = useState(false);
     const [formLogin, setFormLogin] = useState({
         email: '',
         password: ''
+    });
+    const [formRegister, setFormRegister] = useState({
+        nickname: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        acceptTerms: false
     });
     const [loginError, setLoginError] = useState('');
 
@@ -30,6 +40,15 @@ export default function AuthPage() {
             ...formLogin,
             [e.target.name]: e.target.value
         })
+        setLoginError('');
+    }
+
+    const handleChangeRegister = (e) => {
+        setFormRegister({
+            ...formRegister,
+            [e.target.name]: e.target.value
+        })
+        setLoginError('');
     }
 
     const calculateLoginProgress = () => {
@@ -41,12 +60,16 @@ export default function AuthPage() {
     
     const handleSubmitLogin = (e) => {
         e.preventDefault();
-
-        if (formLogin.email === 'admin' && formLogin.password === 'admin') {
-            alert(`Email: ${formLogin.email}\nPassword: ${formLogin.password}`);
-        }else {
-            setLoginError('Invalid email or password');
-        }
+        setLoginError('');
+        setIsLoading(true);
+        setTimeout(() => {
+            if (formLogin.email === 'admin' && formLogin.password === 'admin') {
+                alert(`Email: ${formLogin.email}\nPassword: ${formLogin.password}`);
+            }else {
+                setLoginError('Email ou senha incorretos');
+            }
+            setIsLoading(false);
+        }, 1000)
     }
     
     useEffect(() => {
@@ -160,9 +183,9 @@ export default function AuthPage() {
                                 <label className="input-check"><input type="checkbox" className="remember" id="remember-me"/> Manter logado</label>
                             </div>
                             <div className="input-form">
-                                <button disabled={calculateLoginProgress() < 100} className="input-button login-button" type="submit">
+                                <button disabled={calculateLoginProgress() < 100 || isLoading} className="input-button login-button" type="submit">
                                     <div className={`progress-fill ${calculateLoginProgress() === 100 && 'complete'}`} style={{ width: `${calculateLoginProgress()}%` }}>
-                                        <div className="progress-fill-text" style={{ width: `${calculateLoginProgress()}%` }}>Entrar</div>
+                                        <div className="progress-fill-text" style={{ width: `${calculateLoginProgress()}%` }}>{isLoading ? <Ring size={20} stroke={4} bgOpacity={0.3} speed={2} color='white' /> : 'Entrar'}</div>
                                     </div>
                                 </button>
                             </div>
