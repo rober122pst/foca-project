@@ -433,7 +433,7 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    background-image: url(../../public/landing/wave_red.png);
+    background-image: url(/landing/wave_red.png) !important;
     z-index: 100;
 }
 /* ******************************************** */
