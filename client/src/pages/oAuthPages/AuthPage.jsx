@@ -26,7 +26,7 @@ export default function AuthPage() {
         acceptTerms: false
     });
     const [loginError, setLoginError] = useState('');
-    const [registerErrors, setRegisterErrors] = useState(null);
+    const [registerErrors, setRegisterErrors] = useState('');
 
     const wrapperLogin = useRef(null);
 
@@ -106,12 +106,47 @@ export default function AuthPage() {
     }, [isRegister]);
 
     // Validações dos campos no formulário de registro
-    const validateEmail = (email) => {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!re.test(String(email).toLowerCase())) {
-            setRegisterErrors({ error: 'Email inválido' });
-            alert('Email inválido');
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        let error = '';
+
+        switch (name) {
+            case 'nickname':
+                if (value.length < 3 || value.length > 20) {
+                    error = 'Nickname deve ter entre 3 e 20 caracteres';
+                }
+                if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+                    error = 'Nickname pode conter apenas letras, números e underscores';
+                }
+                break;
+            case 'email': 
+                if (!/\S+@\S+\.\S+/.test(value)) { // Regex do email
+                    error = 'Email inválido';
+                }
+                break;
+            case 'password':
+                if (value.length < 6) {
+                    error = 'Senha deve ter no mínimo 6 caracteres';
+                }
+                if (!/[A-Z]/.test(value)) {
+                    error = 'Senha deve conter ao menos uma letra maiúscula';
+                }
+                if (!/[a-z]/.test(value)) {
+                    error = 'Senha deve conter ao menos uma letra minúscula';
+                }
+                if (!/[0-9]/.test(value)) {
+                    error = 'Senha deve conter ao menos um número';
+                }
+                break;
+            case 'confirmPassword':
+                if (value !== formRegister.password) {
+                    error = 'As senhas não coincidem';
+                }
+                break;
+            default:
+                break;
         }
+        setRegisterErrors(error);
     }
 
     return (
@@ -138,21 +173,21 @@ export default function AuthPage() {
                                     <a href="#" className="social-icon"><FaFacebook /></a>
                                 </div>
                                 <div className="input-form username">
-                                    <input value={formRegister.nickname} onChange={handleChangeRegister} type="text" className="input-field" id="nickname" name='nickname' placeholder=" " />
+                                    <input value={formRegister.nickname} onBlur={handleBlur} onChange={handleChangeRegister} type="text" className="input-field" id="nickname" name='nickname' placeholder=" " />
                                     <label className="input-label">
                                         <span className="label-name">Nickname</span>
                                         <span className="underline"></span>
                                     </label>
                                 </div>
                                 <div className="input-form email">
-                                    <input value={formRegister.email} onBlur={(e) => validateEmail(e.target.value)} onChange={handleChangeRegister} name='email' type="email" className="input-field" id="email-register" placeholder=" " />
+                                    <input value={formRegister.email} onBlur={handleBlur} onChange={handleChangeRegister} name='email' type="email" className="input-field" id="email-register" placeholder=" " />
                                     <label className="input-label">
                                         <span className="label-name">Email</span>
                                         <span className="underline"></span>
                                     </label>
                                 </div>
                                 <div className="input-form password">
-                                    <input value={formRegister.password} onChange={handleChangeRegister} name='password' type={isVisibleRegister ? "text" : "password"} className="input-field" id="senha-register" placeholder=" " />
+                                    <input value={formRegister.password} onBlur={handleBlur} onChange={handleChangeRegister} name='password' type={isVisibleRegister ? "text" : "password"} className="input-field" id="senha-register" placeholder=" " />
                                     <label className="input-label">
                                         <span className="label-name">Senha</span>
                                         <span className="underline"></span>
@@ -161,7 +196,7 @@ export default function AuthPage() {
                                     </label>
                                 </div>
                                 <div className="input-form password">
-                                    <input value={formRegister.confirmPassword} onChange={handleChangeRegister} name='confirmPassword' type={isVisibleRegister ? "text" : "password"} className="input-field" id="senha-confirm" placeholder=" " />
+                                    <input value={formRegister.confirmPassword} onBlur={handleBlur} onChange={handleChangeRegister} name='confirmPassword' type={isVisibleRegister ? "text" : "password"} className="input-field" id="senha-confirm" placeholder=" " />
                                     <label className="input-label">
                                         <span className="label-name">Confirmar Senha</span>
                                         <span className="underline"></span>
@@ -169,9 +204,9 @@ export default function AuthPage() {
                                         <span className="invisible visibility-off" onClick={togglePasswordRegister}><FaRegEyeSlash /></span>}
                                     </label>
                                 </div>
-                                <h3 id="response-register"></h3>
+                                <span className={registerErrors ? 'error' : 'success'} id="response-register">{registerErrors}</span>
                                 <div className="input-form check">
-                                    <label className="input-check"><input value={formRegister.acceptTerms} onChange={handleChangeRegister} name='acceptTerms' type="checkbox" className="remember" id="termos-servicos"/> Aceitar <a href="" style={{textDecoration: 'none', color: '#0098db'}}>Termos e Condições</a></label>
+                                    <label className="input-check"><input checked={formRegister.acceptTerms} onChange={(e) => setFormRegister({ ...formRegister, acceptTerms: e.target.checked })} name='acceptTerms' type="checkbox" className="remember" id="termos-servicos"/> Aceitar <a href="" style={{textDecoration: 'none', color: '#0098db'}}>Termos e Condições</a></label>
                                 </div>
                                 <div className="input-form">
                                     <button disabled={calculateRegisterProgress() < 100 || isLoading} className="input-button login-button" type="submit">

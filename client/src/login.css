@@ -464,7 +464,7 @@ input:-webkit-autofill {
     font-size: .7rem;
     pointer-events: none;
 
-    color: #0098db;
+    color: #fdfdfd;
 }
 
 .error  {
