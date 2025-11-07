@@ -10,8 +10,10 @@ import 'ldrs/react/Ring.css'
 
 export default function AuthPage() {
     const [searchParams] = useSearchParams();
+    const isRegister = searchParams.get('register');
     const [isLoading, setIsLoading] = useState(false);
     const [isVisibleLogin, setIsVisibleLogin] = useState(false);
+    const [isVisibleRegister, setIsVisibleRegister] = useState(false);
     const [formLogin, setFormLogin] = useState({
         email: '',
         password: ''
@@ -24,6 +26,7 @@ export default function AuthPage() {
         acceptTerms: false
     });
     const [loginError, setLoginError] = useState('');
+    const [registerErrors, setRegisterErrors] = useState(null);
 
     const wrapperLogin = useRef(null);
 
@@ -33,6 +36,10 @@ export default function AuthPage() {
 
     const togglePasswordLogin = () => {
         setIsVisibleLogin(!isVisibleLogin);
+    }
+
+    const togglePasswordRegister = () => {
+        setIsVisibleRegister(!isVisibleRegister);
     }
 
     const handleChangeLogin = (e) => {
@@ -57,6 +64,16 @@ export default function AuthPage() {
         if (formLogin.password) percent += 50;
         return percent;
     }
+
+    const calculateRegisterProgress = () => {
+        let percent = 0;
+        if (formRegister.nickname) percent += 20;
+        if (formRegister.email) percent += 20;
+        if (formRegister.password) percent += 20;
+        if (formRegister.confirmPassword) percent += 20;
+        if (formRegister.acceptTerms) percent += 20;
+        return percent;
+    }
     
     const handleSubmitLogin = (e) => {
         e.preventDefault();
@@ -72,12 +89,30 @@ export default function AuthPage() {
         }, 1000)
     }
     
+    const handleSubmitRegister = (e) => {
+        e.preventDefault();
+        // setRegisterError('');
+        setIsLoading(true);
+        setTimeout(() => {
+            alert(`Nickname: ${formRegister.nickname}\nEmail: ${formRegister.email}\nPassword: ${formRegister.password}\nConfirm Password: ${formRegister.confirmPassword}\nAccept Terms: ${formRegister.acceptTerms}`);
+            setIsLoading(false);
+        }, 1000)
+    }
+    
     useEffect(() => {
-        const isRegister = searchParams.get('register');
         if (isRegister === 'true') {
             wrapperLogin.current.classList.add("active");
         }
-    }, []);
+    }, [isRegister]);
+
+    // Validações dos campos no formulário de registro
+    const validateEmail = (email) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!re.test(String(email).toLowerCase())) {
+            setRegisterErrors({ error: 'Email inválido' });
+            alert('Email inválido');
+        }
+    }
 
     return (
         <>
@@ -94,7 +129,7 @@ export default function AuthPage() {
                         <div className="sign-up-button" onClick={toggleForm}>
                             <FaChevronRight />
                         </div>
-                            <form className="form-content" onsubmit="submitRegister()" id="form-signup">
+                            <form className="form-content" onSubmit={handleSubmitRegister} id="form-signup">
                                 
                                 <img src="/logos/foca_logo_uncolor.svg" alt=""/>
                                 <h1>Criar Conta</h1>
@@ -103,45 +138,45 @@ export default function AuthPage() {
                                     <a href="#" className="social-icon"><FaFacebook /></a>
                                 </div>
                                 <div className="input-form username">
-                                    <input type="text" className="input-field" id="nickname" placeholder=" " />
+                                    <input value={formRegister.nickname} onChange={handleChangeRegister} type="text" className="input-field" id="nickname" name='nickname' placeholder=" " />
                                     <label className="input-label">
                                         <span className="label-name">Nickname</span>
                                         <span className="underline"></span>
                                     </label>
                                 </div>
                                 <div className="input-form email">
-                                    <input type="email" className="input-field" id="email-register" placeholder=" " />
+                                    <input value={formRegister.email} onBlur={(e) => validateEmail(e.target.value)} onChange={handleChangeRegister} name='email' type="email" className="input-field" id="email-register" placeholder=" " />
                                     <label className="input-label">
                                         <span className="label-name">Email</span>
                                         <span className="underline"></span>
                                     </label>
                                 </div>
                                 <div className="input-form password">
-                                    <input type="password" className="input-field" id="senha-register" placeholder=" " />
+                                    <input value={formRegister.password} onChange={handleChangeRegister} name='password' type={isVisibleRegister ? "text" : "password"} className="input-field" id="senha-register" placeholder=" " />
                                     <label className="input-label">
                                         <span className="label-name">Senha</span>
                                         <span className="underline"></span>
-                                        <span className="visible material-symbols-rounded visibility" onClick={() => {}}>visibility</span>
-                                        <span className="invisible material-symbols-rounded visibility-off" onClick={() => {}}>visibility_off</span>
+                                        {isVisibleRegister ? <span className="visible visibility" onClick={togglePasswordRegister}><FaRegEye /></span> :
+                                        <span className="invisible visibility-off" onClick={togglePasswordRegister}><FaRegEyeSlash /></span>}
                                     </label>
                                 </div>
                                 <div className="input-form password">
-                                    <input type="password" className="input-field" id="senha-confirm" placeholder=" " />
+                                    <input value={formRegister.confirmPassword} onChange={handleChangeRegister} name='confirmPassword' type={isVisibleRegister ? "text" : "password"} className="input-field" id="senha-confirm" placeholder=" " />
                                     <label className="input-label">
                                         <span className="label-name">Confirmar Senha</span>
                                         <span className="underline"></span>
-                                        <span className="visible material-symbols-rounded visibility" onClick={() => {}}>visibility</span>
-                                        <span className="invisible material-symbols-rounded visibility-off" onClick={() => {}}>visibility_off</span>
+                                        {isVisibleRegister ? <span className="visible visibility" onClick={togglePasswordRegister}><FaRegEye /></span> :
+                                        <span className="invisible visibility-off" onClick={togglePasswordRegister}><FaRegEyeSlash /></span>}
                                     </label>
                                 </div>
                                 <h3 id="response-register"></h3>
                                 <div className="input-form check">
-                                    <label className="input-check"><input type="checkbox" className="remember" id="termos-servicos"/> Aceitar <a href="" style={{textDecoration: 'none', color: '#0098db'}}>Termos e Condições</a></label>
+                                    <label className="input-check"><input value={formRegister.acceptTerms} onChange={handleChangeRegister} name='acceptTerms' type="checkbox" className="remember" id="termos-servicos"/> Aceitar <a href="" style={{textDecoration: 'none', color: '#0098db'}}>Termos e Condições</a></label>
                                 </div>
                                 <div className="input-form">
-                                    <button disabled className="input-button login-button" type="submit">
-                                        <div className="progress-fill">
-                                            <div className="progress-fill-text">Registrar</div>
+                                    <button disabled={calculateRegisterProgress() < 100 || isLoading} className="input-button login-button" type="submit">
+                                        <div className={`progress-fill ${calculateRegisterProgress() === 100 && 'complete'}`} style={{ width: `${calculateRegisterProgress()}%` }}>
+                                            <div className="progress-fill-text" style={{ width: `${calculateRegisterProgress()}%` }}>{isLoading ? <Ring size={20} stroke={4} bgOpacity={0.3} speed={2} color='white' /> : 'Entrar'}</div>
                                         </div>
                                     </button>
                                 </div>
