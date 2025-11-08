@@ -3,6 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 
+// Importar rotas
+import authRoutes from './src/auth/auth.routes.js';
+
 dotenv.config();
 
 const app = express();
@@ -16,26 +19,8 @@ app.get('/', (req, res) => {
     res.send('Server is running');
 });
 
-app.post('/users', async (req, res) => {
-    const { name, email, password } = req.body;
-    try {
-        const newUser = await prisma.user.create({
-            data: { name, email, password }
-        });
-        res.status(201).json(newUser);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to create user' + error.message });
-    }
-})
-
-app.get('/users', async (req, res) => {
-    try {
-        const users = await prisma.user.findMany();
-        res.json(users);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch users: ' + error.message });
-    }
-});
+// Usar rotas
+app.use('/auth', authRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
