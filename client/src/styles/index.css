@@ -1,4 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import 'tailwindcss'
+
+@theme {
+    --color-items-500: #ff0546;
+    --color-items-700: #9c173b;
+    --color-items-900: #450327;
+    --color-accent-500: #0098db;
+    --color-accent-600: #1e579c;
+    --color-cream-100: #fdfdfd;
+    --color-dark-900: #17001d;
+}
 
 :root {
     --bg-primary: #fdfdfd;
