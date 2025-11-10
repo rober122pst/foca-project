@@ -1,24 +1,26 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export async function getMe(req, res) {
-  if (req.userId) {
-    try {
-      const user = await prisma.user.findUnique({
-        where: { id: req.userId },
-      })
-      if (!user) {
-        return res.status(404).json({ message: 'Usuário não encontrado' })
-      }
-      res.json({
-        id: user.id,
-        name: user.name,
-      })
-    } catch (err) {
-      return res.status(500).json({ message: 'Erro no servidor' })
+    if (req.userId) {
+        try {
+            const user = await prisma.user.findUnique({
+                where: { id: req.userId },
+            });
+            if (!user) {
+                return res
+                    .status(404)
+                    .json({ message: 'Usuário não encontrado' });
+            }
+            res.json({
+                id: user.id,
+                name: user.name,
+            });
+        } catch (err) {
+            return res.status(500).json({ message: 'Erro no servidor' });
+        }
+    } else {
+        res.status(401).json({ message: 'Acesso Negado' });
     }
-  } else {
-    res.status(401).json({ message: 'Acesso Negado' })
-  }
 }
