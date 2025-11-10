@@ -11,18 +11,17 @@ export default function Sidebar() {
 
     return (
         <nav>
-            <ul className="flex flex-col p-4 space-y-4 bg-gray-800 text-white h-screen w-60">
+            <ul className="flex h-screen w-60 flex-col space-y-4 bg-gray-800 p-4 text-white">
                 {menuItems.map((item) => (
                     <li key={item.name}>
                         <Link
                             to={`.${item.to}`}
-                            className="block px-4 py-2 rounded hover:bg-gray-700"
-                        >   
+                            className="block rounded px-4 py-2 hover:bg-gray-700"
+                        >
                             {item.name}
                         </Link>
                     </li>
                 ))}
-                    
             </ul>
         </nav>
     );

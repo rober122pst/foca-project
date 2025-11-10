@@ -19,34 +19,38 @@ export const AuthProvider = ({ children }) => {
                 setIsLoggedIn(false);
                 setUser(null);
                 console.error('Falha na auteticação:', error);
-            }finally {
+            } finally {
                 setIsLoading(false);
             }
         };
         checkAuth();
     }, []);
-    
+
     const login = async (data) => {
         await loginUser(data);
         setIsLoggedIn(true);
     };
-    
+
     const register = async (data) => {
         await registerUser(data);
     };
 
     return (
-        <AuthContext.Provider value={{ 
-            isLoggedIn, 
-            user, 
-            isLoading, 
-            login, 
-            register }}>
+        <AuthContext.Provider
+            value={{
+                isLoggedIn,
+                user,
+                isLoading,
+                login,
+                register,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
 };
 
-export const useAuth = () => { // novo hook (acho que se chama assim)
+export const useAuth = () => {
+    // novo hook (acho que se chama assim)
     return useContext(AuthContext);
 };

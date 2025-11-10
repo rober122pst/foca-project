@@ -4,7 +4,7 @@ export const getMe = async () => {
     try {
         const res = await api.get('user/me');
         return res;
-    }catch (e) {
+    } catch (e) {
         console.error('Nenhum usuário logado.', e);
     }
 };
