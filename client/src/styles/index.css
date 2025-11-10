@@ -1,14 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 @import 'tailwindcss';
+@tailwind utilities;
 
 @theme {
     --color-items-500: #ff0546;
     --color-items-700: #9c173b;
     --color-items-900: #450327;
+    --color-items-950: #17001d;
     --color-accent-500: #0098db;
     --color-accent-600: #1e579c;
     --color-cream-100: #fdfdfd;
-    --color-dark-900: #17001d;
+    --color-cream-200: #E4E4E4;
+    --color-cream-300: #CDCDCD;
+    --color-night-950: #121212;
+    --color-night-900: #282828;
+    --color-night-800: #3F3F3F;
 }
 
 :root {
@@ -27,27 +33,10 @@
     --text-theme: #17001d;
 }
 
-* {
-    margin: 0px;
-    padding: 0px;
-    box-sizing: border-box;
-}
-
-
-.dark-mode {
-    --bg-primary: #1D1D1D;
-    --bg-second: #121212;
-    --bg-third: #121212;
-    --bg-cont: #fdfdfd;
-    --color-items-primary: #ff0546;
-    --color-items-primary50: #ff05487c;
-    --color-items-second: #9c173b;
-    --color-dark: #450327;
-    --accent: #0098db;
-    --accent-gradient: #1e579c;
-    --text-light: #fdfdfd;
-    --text-dark: #17001d;
-    --text-theme: #fdfdfd;
+@custom-variant dark {
+	&:where([data-theme="dark"] *) {
+		@slot;
+	}
 }
 
 body {
@@ -61,10 +50,6 @@ body {
 html {
     scroll-behavior: smooth;
     font-size: 16px;
-}
-
-div {
-    display: block;
 }
 
 ::-webkit-scrollbar {
@@ -83,4 +68,17 @@ div {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--accent-gradient);
+}
+
+
+@utility display-center {
+	@apply flex justify-center items-center;
+}
+
+@utility transition-theme {
+	@apply transition-all duration-300 ease-out;
+}
+
+.border-groove {
+    border-style: groove;
 }
