@@ -78,3 +78,7 @@ html {
 @utility transition-theme {
 	@apply transition-all duration-300 ease-out;
 }
+
+.border-groove {
+    border-style: groove;
+}
