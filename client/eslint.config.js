@@ -32,7 +32,8 @@ export default defineConfig([
             'semi': ['error', 'always'],
             'max-len': ['warn', { 'code': 80, 'ignoreComments': true }],
             'object-curly-spacing': ['error', 'always'],
-            'quotes': ['error', 'single']
+            'quotes': ['error', 'single'],
+            'prettier/prettier': 'error',
         },
     },
 ]);
