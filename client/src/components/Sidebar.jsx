@@ -11,13 +11,10 @@ export default function Sidebar() {
 
     return (
         <nav>
-            <ul className="flex h-screen w-60 flex-col space-y-4 bg-gray-800 p-4 text-white">
+            <ul className={'flex h-screen w-60 flex-col space-y-4 bg-gray-800 p-4 text-white'}>
                 {menuItems.map((item) => (
                     <li key={item.name}>
-                        <Link
-                            to={`.${item.to}`}
-                            className="block rounded px-4 py-2 hover:bg-gray-700"
-                        >
+                        <Link to={`.${item.to}`} className="block rounded px-4 py-2 hover:bg-gray-700">
                             {item.name}
                         </Link>
                     </li>
