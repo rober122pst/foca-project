@@ -1,12 +1,12 @@
-import '../../styles/login.css'
-import { FaChevronRight } from "react-icons/fa6";
-import { FcGoogle } from "react-icons/fc";
-import { FaFacebook, FaGoogle } from "react-icons/fa";
-import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
+import '../../styles/login.css';
+import { FaChevronRight } from 'react-icons/fa6';
+import { FcGoogle } from 'react-icons/fc';
+import { FaFacebook, FaGoogle } from 'react-icons/fa';
+import { FaRegEyeSlash, FaRegEye } from 'react-icons/fa';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Ring } from 'ldrs/react'
-import 'ldrs/react/Ring.css'
+import { Ring } from 'ldrs/react';
+import 'ldrs/react/Ring.css';
 
 export default function AuthPage() {
     const [searchParams] = useSearchParams();
@@ -31,39 +31,39 @@ export default function AuthPage() {
     const wrapperLogin = useRef(null);
 
     const toggleForm = () => {
-        wrapperLogin.current.classList.toggle("active");
+        wrapperLogin.current.classList.toggle('active');
     };
 
     const togglePasswordLogin = () => {
         setIsVisibleLogin(!isVisibleLogin);
-    }
+    };
 
     const togglePasswordRegister = () => {
         setIsVisibleRegister(!isVisibleRegister);
-    }
+    };
 
     const handleChangeLogin = (e) => {
         setFormLogin({
             ...formLogin,
             [e.target.name]: e.target.value
-        })
+        });
         setLoginError('');
-    }
+    };
 
     const handleChangeRegister = (e) => {
         setFormRegister({
             ...formRegister,
             [e.target.name]: e.target.value
-        })
+        });
         setLoginError('');
-    }
+    };
 
     const calculateLoginProgress = () => {
         let percent = 0;
         if (formLogin.email) percent += 50;
         if (formLogin.password) percent += 50;
         return percent;
-    }
+    };
 
     const calculateRegisterProgress = () => {
         let percent = 0;
@@ -73,7 +73,7 @@ export default function AuthPage() {
         if (formRegister.confirmPassword) percent += 20;
         if (formRegister.acceptTerms) percent += 20;
         return percent;
-    }
+    };
     
     const handleSubmitLogin = (e) => {
         e.preventDefault();
@@ -86,8 +86,8 @@ export default function AuthPage() {
                 setLoginError('Email ou senha incorretos');
             }
             setIsLoading(false);
-        }, 1000)
-    }
+        }, 1000);
+    };
     
     const handleSubmitRegister = (e) => {
         e.preventDefault();
@@ -96,12 +96,12 @@ export default function AuthPage() {
         setTimeout(() => {
             alert(`Nickname: ${formRegister.nickname}\nEmail: ${formRegister.email}\nPassword: ${formRegister.password}\nConfirm Password: ${formRegister.confirmPassword}\nAccept Terms: ${formRegister.acceptTerms}`);
             setIsLoading(false);
-        }, 1000)
-    }
+        }, 1000);
+    };
     
     useEffect(() => {
         if (isRegister === 'true') {
-            wrapperLogin.current.classList.add("active");
+            wrapperLogin.current.classList.add('active');
         }
     }, [isRegister]);
 
@@ -147,7 +147,7 @@ export default function AuthPage() {
                 break;
         }
         setRegisterErrors(error);
-    }
+    };
 
     return (
         <>
@@ -164,58 +164,58 @@ export default function AuthPage() {
                         <div className="sign-up-button" onClick={toggleForm}>
                             <FaChevronRight />
                         </div>
-                            <form className="form-content" onSubmit={handleSubmitRegister} id="form-signup">
+                        <form className="form-content" onSubmit={handleSubmitRegister} id="form-signup">
                                 
-                                <img src="/logos/foca_logo_uncolor.svg" alt=""/>
-                                <h1>Criar Conta</h1>
-                                <div className="social-icons">
-                                    <a href="#" className="social-icon"><FaGoogle /></a>
-                                    <a href="#" className="social-icon"><FaFacebook /></a>
-                                </div>
-                                <div className="input-form username">
-                                    <input value={formRegister.nickname} onBlur={handleBlur} onChange={handleChangeRegister} type="text" className="input-field" id="nickname" name='nickname' placeholder=" " />
-                                    <label className="input-label">
-                                        <span className="label-name">Nickname</span>
-                                        <span className="underline"></span>
-                                    </label>
-                                </div>
-                                <div className="input-form email">
-                                    <input value={formRegister.email} onBlur={handleBlur} onChange={handleChangeRegister} name='email' type="email" className="input-field" id="email-register" placeholder=" " />
-                                    <label className="input-label">
-                                        <span className="label-name">Email</span>
-                                        <span className="underline"></span>
-                                    </label>
-                                </div>
-                                <div className="input-form password">
-                                    <input value={formRegister.password} onBlur={handleBlur} onChange={handleChangeRegister} name='password' type={isVisibleRegister ? "text" : "password"} className="input-field" id="senha-register" placeholder=" " />
-                                    <label className="input-label">
-                                        <span className="label-name">Senha</span>
-                                        <span className="underline"></span>
-                                        {isVisibleRegister ? <span className="visible visibility" onClick={togglePasswordRegister}><FaRegEye /></span> :
+                            <img src="/logos/foca_logo_uncolor.svg" alt=""/>
+                            <h1>Criar Conta</h1>
+                            <div className="social-icons">
+                                <a href="#" className="social-icon"><FaGoogle /></a>
+                                <a href="#" className="social-icon"><FaFacebook /></a>
+                            </div>
+                            <div className="input-form username">
+                                <input value={formRegister.nickname} onBlur={handleBlur} onChange={handleChangeRegister} type="text" className="input-field" id="nickname" name='nickname' placeholder=" " />
+                                <label className="input-label">
+                                    <span className="label-name">Nickname</span>
+                                    <span className="underline"></span>
+                                </label>
+                            </div>
+                            <div className="input-form email">
+                                <input value={formRegister.email} onBlur={handleBlur} onChange={handleChangeRegister} name='email' type="email" className="input-field" id="email-register" placeholder=" " />
+                                <label className="input-label">
+                                    <span className="label-name">Email</span>
+                                    <span className="underline"></span>
+                                </label>
+                            </div>
+                            <div className="input-form password">
+                                <input value={formRegister.password} onBlur={handleBlur} onChange={handleChangeRegister} name='password' type={isVisibleRegister ? 'text' : 'password'} className="input-field" id="senha-register" placeholder=" " />
+                                <label className="input-label">
+                                    <span className="label-name">Senha</span>
+                                    <span className="underline"></span>
+                                    {isVisibleRegister ? <span className="visible visibility" onClick={togglePasswordRegister}><FaRegEye /></span> :
                                         <span className="invisible visibility-off" onClick={togglePasswordRegister}><FaRegEyeSlash /></span>}
-                                    </label>
-                                </div>
-                                <div className="input-form password">
-                                    <input value={formRegister.confirmPassword} onBlur={handleBlur} onChange={handleChangeRegister} name='confirmPassword' type={isVisibleRegister ? "text" : "password"} className="input-field" id="senha-confirm" placeholder=" " />
-                                    <label className="input-label">
-                                        <span className="label-name">Confirmar Senha</span>
-                                        <span className="underline"></span>
-                                        {isVisibleRegister ? <span className="visible visibility" onClick={togglePasswordRegister}><FaRegEye /></span> :
+                                </label>
+                            </div>
+                            <div className="input-form password">
+                                <input value={formRegister.confirmPassword} onBlur={handleBlur} onChange={handleChangeRegister} name='confirmPassword' type={isVisibleRegister ? 'text' : 'password'} className="input-field" id="senha-confirm" placeholder=" " />
+                                <label className="input-label">
+                                    <span className="label-name">Confirmar Senha</span>
+                                    <span className="underline"></span>
+                                    {isVisibleRegister ? <span className="visible visibility" onClick={togglePasswordRegister}><FaRegEye /></span> :
                                         <span className="invisible visibility-off" onClick={togglePasswordRegister}><FaRegEyeSlash /></span>}
-                                    </label>
-                                </div>
-                                <span className={registerErrors ? 'error' : 'success'} id="response-register">{registerErrors}</span>
-                                <div className="input-form check">
-                                    <label className="input-check"><input checked={formRegister.acceptTerms} onChange={(e) => setFormRegister({ ...formRegister, acceptTerms: e.target.checked })} name='acceptTerms' type="checkbox" className="remember" id="termos-servicos"/> Aceitar <a href="" style={{textDecoration: 'none', color: '#0098db'}}>Termos e Condições</a></label>
-                                </div>
-                                <div className="input-form">
-                                    <button disabled={calculateRegisterProgress() < 100 || isLoading} className="input-button login-button" type="submit">
-                                        <div className={`progress-fill ${calculateRegisterProgress() === 100 && 'complete'}`} style={{ width: `${calculateRegisterProgress()}%` }}>
-                                            <div className="progress-fill-text" style={{ width: `${calculateRegisterProgress()}%` }}>{isLoading ? <Ring size={20} stroke={4} bgOpacity={0.3} speed={2} color='white' /> : 'Entrar'}</div>
-                                        </div>
-                                    </button>
-                                </div>
-                            </form>               
+                                </label>
+                            </div>
+                            <span className={registerErrors ? 'error' : 'success'} id="response-register">{registerErrors}</span>
+                            <div className="input-form check">
+                                <label className="input-check"><input checked={formRegister.acceptTerms} onChange={(e) => setFormRegister({ ...formRegister, acceptTerms: e.target.checked })} name='acceptTerms' type="checkbox" className="remember" id="termos-servicos"/> Aceitar <a href="" style={{ textDecoration: 'none', color: '#0098db' }}>Termos e Condições</a></label>
+                            </div>
+                            <div className="input-form">
+                                <button disabled={calculateRegisterProgress() < 100 || isLoading} className="input-button login-button" type="submit">
+                                    <div className={`progress-fill ${calculateRegisterProgress() === 100 && 'complete'}`} style={{ width: `${calculateRegisterProgress()}%` }}>
+                                        <div className="progress-fill-text" style={{ width: `${calculateRegisterProgress()}%` }}>{isLoading ? <Ring size={20} stroke={4} bgOpacity={0.3} speed={2} color='white' /> : 'Entrar'}</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </form>               
                     </div>
                     <div className="sign-in-container">
                         <div className="sidebar">
@@ -245,7 +245,7 @@ export default function AuthPage() {
                                     <span className="label-name">Senha</span>
                                     <span className="underline"></span>
                                     {isVisibleLogin ? <span className="visible visibility" onClick={togglePasswordLogin}><FaRegEye /></span> :
-                                    <span className="invisible visibility-off" onClick={togglePasswordLogin}><FaRegEyeSlash /></span>}
+                                        <span className="invisible visibility-off" onClick={togglePasswordLogin}><FaRegEyeSlash /></span>}
                                 </label>
                             </div>
                             <span id="response-login">{loginError}</span>

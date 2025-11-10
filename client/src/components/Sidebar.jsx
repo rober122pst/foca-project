@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 export default function Sidebar() {
     const menuItems = [
@@ -7,7 +7,7 @@ export default function Sidebar() {
         { name: 'Tarefas', to: '/tarefa' },
         { name: 'Turmas', to: '/turmas' },
         { name: 'Focão AI', to: '/ai' },
-    ]
+    ];
 
     return (
         <nav>

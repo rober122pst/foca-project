@@ -1,8 +1,8 @@
-let header = document.getElementById('header')
+let header = document.getElementById('header');
 
 window.addEventListener('scroll', () => {
     navbarColor();
-})
+});
 
 function navbarColor() {
     if(window.scrollY >= 10){
