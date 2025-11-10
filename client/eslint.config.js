@@ -28,7 +28,6 @@ export default defineConfig([
             'no-unused-vars': ['warn', { varsIgnorePattern: '^[A-Z_]' }],
             indent: ['error', 4, { SwitchCase: 1 }],
             semi: ['error', 'always'],
-            'max-len': ['warn', { code: 120, ignoreComments: true }],
             'object-curly-spacing': ['error', 'always'],
             quotes: ['error', 'single'],
             'prettier/prettier': [

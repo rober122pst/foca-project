@@ -33,12 +33,6 @@
     --text-theme: #17001d;
 }
 
-* {
-    margin: 0px;
-    padding: 0px;
-    box-sizing: border-box;
-}
-
 @custom-variant dark {
 	&:where([data-theme="dark"] *) {
 		@slot;
