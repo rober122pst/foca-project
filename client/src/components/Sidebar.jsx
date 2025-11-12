@@ -30,7 +30,7 @@ export default function Sidebar() {
         <aside
             data-open={isOpen}
             className={
-                'bg-cream-100 dark:bg-night-950 text-items-950 dark:text-cream-100 border-items-500 border-groove box-border flex h-screen w-64 flex-col overflow-hidden border-r-5 py-8 duration-700 data-[open=false]:w-22'
+                'bg-cream-100 dark:bg-night-900 text-items-950 dark:text-cream-100 border-items-500 border-groove box-border flex h-screen w-64 flex-col overflow-hidden border-r-5 py-8 duration-700 data-[open=false]:w-22'
             }
         >
             <img src={isOpen ? focaLogoTypo : focaLogo} alt="foca-logo" className="h-full max-h-10" />

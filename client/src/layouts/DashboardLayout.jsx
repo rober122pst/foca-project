@@ -8,7 +8,7 @@ export default function DashboardLayout() {
     return (
         <div className="flex">
             {isMobile ? <NavbarMobile /> : <Sidebar />}
-            <main className="min-h-screen overflow-auto">
+            <main className="min-h-screen w-full overflow-auto">
                 <Outlet />
             </main>
         </div>
