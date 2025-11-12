@@ -82,3 +82,22 @@ html {
 .border-groove {
     border-style: groove;
 }
+
+@keyframes slime-wave {
+  0%, 100% { 
+    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+    transform: translateY(0);
+  }
+  25% { 
+    border-radius: 55% 45% 37% 63% / 40% 52% 48% 60%;
+    transform: translateY(-2px);
+  }
+  50% { 
+    border-radius: 37% 63% 55% 45% / 63% 38% 62% 37%;
+    transform: translateY(0);
+  }
+  75% { 
+    border-radius: 45% 55% 70% 30% / 52% 45% 55% 48%;
+    transform: translateY(2px);
+  }
+}
