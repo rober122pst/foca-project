@@ -16,6 +16,7 @@ function App() {
                 <Route path="/dashboard" element={<DashboardLayout />}>
                     <Route index element={<Dashboard />} />
                     <Route path="rotina" element={<Rotina />} />
+                    <Route path="*" element={<h1>Error 404</h1>} />
                 </Route>
             </Routes>
         </>

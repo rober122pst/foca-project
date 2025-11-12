@@ -1,21 +1,20 @@
-import { Link, useLocation } from 'react-router-dom';
 import { FaChartLine, FaRegCalendar, FaRegClipboard, FaRegUser } from 'react-icons/fa6';
-import { MdOutlineChat } from 'react-icons/md';
-import { LuBrain } from 'react-icons/lu';
-import { GoGear } from 'react-icons/go';
-import { MdLogout } from 'react-icons/md';
-import { IoMenu } from 'react-icons/io5';
+import { MdLogout, MdOutlineChat } from 'react-icons/md';
+import { Link, useLocation } from 'react-router-dom';
 
+import { useState } from 'react';
+import { GoGear } from 'react-icons/go';
+import { IoMenu } from 'react-icons/io5';
+import { LuBrain } from 'react-icons/lu';
 import focaLogo from '../assets/logos/foca_logo_uncolor.svg';
 import focaLogoTypo from '../assets/logos/foca_logo_uncolor_typo.svg';
-import { useState } from 'react';
 
 export default function Sidebar() {
     const location = useLocation();
     const [isOpen, setIsOpen] = useState(true);
 
     const menuItems = [
-        { name: 'Overview', to: '/', icon: <FaChartLine /> },
+        { name: 'Overview', to: '', icon: <FaChartLine /> },
         { name: 'Rotina', to: '/rotina', icon: <FaRegCalendar /> },
         { name: 'Tarefas', to: '/tarefa', icon: <FaRegClipboard /> },
         { name: 'Turmas', to: '/turmas', icon: <MdOutlineChat /> },
@@ -38,10 +37,10 @@ export default function Sidebar() {
             <nav className="transition-theme my-8 mr-0 ml-4 space-y-4">
                 <ul>
                     {menuItems.map((item) => {
-                        const isActive = '/' + location.pathname.split('/')[2] === item.to;
+                        const isActive = location.pathname === `/dashboard${item.to}`;
 
                         return (
-                            <Link replace to={`.${item.to}`} key={item.name}>
+                            <Link title={item.name} replace to={`.${item.to}`} key={item.name}>
                                 <li
                                     className={`hover:shadow-items-500/50 transition-theme hover:text-cream-100 box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl text-nowrap hover:shadow-[inset_250px_0_0] ${isActive && 'shadow-items-500/50 shadow-[inset_250px_0_0]'}`}
                                 >
@@ -60,7 +59,7 @@ export default function Sidebar() {
             <nav className="transition-theme my-8 mr-0 ml-4 space-y-4">
                 <ul>
                     {menuInsights.map((item) => (
-                        <Link to={`.${item.to}`} key={item.name}>
+                        <Link title={item.name} to={`.${item.to}`} key={item.name}>
                             <li className="hover:shadow-items-500/50 transition-theme hover:text-cream-100 box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl text-nowrap hover:shadow-[inset_250px_0_0]">
                                 <span>{item.icon}</span>
                                 <span
@@ -72,7 +71,10 @@ export default function Sidebar() {
                         </Link>
                     ))}
                     <a href="/auth/logout">
-                        <li className="hover:shadow-items-500/50 transition-theme hover:text-cream-100 box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl hover:shadow-[inset_250px_0_0]">
+                        <li
+                            title="Sair"
+                            className="hover:shadow-items-500/50 transition-theme hover:text-cream-100 box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl hover:shadow-[inset_250px_0_0]"
+                        >
                             <span>
                                 <MdLogout />
                             </span>
@@ -85,7 +87,11 @@ export default function Sidebar() {
                     </a>
                 </ul>
             </nav>
-            <button className="mx-auto mt-auto mb-8 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+            <button
+                className="mx-auto mt-auto mb-8 cursor-pointer"
+                title={isOpen ? 'Encolher' : 'Expandir'}
+                onClick={() => setIsOpen(!isOpen)}
+            >
                 <IoMenu size={30} className="text-items-500" />
             </button>
         </aside>
