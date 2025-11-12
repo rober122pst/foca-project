@@ -69,7 +69,13 @@ export default function NavbarMobile() {
                         className="relative z-10"
                     >
                         <li className="hover:bg-items-500/50 rounded-md p-2 text-2xl duration-300">
-                            <div>{item.icon}</div>
+                            <div
+                                className={
+                                    activeIndex === index ? 'opacity-100 duration-300' : 'opacity-30 duration-300'
+                                }
+                            >
+                                {item.icon}
+                            </div>
                         </li>
                     </Link>
                 ))}
