@@ -1,9 +1,10 @@
+import { defineConfig, globalIgnores } from 'eslint/config';
+
 import js from '@eslint/js';
-import globals from 'globals';
+import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
-import { defineConfig, globalIgnores } from 'eslint/config';
-import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
+import globals from 'globals';
 
 export default defineConfig([
     globalIgnores(['dist']),
@@ -41,6 +42,7 @@ export default defineConfig([
                     bracketSpacing: true, // deixa espaço dentro de { }
                     jsxBracketSameLine: false,
                     bracketSameLine: false,
+                    endOfLine: 'crlf',
                 },
             ],
         },

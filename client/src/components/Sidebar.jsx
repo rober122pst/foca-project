@@ -1,21 +1,20 @@
-import { Link, useLocation } from 'react-router-dom';
 import { FaChartLine, FaRegCalendar, FaRegClipboard, FaRegUser } from 'react-icons/fa6';
-import { MdOutlineChat } from 'react-icons/md';
-import { LuBrain } from 'react-icons/lu';
-import { GoGear } from 'react-icons/go';
-import { MdLogout } from 'react-icons/md';
-import { IoMenu } from 'react-icons/io5';
+import { MdLogout, MdOutlineChat } from 'react-icons/md';
+import { Link, useLocation } from 'react-router-dom';
 
+import { useState } from 'react';
+import { GoGear } from 'react-icons/go';
+import { IoMenu } from 'react-icons/io5';
+import { LuBrain } from 'react-icons/lu';
 import focaLogo from '../assets/logos/foca_logo_uncolor.svg';
 import focaLogoTypo from '../assets/logos/foca_logo_uncolor_typo.svg';
-import { useState } from 'react';
 
 export default function Sidebar() {
     const location = useLocation();
     const [isOpen, setIsOpen] = useState(true);
 
     const menuItems = [
-        { name: 'Overview', to: '/', icon: <FaChartLine /> },
+        { name: 'Overview', to: '', icon: <FaChartLine /> },
         { name: 'Rotina', to: '/rotina', icon: <FaRegCalendar /> },
         { name: 'Tarefas', to: '/tarefa', icon: <FaRegClipboard /> },
         { name: 'Turmas', to: '/turmas', icon: <MdOutlineChat /> },
@@ -38,7 +37,7 @@ export default function Sidebar() {
             <nav className="transition-theme my-8 mr-0 ml-4 space-y-4">
                 <ul>
                     {menuItems.map((item) => {
-                        const isActive = '/' + location.pathname.split('/')[2] === item.to;
+                        const isActive = location.pathname === `/dashboard${item.to}`;
 
                         return (
                             <Link title={item.name} replace to={`.${item.to}`} key={item.name}>
