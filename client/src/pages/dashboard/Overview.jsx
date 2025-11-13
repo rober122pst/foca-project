@@ -1,5 +1,6 @@
 import spiderBanner from '../../assets/spider-man.webp';
 import BannerDashboard from '../../components/BannerDashboard';
+import ProfileHeader from '../../components/ProfileHeader';
 
 export default function Overview() {
     const date = new Date()
@@ -11,6 +12,7 @@ export default function Overview() {
     return (
         <div className="bg-cream-100 dark:bg-night-950 h-full w-full p-12">
             <header>
+                <ProfileHeader title="Visão Geral" />
                 <BannerDashboard banner={spiderBanner}>
                     <h1 className="text-4xl font-black 2xl:text-5xl">{date}</h1>
                     <span>Sua central de foco</span>
