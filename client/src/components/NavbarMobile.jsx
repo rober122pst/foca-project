@@ -23,6 +23,11 @@ export default function NavbarMobile() {
         return i || 2;
     });
 
+    useEffect(() => {
+        const i = menuItems.findIndex((item) => location.pathname === `/dashboard${item.to}`);
+        setActiveIndex(i);
+    }, [location.pathname]);
+
     // Função pra mudar indicador de lugar
     const updateIndicator = useCallback(() => {
         const item = itemsRef.current[activeIndex];

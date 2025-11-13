@@ -4,7 +4,7 @@ import Sidebar from '../components/Sidebar';
 import { useResponsive } from '../hooks/useResponsive';
 
 export default function DashboardLayout() {
-    const isMobile = useResponsive();
+    const isMobile = useResponsive(1024);
     return (
         <div className="flex">
             {isMobile ? <NavbarMobile /> : <Sidebar />}
