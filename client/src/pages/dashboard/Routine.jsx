@@ -1,7 +1,7 @@
 import sportBanner from '../../assets/SPORTRECIFE.webp';
 import BannerDashboard from '../../components/BannerDashboard';
-import ButtonCta from '../../components/ButtonCta';
 import ProfileHeader from '../../components/ProfileHeader';
+import ButtonCta from '../../components/ui/ButtonCta';
 
 export default function Routine() {
     return (
