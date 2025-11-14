@@ -2,6 +2,7 @@ import spiderBanner from '../../assets/spider-man.webp';
 import BannerDashboard from '../../components/BannerDashboard';
 import LevelProgress from '../../components/LevelProgress';
 import ProfileHeader from '../../components/ProfileHeader';
+import QuickActions from '../../components/QuickActions';
 import StatsOverview from '../../components/StatsOverview';
 
 export default function Overview() {
@@ -12,7 +13,7 @@ export default function Overview() {
         .join(' ');
 
     return (
-        <div className="bg-cream-100 dark:bg-night-950 h-auto w-full p-6 md:p-12">
+        <div className="bg-cream-200 dark:bg-night-950 h-auto w-full p-6 md:p-12">
             <header>
                 <ProfileHeader title="Visão Geral" />
                 <BannerDashboard banner={spiderBanner}>
@@ -28,6 +29,7 @@ export default function Overview() {
                     {/* Coluna na esquerda */}
                     <div className="space-y-5 lg:col-span-2">
                         <LevelProgress />
+                        <QuickActions />
                     </div>
                 </div>
             </div>

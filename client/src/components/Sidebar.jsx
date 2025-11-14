@@ -1,7 +1,7 @@
-import { FaChartLine, FaRegCalendar, FaRegClipboard, FaRegUser } from 'react-icons/fa6';
-import { Link, useLocation } from 'react-router-dom';
-import { MdLogout, MdOutlineChat } from 'react-icons/md';
 import { useEffect, useState } from 'react';
+import { FaChartLine, FaRegCalendar, FaRegClipboard, FaRegUser } from 'react-icons/fa6';
+import { MdLogout, MdOutlineChat } from 'react-icons/md';
+import { Link, useLocation } from 'react-router-dom';
 
 import { GoGear } from 'react-icons/go';
 import { IoMenu } from 'react-icons/io5';
@@ -48,7 +48,7 @@ export default function Sidebar() {
                         return (
                             <Link title={item.name} replace to={`.${item.to}`} key={item.name}>
                                 <li
-                                    className={`hover:shadow-items-500/50 transition-theme hover:text-cream-100 box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl text-nowrap hover:shadow-[inset_250px_0_0] ${isActive && 'shadow-items-500/50 shadow-[inset_250px_0_0]'}`}
+                                    className={`hover:shadow-items-500/50 transition-theme box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl text-nowrap hover:shadow-[inset_250px_0_0] ${isActive && 'shadow-items-500/50 shadow-[inset_250px_0_0]'}`}
                                 >
                                     <span>{item.icon}</span>
                                     <span
@@ -66,7 +66,7 @@ export default function Sidebar() {
                 <ul>
                     {menuInsights.map((item) => (
                         <Link title={item.name} to={`.${item.to}`} key={item.name}>
-                            <li className="hover:shadow-items-500/50 transition-theme hover:text-cream-100 box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl text-nowrap hover:shadow-[inset_250px_0_0]">
+                            <li className="hover:shadow-items-500/50 transition-theme box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl text-nowrap hover:shadow-[inset_250px_0_0]">
                                 <span>{item.icon}</span>
                                 <span
                                     className={`transition-theme whitespace-nowrap delay-300 ${!isOpen && '-translate-x-3 opacity-0'}`}
@@ -79,7 +79,7 @@ export default function Sidebar() {
                     <a href="/auth/logout">
                         <li
                             title="Sair"
-                            className="hover:shadow-items-500/50 transition-theme hover:text-cream-100 box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl hover:shadow-[inset_250px_0_0]"
+                            className="hover:shadow-items-500/50 transition-theme box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl hover:shadow-[inset_250px_0_0]"
                         >
                             <span>
                                 <MdLogout />
