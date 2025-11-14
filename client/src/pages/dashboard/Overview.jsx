@@ -1,3 +1,5 @@
+import { Card, CardContent } from '../../components/ui/Card';
+
 import BannerDashboard from '../../components/BannerDashboard';
 import ProfileHeader from '../../components/ProfileHeader';
 import StatsOverview from '../../components/StatsOverview';
@@ -19,13 +21,20 @@ export default function Overview() {
                     <span>Sua central de foco</span>
                 </BannerDashboard>
             </header>
-            <div className="my-5">
+            <div className="mt-5">
                 <div>
                     <StatsOverview />
                 </div>
-                <div className="grid lg:grid-cols-3">
+                <div className="mt-5 grid lg:grid-cols-3">
                     {/* Coluna na esquerda */}
-                    <div className="space-y-5 lg:col-span-2"></div>
+                    <div className="space-y-5 lg:col-span-2">
+                        <Card className="to-items-900 from-items-700 h-48 border-none bg-linear-to-tl">
+                            <CardContent></CardContent>
+                        </Card>
+                        <Card className="to-items-900 from-items-700 h-48 border-none bg-linear-to-tl">
+                            <CardContent></CardContent>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,5 +1,5 @@
-import { Outlet } from 'react-router-dom';
 import NavbarMobile from '../components/NavbarMobile';
+import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { useResponsive } from '../hooks/useResponsive';
 
