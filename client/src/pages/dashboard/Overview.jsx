@@ -1,7 +1,7 @@
-import spiderBanner from '../../assets/spider-man.webp';
 import BannerDashboard from '../../components/BannerDashboard';
 import ProfileHeader from '../../components/ProfileHeader';
 import StatsOverview from '../../components/StatsOverview';
+import spiderBanner from '../../assets/spider-man.webp';
 
 export default function Overview() {
     const date = new Date()
@@ -19,10 +19,13 @@ export default function Overview() {
                     <span>Sua central de foco</span>
                 </BannerDashboard>
             </header>
-            <div className="my-5 grid lg:grid-cols-3">
-                {/* Coluna na esquerda */}
-                <div className="space-y-5 lg:col-span-2">
+            <div className="my-5">
+                <div>
                     <StatsOverview />
+                </div>
+                <div className="grid lg:grid-cols-3">
+                    {/* Coluna na esquerda */}
+                    <div className="space-y-5 lg:col-span-2"></div>
                 </div>
             </div>
         </div>

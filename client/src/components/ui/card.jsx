@@ -20,7 +20,7 @@ export function Card({ className, children }) {
     return (
         <div
             className={twMerge(
-                'bg-cream-100 dark:bg-night-900 border-cream-300 dark:border-night-800 rounded-4xl border p-4',
+                'bg-cream-100 dark:bg-night-900 border-cream-300 dark:border-night-800 rounded-4xl border py-6',
                 className
             )}
         >
