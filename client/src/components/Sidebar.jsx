@@ -1,17 +1,23 @@
 import { FaChartLine, FaRegCalendar, FaRegClipboard, FaRegUser } from 'react-icons/fa6';
-import { MdLogout, MdOutlineChat } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
+import { MdLogout, MdOutlineChat } from 'react-icons/md';
+import { useEffect, useState } from 'react';
 
-import { useState } from 'react';
 import { GoGear } from 'react-icons/go';
 import { IoMenu } from 'react-icons/io5';
 import { LuBrain } from 'react-icons/lu';
 import focaLogo from '../assets/logos/foca_logo_uncolor.svg';
 import focaLogoTypo from '../assets/logos/foca_logo_uncolor_typo.svg';
+import { useResponsive } from '../hooks/useResponsive';
 
 export default function Sidebar() {
     const location = useLocation();
+    const isResponsive = useResponsive(1280);
     const [isOpen, setIsOpen] = useState(true);
+
+    useEffect(() => {
+        if (isResponsive) setIsOpen(false);
+    }, [isResponsive]);
 
     const menuItems = [
         { name: 'Overview', to: '', icon: <FaChartLine /> },
@@ -87,13 +93,15 @@ export default function Sidebar() {
                     </a>
                 </ul>
             </nav>
-            <button
-                className="mx-auto mt-auto mb-8 cursor-pointer"
-                title={isOpen ? 'Encolher' : 'Expandir'}
-                onClick={() => setIsOpen(!isOpen)}
-            >
-                <IoMenu size={30} className="text-items-500" />
-            </button>
+            {!isResponsive && (
+                <button
+                    className="mx-auto mt-auto mb-8 cursor-pointer"
+                    title={isOpen ? 'Encolher' : 'Expandir'}
+                    onClick={() => setIsOpen(!isOpen)}
+                >
+                    <IoMenu size={30} className="text-items-500" />
+                </button>
+            )}
         </aside>
     );
 }
