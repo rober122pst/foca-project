@@ -16,6 +16,8 @@ export async function getMe(req, res) {
             res.json({
                 id: user.id,
                 name: user.name,
+                profile: user.profile,
+                config: user.config,
             });
         } catch (err) {
             return res.status(500).json({ message: 'Erro no servidor' });
