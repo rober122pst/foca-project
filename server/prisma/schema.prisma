@@ -8,12 +8,51 @@ generator client {
 }
 
 model User {
-    id         Int      @id @default(autoincrement())
-    email      String   @unique
-    name       String   @unique
-    password   String
-    role       String   @default("USER")
-    isVerified Boolean  @default(false)
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+    id           Int           @id @default(autoincrement())
+    email        String        @unique
+    name         String        @unique
+    password     String
+    role         String        @default("USER")
+    isVerified   Boolean       @default(false)
+    createdAt    DateTime      @default(now())
+    updatedAt    DateTime      @updatedAt
+    profile      Profile?
+    config       Config?
+    gamefication Gamefication?
+}
+
+enum Theme {
+    DARK
+    LIGHT
+}
+
+model Config {
+    id       Int   @id @default(autoincrement())
+    userId   Int   @unique
+    user     User  @relation(fields: [userId], references: [id])
+    theme    Theme @default(DARK)
+    language Int   @default(1)
+}
+
+model Profile {
+    id        Int    @id @default(autoincrement())
+    userId    Int    @unique
+    user      User   @relation(fields: [userId], references: [id])
+    picUrl    String @default("")
+    bannerUrl String @default("")
+    bio       String @default("")
+    followers Int    @default(0)
+    following Int    @default(0)
+}
+
+model Gamefication {
+    id            Int   @id @default(autoincrement())
+    userId        Int   @unique
+    user          User  @relation(fields: [userId], references: [id])
+    level         Int   @default(1)
+    xp            Int   @default(0)
+    coins         Float @default(0)
+    streakCurrent Int   @default(0)
+    streakBest    Int   @default(0)
+    meta          Json?
 }
