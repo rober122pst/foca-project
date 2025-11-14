@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
  * Hook pra saber o tamanho da tela
  */
 export function useResponsive(breakpoint = 768) {
-    const [isMobile, setIsMobile] = useState(window.innerHeight <= breakpoint);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= breakpoint);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= breakpoint);
