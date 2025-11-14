@@ -1,9 +1,8 @@
-import { Card, CardContent } from '../../components/ui/Card';
-
+import spiderBanner from '../../assets/spider-man.webp';
 import BannerDashboard from '../../components/BannerDashboard';
+import LevelProgress from '../../components/LevelProgress';
 import ProfileHeader from '../../components/ProfileHeader';
 import StatsOverview from '../../components/StatsOverview';
-import spiderBanner from '../../assets/spider-man.webp';
 
 export default function Overview() {
     const date = new Date()
@@ -13,7 +12,7 @@ export default function Overview() {
         .join(' ');
 
     return (
-        <div className="bg-cream-100 dark:bg-night-950 h-full w-full p-6 md:p-12">
+        <div className="bg-cream-100 dark:bg-night-950 h-auto w-full p-6 md:p-12">
             <header>
                 <ProfileHeader title="Visão Geral" />
                 <BannerDashboard banner={spiderBanner}>
@@ -28,12 +27,7 @@ export default function Overview() {
                 <div className="mt-5 grid lg:grid-cols-3">
                     {/* Coluna na esquerda */}
                     <div className="space-y-5 lg:col-span-2">
-                        <Card className="to-items-900 from-items-700 h-48 border-none bg-linear-to-tl">
-                            <CardContent></CardContent>
-                        </Card>
-                        <Card className="to-items-900 from-items-700 h-48 border-none bg-linear-to-tl">
-                            <CardContent></CardContent>
-                        </Card>
+                        <LevelProgress />
                     </div>
                 </div>
             </div>

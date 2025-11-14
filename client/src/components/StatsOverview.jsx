@@ -1,12 +1,12 @@
+import { Calendar, Check, Flame, Timer } from 'lucide-react';
 import { Card, CardContent } from './ui/Card';
-import { Flame, TrendingUp, Trophy, Zap } from 'lucide-react';
 
 export default function StatsOverview() {
     const stats = [
         { icon: Flame, label: 'Sequência', value: '7 dias' },
-        { icon: Trophy, label: 'Tempo em foco', value: '1h33' },
-        { icon: Zap, label: 'Tarefas concluídas', value: '1 tarefa' },
-        { icon: TrendingUp, label: 'Rotinas ativas', value: '7 rotinas' },
+        { icon: Timer, label: 'Tempo em foco', value: '1h33' },
+        { icon: Check, label: 'Tarefas concluídas', value: '1 tarefa' },
+        { icon: Calendar, label: 'Rotinas ativas', value: '7 rotinas' },
     ];
 
     return (
