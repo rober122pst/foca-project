@@ -8,7 +8,7 @@ export default function DashboardLayout() {
     return (
         <div className="flex">
             {isMobile ? <NavbarMobile /> : <Sidebar />}
-            <main className="h-screen w-full overflow-auto">
+            <main className="h-fit w-full overflow-auto [-webkit-overflow-scrolling:touch] lg:h-screen">
                 <Outlet />
             </main>
         </div>

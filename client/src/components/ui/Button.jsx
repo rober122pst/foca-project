@@ -12,6 +12,8 @@ export default function Button({ children, className, variant = 'default' }) {
     }
 
     return (
-        <button className={twMerge('cursor-pointer disabled:cursor-not-allowed', _class, className)}>{children}</button>
+        <button className={twMerge('cursor-pointer hover:opacity-75 disabled:cursor-not-allowed', _class, className)}>
+            {children}
+        </button>
     );
 }

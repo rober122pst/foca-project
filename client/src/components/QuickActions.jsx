@@ -1,4 +1,4 @@
-import { Calendar, Plus, Sparkles, Timer } from 'lucide-react';
+import { Calendar, Plus, Sparkles, Timer, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 import Button from './ui/Button';
@@ -14,7 +14,10 @@ export default function QuickActions() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Ações rápidas</CardTitle>
+                <CardTitle>
+                    <Zap className="text-items-500 mr-1.5 inline" />
+                    Ações rápidas
+                </CardTitle>
             </CardHeader>
             <CardContent className="p-4">
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

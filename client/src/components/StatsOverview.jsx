@@ -1,5 +1,5 @@
 import { Calendar, Check, Flame, Timer } from 'lucide-react';
-import { Card, CardContent } from './ui/Card';
+import { Card, CardContent } from './ui/card';
 
 export default function StatsOverview() {
     const stats = [
