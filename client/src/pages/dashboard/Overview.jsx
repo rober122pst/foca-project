@@ -4,6 +4,7 @@ import LevelProgress from '../../components/LevelProgress';
 import ProfileHeader from '../../components/ProfileHeader';
 import QuickActions from '../../components/QuickActions';
 import StatsOverview from '../../components/StatsOverview';
+import TaskList from '../../components/TaskList';
 
 export default function Overview() {
     const date = new Date()
@@ -13,7 +14,7 @@ export default function Overview() {
         .join(' ');
 
     return (
-        <div className="bg-cream-200 dark:bg-night-950 h-auto w-full p-6 md:p-12">
+        <div className="bg-cream-200 dark:bg-night-950 m-auto h-auto w-fit p-4 lg:p-6">
             <header>
                 <ProfileHeader title="Visão Geral" />
                 <BannerDashboard banner={spiderBanner}>
@@ -30,6 +31,7 @@ export default function Overview() {
                     <div className="space-y-5 lg:col-span-2">
                         <LevelProgress />
                         <QuickActions />
+                        <TaskList />
                     </div>
                 </div>
             </div>
