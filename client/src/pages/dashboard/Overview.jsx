@@ -1,6 +1,7 @@
 import spiderBanner from '../../assets/spider-man.webp';
 import ActivityFeed from '../../components/ActivityFeed';
 import BannerDashboard from '../../components/BannerDashboard';
+import DailyChallenge from '../../components/DailyChallenge';
 import LevelProgress from '../../components/LevelProgress';
 import ProfileHeader from '../../components/ProfileHeader';
 import QuickActions from '../../components/QuickActions';
@@ -35,7 +36,8 @@ export default function Overview() {
                         <TaskList />
                     </div>
                     {/* Coluna da direita */}
-                    <div>
+                    <div className="space-y-5">
+                        <DailyChallenge />
                         <ActivityFeed />
                     </div>
                 </div>
