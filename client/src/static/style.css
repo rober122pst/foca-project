@@ -70,7 +70,7 @@
     max-width: 300px;
 } */
 
-.cta-button.invert {
+.cta-button.invert-button {
     background: linear-gradient(180deg, var(--bg-primary), var(--bg-second));
     &:before {
         color: var(--color-items-primary);
@@ -424,12 +424,12 @@
 }
 
 /* ********************************************* */
-.waves {
+.lading-waves.waves {
     position: relative;
     margin-top: 10vh;
 }
 
-.wave {
+.lading-waves .wave {
     position: absolute;
     bottom: 0;
     left: 0;
