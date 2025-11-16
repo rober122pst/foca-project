@@ -1,4 +1,5 @@
 import spiderBanner from '../../assets/spider-man.webp';
+import AchiviementsCard from '../../components/AchiviementsCard';
 import ActivityFeed from '../../components/ActivityFeed';
 import BannerDashboard from '../../components/BannerDashboard';
 import DailyChallenge from '../../components/DailyChallenge';
@@ -38,6 +39,7 @@ export default function Overview() {
                     {/* Coluna da direita */}
                     <div className="space-y-5">
                         <DailyChallenge />
+                        <AchiviementsCard />
                         <ActivityFeed />
                     </div>
                 </div>

@@ -56,7 +56,7 @@ export default function TaskList() {
                     {tasks.map((task) => (
                         <div
                             key={task.id}
-                            className="bg-card hover:bg-muted/50 border-cream-200 dark:border-night-800 hover:bg-cream-200 dark:hover:bg-night-800 flex w-full items-start gap-3 rounded-lg border p-3 transition-colors"
+                            className="border-cream-200 dark:border-night-800 hover:bg-cream-200 dark:hover:bg-night-800 flex w-full items-start gap-3 rounded-lg border p-3 transition-colors"
                         >
                             <input
                                 type="checkbox"
