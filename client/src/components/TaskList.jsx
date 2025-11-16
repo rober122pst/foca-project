@@ -47,6 +47,9 @@ export default function TaskList() {
                     <Check className="text-items-500 mr-1.5 inline" />
                     Tarefas de hoje
                 </CardTitle>
+                <Button className="dark:text-cream-100 text-items-950 mr-4" variant="ghost">
+                    Ver todas
+                </Button>
             </CardHeader>
             <CardContent className="p-4">
                 <div className="space-y-3">

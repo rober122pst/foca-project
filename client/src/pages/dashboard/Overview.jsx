@@ -1,4 +1,5 @@
 import spiderBanner from '../../assets/spider-man.webp';
+import ActivityFeed from '../../components/ActivityFeed';
 import BannerDashboard from '../../components/BannerDashboard';
 import LevelProgress from '../../components/LevelProgress';
 import ProfileHeader from '../../components/ProfileHeader';
@@ -26,12 +27,16 @@ export default function Overview() {
                 <div>
                     <StatsOverview />
                 </div>
-                <div className="mt-5 grid lg:grid-cols-3">
+                <div className="mt-5 grid gap-5 lg:grid-cols-3">
                     {/* Coluna na esquerda */}
                     <div className="space-y-5 lg:col-span-2">
                         <LevelProgress />
                         <QuickActions />
                         <TaskList />
+                    </div>
+                    {/* Coluna da direita */}
+                    <div>
+                        <ActivityFeed />
                     </div>
                 </div>
             </div>
