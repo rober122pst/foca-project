@@ -1,8 +1,9 @@
-import { Link, useLocation } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FaChartLine, FaRegCalendar, FaRegClipboard } from 'react-icons/fa6';
-import { MdOutlineChat } from 'react-icons/md';
+import { Link, useLocation } from 'react-router-dom';
+
 import { LuBrain } from 'react-icons/lu';
-import { useEffect, useRef, useState, useCallback, act } from 'react';
+import { MdOutlineChat } from 'react-icons/md';
 
 export default function NavbarMobile() {
     const location = useLocation();
@@ -21,6 +22,11 @@ export default function NavbarMobile() {
         const i = menuItems.findIndex((item) => location.pathname === `/dashboard${item.to}`);
         return i || 2;
     });
+
+    useEffect(() => {
+        const i = menuItems.findIndex((item) => location.pathname === `/dashboard${item.to}`);
+        setActiveIndex(i);
+    }, [location.pathname]);
 
     // Função pra mudar indicador de lugar
     const updateIndicator = useCallback(() => {
@@ -53,7 +59,7 @@ export default function NavbarMobile() {
     }, [updateIndicator]);
 
     return (
-        <nav className="bg-cream-100 dark:bg-night-950 text-items-950 dark:text-cream-100 display-center fixed bottom-4 left-1/2 box-content flex -translate-x-1/2 rounded-xl px-4 py-3">
+        <nav className="bg-cream-100 dark:bg-night-900 text-items-950 dark:text-cream-100 display-center border-cream-300 dark:border-night-800 fixed bottom-4 left-1/2 box-content flex -translate-x-1/2 rounded-xl border-2 px-4 py-3">
             <span
                 className="bg-items-500/50 absolute z-0 rounded-md duration-300 ease-in-out"
                 style={indicatorStyle}

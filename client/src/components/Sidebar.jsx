@@ -1,17 +1,23 @@
+import { useEffect, useState } from 'react';
 import { FaChartLine, FaRegCalendar, FaRegClipboard, FaRegUser } from 'react-icons/fa6';
 import { MdLogout, MdOutlineChat } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
 
-import { useState } from 'react';
 import { GoGear } from 'react-icons/go';
 import { IoMenu } from 'react-icons/io5';
 import { LuBrain } from 'react-icons/lu';
 import focaLogo from '../assets/logos/foca_logo_uncolor.svg';
 import focaLogoTypo from '../assets/logos/foca_logo_uncolor_typo.svg';
+import { useResponsive } from '../hooks/useResponsive';
 
 export default function Sidebar() {
     const location = useLocation();
+    const isResponsive = useResponsive(1280);
     const [isOpen, setIsOpen] = useState(true);
+
+    useEffect(() => {
+        if (isResponsive) setIsOpen(false);
+    }, [isResponsive]);
 
     const menuItems = [
         { name: 'Overview', to: '', icon: <FaChartLine /> },
@@ -30,7 +36,7 @@ export default function Sidebar() {
         <aside
             data-open={isOpen}
             className={
-                'bg-cream-100 dark:bg-night-950 text-items-950 dark:text-cream-100 border-items-500 border-groove box-border flex h-screen w-64 flex-col overflow-hidden border-r-5 py-8 duration-700 data-[open=false]:w-22'
+                'bg-cream-100 dark:bg-night-900 text-items-950 dark:text-cream-100 border-items-500 border-groove box-border flex h-screen w-64 flex-col overflow-hidden border-r-5 py-8 duration-700 data-[open=false]:w-22'
             }
         >
             <img src={isOpen ? focaLogoTypo : focaLogo} alt="foca-logo" className="h-full max-h-10" />
@@ -42,7 +48,7 @@ export default function Sidebar() {
                         return (
                             <Link title={item.name} replace to={`.${item.to}`} key={item.name}>
                                 <li
-                                    className={`hover:shadow-items-500/50 transition-theme hover:text-cream-100 box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl text-nowrap hover:shadow-[inset_250px_0_0] ${isActive && 'shadow-items-500/50 shadow-[inset_250px_0_0]'}`}
+                                    className={`hover:shadow-items-500/50 transition-theme box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl text-nowrap hover:shadow-[inset_250px_0_0] ${isActive && 'shadow-items-500/50 shadow-[inset_250px_0_0]'}`}
                                 >
                                     <span>{item.icon}</span>
                                     <span
@@ -60,7 +66,7 @@ export default function Sidebar() {
                 <ul>
                     {menuInsights.map((item) => (
                         <Link title={item.name} to={`.${item.to}`} key={item.name}>
-                            <li className="hover:shadow-items-500/50 transition-theme hover:text-cream-100 box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl text-nowrap hover:shadow-[inset_250px_0_0]">
+                            <li className="hover:shadow-items-500/50 transition-theme box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl text-nowrap hover:shadow-[inset_250px_0_0]">
                                 <span>{item.icon}</span>
                                 <span
                                     className={`transition-theme whitespace-nowrap delay-300 ${!isOpen && '-translate-x-3 opacity-0'}`}
@@ -73,7 +79,7 @@ export default function Sidebar() {
                     <a href="/auth/logout">
                         <li
                             title="Sair"
-                            className="hover:shadow-items-500/50 transition-theme hover:text-cream-100 box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl hover:shadow-[inset_250px_0_0]"
+                            className="hover:shadow-items-500/50 transition-theme box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl hover:shadow-[inset_250px_0_0]"
                         >
                             <span>
                                 <MdLogout />
@@ -87,13 +93,15 @@ export default function Sidebar() {
                     </a>
                 </ul>
             </nav>
-            <button
-                className="mx-auto mt-auto mb-8 cursor-pointer"
-                title={isOpen ? 'Encolher' : 'Expandir'}
-                onClick={() => setIsOpen(!isOpen)}
-            >
-                <IoMenu size={30} className="text-items-500" />
-            </button>
+            {!isResponsive && (
+                <button
+                    className="mx-auto mt-auto mb-8 cursor-pointer"
+                    title={isOpen ? 'Encolher' : 'Expandir'}
+                    onClick={() => setIsOpen(!isOpen)}
+                >
+                    <IoMenu size={30} className="text-items-500" />
+                </button>
+            )}
         </aside>
     );
 }
