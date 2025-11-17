@@ -19,6 +19,8 @@ model User {
     profile      Profile?
     config       Config?
     gamefication Gamefication?
+    task         Task?
+    routine      Routine?
 }
 
 enum Theme {
@@ -55,4 +57,46 @@ model Gamefication {
     streakCurrent Int   @default(0)
     streakBest    Int   @default(0)
     meta          Json?
+}
+
+enum Priority {
+    LOW
+    MEDIUM
+    HIGH
+}
+
+model Task {
+    id       Int       @id @default(autoincrement())
+    userId   Int       @unique
+    user     User      @relation(fields: [userId], references: [id])
+    title    String
+    done     Boolean   @default(false)
+    deadline DateTime?
+    priority Priority  @default(LOW)
+    tags     String[]
+}
+
+enum Frequency {
+    N0
+    N1
+    N2
+    N3
+    N4
+    N5
+    N6
+}
+
+model Routine {
+    id              Int         @id @default(autoincrement())
+    userId          Int         @unique
+    user            User        @relation(fields: [userId], references: [id])
+    description     String
+    frequency       Frequency[] @default([N0, N1, N2, N3, N4, N5, N6])
+    timeStart       String
+    timeEnd         String
+    completedToday  Boolean     @default(false)
+    completeDays    String
+    lastCompletedAt DateTime
+    createAt        DateTime    @default(now())
+    updateAt        DateTime    @default(now())
 }
