@@ -1,9 +1,8 @@
-import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-
-// Importar rotas
+import express from 'express';
 import authRoutes from './src/auth/auth.routes.js';
+import dashboardRoutes from './src/routes/dashboard.routes.js';
 import userRoutes from './src/routes/user.routes.js';
 
 dotenv.config();
@@ -21,6 +20,7 @@ app.get('/', (req, res) => {
 // Usar rotas
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
+app.use('/dashboard', dashboardRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

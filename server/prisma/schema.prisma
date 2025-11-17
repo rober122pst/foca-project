@@ -8,19 +8,16 @@ generator client {
 }
 
 model User {
-    id           Int           @id @default(autoincrement())
-    email        String        @unique
-    name         String        @unique
-    password     String
-    role         String        @default("USER")
-    isVerified   Boolean       @default(false)
-    createdAt    DateTime      @default(now())
-    updatedAt    DateTime      @updatedAt
-    profile      Profile?
-    config       Config?
-    gamefication Gamefication?
-    tasks        Task[]
-    routines     Routine[]
+    id         Int      @id @default(autoincrement())
+    email      String   @unique
+    name       String   @unique
+    password   String
+    role       String   @default("USER")
+    isVerified Boolean  @default(false)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    profile    Profile?
+    config     Config?
 }
 
 enum Theme {
@@ -38,25 +35,29 @@ model Config {
 }
 
 model Profile {
-    id        Int    @id @default(autoincrement())
-    userId    Int    @unique
-    user      User   @relation(fields: [userId], references: [id])
-    picUrl    String @default("")
-    bannerUrl String @default("")
-    bio       String @default("")
-    followers Int    @default(0)
-    following Int    @default(0)
+    id               Int               @id @default(autoincrement())
+    userId           Int               @unique
+    user             User              @relation(fields: [userId], references: [id])
+    picUrl           String            @default("")
+    bannerUrl        String            @default("")
+    bio              String            @default("")
+    followers        Int               @default(0)
+    following        Int               @default(0)
+    userAchiviements UserAchiviement[]
+    routines         Routine[]
+    tasks            Task[]
+    gamefication     Gamefication?
 }
 
 model Gamefication {
-    id            Int   @id @default(autoincrement())
-    userId        Int   @unique
-    user          User  @relation(fields: [userId], references: [id])
-    level         Int   @default(1)
-    xp            Int   @default(0)
-    coins         Float @default(0)
-    streakCurrent Int   @default(0)
-    streakBest    Int   @default(0)
+    id            Int     @id @default(autoincrement())
+    profileId     Int     @unique
+    profile       Profile @relation(fields: [profileId], references: [id])
+    level         Int     @default(1)
+    xp            Int     @default(0)
+    coins         Float   @default(0)
+    streakCurrent Int     @default(0)
+    streakBest    Int     @default(0)
     meta          Json?
 }
 
@@ -68,8 +69,8 @@ enum Priority {
 
 model Task {
     id          Int       @id @default(autoincrement())
-    userId      Int
-    user        User      @relation(fields: [userId], references: [id])
+    profileId   Int
+    profile     Profile   @relation(fields: [profileId], references: [id])
     title       String
     description String?
     completed   Boolean   @default(false)
@@ -94,8 +95,8 @@ enum Weekday {
 
 model Routine {
     id              Int        @id @default(autoincrement())
-    userId          Int
-    user            User       @relation(fields: [userId], references: [id])
+    profileId       Int
+    profile         Profile    @relation(fields: [profileId], references: [id])
     description     String?
     frequency       Weekday[]  @default([SUN, MON, TWE, WED, THU, FRI, SAT])
     timeStart       String
@@ -105,4 +106,34 @@ model Routine {
     lastCompletedAt DateTime
     createAt        DateTime   @default(now())
     updateAt        DateTime   @updatedAt
+}
+
+enum Rarity {
+    COMMON
+    RARE
+}
+
+model Achiviement {
+    id               Int               @id @default(autoincrement())
+    name             String
+    description      String
+    iconUrl          String
+    total            Int?
+    rarity           Rarity            @default(COMMON)
+    xpReward         Int
+    coinReward       Float
+    criteria         Json
+    createAt         DateTime          @default(now())
+    updateAt         DateTime          @updatedAt
+    userAchiviements UserAchiviement[]
+}
+
+model UserAchiviement {
+    id            Int         @id @default(autoincrement())
+    profileId     Int
+    profile       Profile     @relation(fields: [profileId], references: [id])
+    achiviementId Int
+    achiviement   Achiviement @relation(fields: [achiviementId], references: [id])
+    progress      Int         @default(0)
+    achievedAt    DateTime?
 }
