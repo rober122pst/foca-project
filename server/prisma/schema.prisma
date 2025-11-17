@@ -19,20 +19,21 @@ model User {
     profile      Profile?
     config       Config?
     gamefication Gamefication?
-    task         Task?
-    routine      Routine?
+    tasks        Task[]
+    routines     Routine[]
 }
 
 enum Theme {
     DARK
     LIGHT
+    SYSTEM
 }
 
 model Config {
     id       Int   @id @default(autoincrement())
     userId   Int   @unique
     user     User  @relation(fields: [userId], references: [id])
-    theme    Theme @default(DARK)
+    theme    Theme @default(SYSTEM)
     language Int   @default(1)
 }
 
@@ -66,37 +67,42 @@ enum Priority {
 }
 
 model Task {
-    id       Int       @id @default(autoincrement())
-    userId   Int       @unique
-    user     User      @relation(fields: [userId], references: [id])
-    title    String
-    done     Boolean   @default(false)
-    deadline DateTime?
-    priority Priority  @default(LOW)
-    tags     String[]
+    id          Int       @id @default(autoincrement())
+    userId      Int
+    user        User      @relation(fields: [userId], references: [id])
+    title       String
+    description String?
+    completed   Boolean   @default(false)
+    completedAt DateTime?
+    deadline    DateTime?
+    priority    Priority  @default(LOW)
+    tags        String[]
+    isRecurring Boolean   @default(false)
+    createAt    DateTime  @default(now())
+    updateAt    DateTime  @updatedAt
 }
 
-enum Frequency {
-    N0
-    N1
-    N2
-    N3
-    N4
-    N5
-    N6
+enum Weekday {
+    SUN
+    MON
+    TWE
+    WED
+    THU
+    FRI
+    SAT
 }
 
 model Routine {
-    id              Int         @id @default(autoincrement())
-    userId          Int         @unique
-    user            User        @relation(fields: [userId], references: [id])
-    description     String
-    frequency       Frequency[] @default([N0, N1, N2, N3, N4, N5, N6])
+    id              Int        @id @default(autoincrement())
+    userId          Int
+    user            User       @relation(fields: [userId], references: [id])
+    description     String?
+    frequency       Weekday[]  @default([SUN, MON, TWE, WED, THU, FRI, SAT])
     timeStart       String
     timeEnd         String
-    completedToday  Boolean     @default(false)
-    completeDays    String
+    completedToday  Boolean    @default(false)
+    completedDays   DateTime[]
     lastCompletedAt DateTime
-    createAt        DateTime    @default(now())
-    updateAt        DateTime    @default(now())
+    createAt        DateTime   @default(now())
+    updateAt        DateTime   @updatedAt
 }
