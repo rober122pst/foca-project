@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { loginUser, registerUser } from '../services/oauthService.js';
 
 import { useNavigate } from 'react-router-dom';
-import { refresh } from '../../../server/src/auth/refresh.controller.js';
+import { refresh } from '../services/oauthService.js';
 import { getMe } from '../services/userService.js';
 
 export const AuthContext = createContext();
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
             // Atualiza o refresh token
             localStorage.setItem('refreshToken', data.refreshToken);
 
-            await loadUser();
+            await loadUser(data.accessToken);
         } catch (error) {
             console.log('Sessão expirada: ', error);
             logout();
@@ -45,9 +45,9 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const loadUser = async () => {
+    const loadUser = async (token) => {
         try {
-            const res = await getMe();
+            const res = await getMe(token);
             setUser(res.data);
         } catch (error) {
             setUser(null);
@@ -64,19 +64,19 @@ export const AuthProvider = ({ children }) => {
 
         localStorage.setItem('refreshToken', res.refreshToken);
 
-        await loadUser();
+        await loadUser(res.accessToken);
     };
 
     const register = async (data) => {
-        await registerUser(data);
+        const res = await registerUser(data);
         setIsLoggedIn(true);
 
-        setAccessToken(data.accessToken);
-        setRefreshToken(data.refreshToken);
+        setAccessToken(res.accessToken);
+        setRefreshToken(res.refreshToken);
 
-        localStorage.setItem('refreshToken', data.refreshToken);
+        localStorage.setItem('refreshToken', res.refreshToken);
 
-        await loadUser();
+        await loadUser(res.accessToken);
     };
 
     const logout = () => {

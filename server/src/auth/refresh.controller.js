@@ -50,6 +50,7 @@ export async function refresh(req, res) {
     await prisma.refreshToken.create({
         data: {
             id: generateId(),
+            token: newRefreshToken,
             userId: stored.userId,
             expiresAt: new Date(decoded.exp * 1000),
         },

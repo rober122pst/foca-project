@@ -80,18 +80,18 @@ export default function AuthPage() {
         return percent;
     };
 
-    const handleSubmitLogin = (e) => {
+    const handleSubmitLogin = async (e) => {
         e.preventDefault();
         setLoginError('');
         setIsLoading(true);
-        setTimeout(() => {
-            if (formLogin.email === 'admin' && formLogin.password === 'admin') {
-                alert(`Email: ${formLogin.email}\nPassword: ${formLogin.password}`);
-            } else {
-                setLoginError('Email ou senha incorretos');
-            }
+        try {
+            await login(formLogin);
+            navigate('/dashboard');
+        } catch (error) {
+            setRegisterErrors(error.response?.data?.message || 'Erro ao registrar usuário');
+        } finally {
             setIsLoading(false);
-        }, 1000);
+        }
     };
 
     const handleSubmitRegister = async (e) => {

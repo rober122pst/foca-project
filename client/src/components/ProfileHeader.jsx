@@ -2,8 +2,10 @@ import { CircleDollarSign, Star } from 'lucide-react';
 
 import { useState } from 'react';
 import profilePic from '../assets/foxy.webp';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ProfileHeader({ title }) {
+    const { user: _user, isLoading } = useAuth();
     const [user, setUser] = useState({
         name: 'Fulano',
         coins: 1000,
@@ -16,7 +18,7 @@ export default function ProfileHeader({ title }) {
         <div className="mb-12 flex justify-between">
             <div>
                 <span className="dark:text-cream-100 text-items-950 text-md sm:text-base md:text-xl/1">
-                    Olá <strong>{user.name},</strong>
+                    Olá <strong>{isLoading ? "Carregando" : _user.name},</strong>
                 </span>
                 <h1 className="text-items-500 text-3xl font-black sm:text-4xl md:text-5xl">{title}</h1>
             </div>
