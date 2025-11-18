@@ -184,10 +184,10 @@ export default function AuthPage() {
                             <img src="/logos/foca_logo_uncolor.svg" alt="" />
                             <h1>Criar Conta</h1>
                             <div className="social-icons">
-                                <a href="#" className="social-icon">
+                                <a href="http://localhost:3000/auth/auth/google" className="social-icon">
                                     <FaGoogle />
                                 </a>
-                                <a href="#" className="social-icon">
+                                <a href="http://localhost:3000/auth/auth/facebook" className="social-icon">
                                     <FaFacebook />
                                 </a>
                             </div>
