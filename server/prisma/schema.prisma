@@ -8,16 +8,17 @@ generator client {
 }
 
 model User {
-    id         Int      @id @default(autoincrement())
-    email      String   @unique
-    name       String   @unique
-    password   String
-    role       String   @default("USER")
-    isVerified Boolean  @default(false)
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-    profile    Profile?
-    config     Config?
+    id            String         @id @default(dbgenerated()) @db.Uuid
+    email         String         @unique
+    name          String         @unique
+    password      String
+    role          String         @default("USER")
+    isVerified    Boolean        @default(false)
+    createdAt     DateTime       @default(now())
+    updatedAt     DateTime       @updatedAt
+    profile       Profile?
+    config        Config?
+    refreshTokens refreshToken[]
 }
 
 enum Theme {
@@ -27,16 +28,16 @@ enum Theme {
 }
 
 model Config {
-    id       Int   @id @default(autoincrement())
-    userId   Int   @unique
-    user     User  @relation(fields: [userId], references: [id])
-    theme    Theme @default(SYSTEM)
-    language Int   @default(1)
+    id       String @id @default(dbgenerated()) @db.Uuid
+    userId   String @unique @db.Uuid
+    user     User   @relation(fields: [userId], references: [id])
+    theme    Theme  @default(SYSTEM)
+    language Int    @default(1)
 }
 
 model Profile {
-    id               Int               @id @default(autoincrement())
-    userId           Int               @unique
+    id               String            @id @default(dbgenerated()) @db.Uuid
+    userId           String            @unique @db.Uuid
     user             User              @relation(fields: [userId], references: [id])
     picUrl           String            @default("")
     bannerUrl        String            @default("")
@@ -50,8 +51,8 @@ model Profile {
 }
 
 model Gamefication {
-    id            Int     @id @default(autoincrement())
-    profileId     Int     @unique
+    id            String  @id @default(dbgenerated()) @db.Uuid
+    profileId     String  @unique @db.Uuid
     profile       Profile @relation(fields: [profileId], references: [id])
     level         Int     @default(1)
     xp            Int     @default(0)
@@ -68,8 +69,8 @@ enum Priority {
 }
 
 model Task {
-    id          Int       @id @default(autoincrement())
-    profileId   Int
+    id          String    @id @default(dbgenerated()) @db.Uuid
+    profileId   String    @db.Uuid
     profile     Profile   @relation(fields: [profileId], references: [id])
     title       String
     description String?
@@ -94,8 +95,8 @@ enum Weekday {
 }
 
 model Routine {
-    id              Int        @id @default(autoincrement())
-    profileId       Int
+    id              String     @id @default(dbgenerated()) @db.Uuid
+    profileId       String     @db.Uuid
     profile         Profile    @relation(fields: [profileId], references: [id])
     description     String?
     frequency       Weekday[]  @default([SUN, MON, TWE, WED, THU, FRI, SAT])
@@ -114,7 +115,7 @@ enum Rarity {
 }
 
 model Achiviement {
-    id               Int               @id @default(autoincrement())
+    id               String            @id @default(dbgenerated()) @db.Uuid
     name             String
     description      String
     iconUrl          String
@@ -129,11 +130,20 @@ model Achiviement {
 }
 
 model UserAchiviement {
-    id            Int         @id @default(autoincrement())
-    profileId     Int
+    id            String      @id @default(dbgenerated()) @db.Uuid
+    profileId     String      @db.Uuid
     profile       Profile     @relation(fields: [profileId], references: [id])
-    achiviementId Int
+    achiviementId String      @db.Uuid
     achiviement   Achiviement @relation(fields: [achiviementId], references: [id])
     progress      Int         @default(0)
     achievedAt    DateTime?
+}
+
+model refreshToken {
+    id        String   @id @default(dbgenerated()) @db.Uuid
+    token     String   @unique
+    userId    String   @db.Uuid
+    user      User     @relation(fields: [userId], references: [id])
+    createdAt DateTime @default(now())
+    expiresAt DateTime
 }

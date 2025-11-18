@@ -1,14 +1,19 @@
+import 'ldrs/react/Ring.css';
 import '../../styles/login.css';
+
+import { useEffect, useRef, useState } from 'react';
+import { FaFacebook, FaGoogle, FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
+import { Ring } from 'ldrs/react';
 import { FaChevronRight } from 'react-icons/fa6';
 import { FcGoogle } from 'react-icons/fc';
-import { FaFacebook, FaGoogle } from 'react-icons/fa';
-import { FaRegEyeSlash, FaRegEye } from 'react-icons/fa';
-import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Ring } from 'ldrs/react';
-import 'ldrs/react/Ring.css';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function AuthPage() {
+    const { login, register } = useAuth();
+    const navigate = useNavigate();
+
     const [searchParams] = useSearchParams();
     const isRegister = searchParams.get('register');
     const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +24,7 @@ export default function AuthPage() {
         password: '',
     });
     const [formRegister, setFormRegister] = useState({
-        nickname: '',
+        name: '',
         email: '',
         password: '',
         confirmPassword: '',
@@ -67,7 +72,7 @@ export default function AuthPage() {
 
     const calculateRegisterProgress = () => {
         let percent = 0;
-        if (formRegister.nickname) percent += 20;
+        if (formRegister.name) percent += 20;
         if (formRegister.email) percent += 20;
         if (formRegister.password) percent += 20;
         if (formRegister.confirmPassword) percent += 20;
@@ -75,32 +80,32 @@ export default function AuthPage() {
         return percent;
     };
 
-    const handleSubmitLogin = (e) => {
+    const handleSubmitLogin = async (e) => {
         e.preventDefault();
         setLoginError('');
         setIsLoading(true);
-        setTimeout(() => {
-            if (formLogin.email === 'admin' && formLogin.password === 'admin') {
-                alert(
-                    `Email: ${formLogin.email}\nPassword: ${formLogin.password}`
-                );
-            } else {
-                setLoginError('Email ou senha incorretos');
-            }
+        try {
+            await login(formLogin);
+            navigate('/dashboard');
+        } catch (error) {
+            setRegisterErrors(error.response?.data?.message || 'Erro ao registrar usuário');
+        } finally {
             setIsLoading(false);
-        }, 1000);
+        }
     };
 
-    const handleSubmitRegister = (e) => {
+    const handleSubmitRegister = async (e) => {
         e.preventDefault();
         // setRegisterError('');
         setIsLoading(true);
-        setTimeout(() => {
-            alert(
-                `Nickname: ${formRegister.nickname}\nEmail: ${formRegister.email}\nPassword: ${formRegister.password}\nConfirm Password: ${formRegister.confirmPassword}\nAccept Terms: ${formRegister.acceptTerms}`
-            );
+        try {
+            await register(formRegister);
+            navigate('/dashboard');
+        } catch (error) {
+            setRegisterErrors(error.response?.data?.message || 'Erro ao registrar usuário');
+        } finally {
             setIsLoading(false);
-        }, 1000);
+        }
     };
 
     useEffect(() => {
@@ -120,8 +125,7 @@ export default function AuthPage() {
                     error = 'Nickname deve ter entre 3 e 20 caracteres';
                 }
                 if (!/^[a-zA-Z0-9_]+$/.test(value)) {
-                    error =
-                        'Nickname pode conter apenas letras, números e underscores';
+                    error = 'Nickname pode conter apenas letras, números e underscores';
                 }
                 break;
             case 'email':
@@ -167,8 +171,7 @@ export default function AuthPage() {
                                     <br />
                                     de volta!
                                     <p>
-                                        Não tem uma conta? <b>Registre-se</b>{' '}
-                                        agora e começe a focar!
+                                        Não tem uma conta? <b>Registre-se</b> agora e começe a focar!
                                     </p>
                                 </h1>
                             </div>
@@ -176,11 +179,7 @@ export default function AuthPage() {
                         <div className="sign-up-button" onClick={toggleForm}>
                             <FaChevronRight />
                         </div>
-                        <form
-                            className="form-content"
-                            onSubmit={handleSubmitRegister}
-                            id="form-signup"
-                        >
+                        <form className="form-content" onSubmit={handleSubmitRegister} id="form-signup">
                             <img src="/logos/foca_logo_uncolor.svg" alt="" />
                             <h1>Criar Conta</h1>
                             <div className="social-icons">
@@ -193,13 +192,13 @@ export default function AuthPage() {
                             </div>
                             <div className="input-form username">
                                 <input
-                                    value={formRegister.nickname}
+                                    value={formRegister.name}
                                     onBlur={handleBlur}
                                     onChange={handleChangeRegister}
                                     type="text"
                                     className="input-field"
                                     id="nickname"
-                                    name="nickname"
+                                    name="name"
                                     placeholder=" "
                                 />
                                 <label className="input-label">
@@ -229,9 +228,7 @@ export default function AuthPage() {
                                     onBlur={handleBlur}
                                     onChange={handleChangeRegister}
                                     name="password"
-                                    type={
-                                        isVisibleRegister ? 'text' : 'password'
-                                    }
+                                    type={isVisibleRegister ? 'text' : 'password'}
                                     className="input-field"
                                     id="senha-register"
                                     placeholder=" "
@@ -240,17 +237,11 @@ export default function AuthPage() {
                                     <span className="label-name">Senha</span>
                                     <span className="underline"></span>
                                     {isVisibleRegister ? (
-                                        <span
-                                            className="visibility visible"
-                                            onClick={togglePasswordRegister}
-                                        >
+                                        <span className="visibility visible" onClick={togglePasswordRegister}>
                                             <FaRegEye />
                                         </span>
                                     ) : (
-                                        <span
-                                            className="visibility-off invisible"
-                                            onClick={togglePasswordRegister}
-                                        >
+                                        <span className="visibility-off invisible" onClick={togglePasswordRegister}>
                                             <FaRegEyeSlash />
                                         </span>
                                     )}
@@ -262,39 +253,26 @@ export default function AuthPage() {
                                     onBlur={handleBlur}
                                     onChange={handleChangeRegister}
                                     name="confirmPassword"
-                                    type={
-                                        isVisibleRegister ? 'text' : 'password'
-                                    }
+                                    type={isVisibleRegister ? 'text' : 'password'}
                                     className="input-field"
                                     id="senha-confirm"
                                     placeholder=" "
                                 />
                                 <label className="input-label">
-                                    <span className="label-name">
-                                        Confirmar Senha
-                                    </span>
+                                    <span className="label-name">Confirmar Senha</span>
                                     <span className="underline"></span>
                                     {isVisibleRegister ? (
-                                        <span
-                                            className="visibility visible"
-                                            onClick={togglePasswordRegister}
-                                        >
+                                        <span className="visibility visible" onClick={togglePasswordRegister}>
                                             <FaRegEye />
                                         </span>
                                     ) : (
-                                        <span
-                                            className="visibility-off invisible"
-                                            onClick={togglePasswordRegister}
-                                        >
+                                        <span className="visibility-off invisible" onClick={togglePasswordRegister}>
                                             <FaRegEyeSlash />
                                         </span>
                                     )}
                                 </label>
                             </div>
-                            <span
-                                className={registerErrors ? 'error' : 'success'}
-                                id="response-register"
-                            >
+                            <span className={registerErrors ? 'error' : 'success'} id="response-register">
                                 {registerErrors}
                             </span>
                             <div className="input-form check">
@@ -326,10 +304,7 @@ export default function AuthPage() {
                             </div>
                             <div className="input-form">
                                 <button
-                                    disabled={
-                                        calculateRegisterProgress() < 100 ||
-                                        isLoading
-                                    }
+                                    disabled={calculateRegisterProgress() < 100 || isLoading}
                                     className="input-button login-button"
                                     type="submit"
                                 >
@@ -346,13 +321,7 @@ export default function AuthPage() {
                                             }}
                                         >
                                             {isLoading ? (
-                                                <Ring
-                                                    size={20}
-                                                    stroke={4}
-                                                    bgOpacity={0.3}
-                                                    speed={2}
-                                                    color="white"
-                                                />
+                                                <Ring size={20} stroke={4} bgOpacity={0.3} speed={2} color="white" />
                                             ) : (
                                                 'Entrar'
                                             )}
@@ -369,18 +338,11 @@ export default function AuthPage() {
                                     Seja
                                     <br />
                                     bem vindo!
-                                    <p>
-                                        Já tem uma conta? Faça login e volte a
-                                        focar!
-                                    </p>
+                                    <p>Já tem uma conta? Faça login e volte a focar!</p>
                                 </h1>
                             </div>
                         </div>
-                        <form
-                            className="form-content"
-                            onSubmit={handleSubmitLogin}
-                            id="form-signin"
-                        >
+                        <form className="form-content" onSubmit={handleSubmitLogin} id="form-signin">
                             <img src="/logos/foca_logo.svg" alt="" />
                             <h1>Login</h1>
                             <div className="social-icons">
@@ -420,17 +382,11 @@ export default function AuthPage() {
                                     <span className="label-name">Senha</span>
                                     <span className="underline"></span>
                                     {isVisibleLogin ? (
-                                        <span
-                                            className="visibility visible"
-                                            onClick={togglePasswordLogin}
-                                        >
+                                        <span className="visibility visible" onClick={togglePasswordLogin}>
                                             <FaRegEye />
                                         </span>
                                     ) : (
-                                        <span
-                                            className="visibility-off invisible"
-                                            onClick={togglePasswordLogin}
-                                        >
+                                        <span className="visibility-off invisible" onClick={togglePasswordLogin}>
                                             <FaRegEyeSlash />
                                         </span>
                                     )}
@@ -439,20 +395,12 @@ export default function AuthPage() {
                             <span id="response-login">{loginError}</span>
                             <div className="input-form check">
                                 <label className="input-check">
-                                    <input
-                                        type="checkbox"
-                                        className="remember"
-                                        id="remember-me"
-                                    />{' '}
-                                    Manter logado
+                                    <input type="checkbox" className="remember" id="remember-me" /> Manter logado
                                 </label>
                             </div>
                             <div className="input-form">
                                 <button
-                                    disabled={
-                                        calculateLoginProgress() < 100 ||
-                                        isLoading
-                                    }
+                                    disabled={calculateLoginProgress() < 100 || isLoading}
                                     className="input-button login-button"
                                     type="submit"
                                 >
@@ -469,13 +417,7 @@ export default function AuthPage() {
                                             }}
                                         >
                                             {isLoading ? (
-                                                <Ring
-                                                    size={20}
-                                                    stroke={4}
-                                                    bgOpacity={0.3}
-                                                    speed={2}
-                                                    color="white"
-                                                />
+                                                <Ring size={20} stroke={4} bgOpacity={0.3} speed={2} color="white" />
                                             ) : (
                                                 'Entrar'
                                             )}
