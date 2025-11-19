@@ -1,12 +1,22 @@
 import { Calendar, Check, Flame, Timer } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 
-export default function StatsOverview() {
+import { formatMinutesToHourString } from '../../utils/formatTime';
+
+export default function StatsOverview({ userStats }) {
     const stats = [
-        { icon: Flame, label: 'Sequência', value: '7 dias' },
-        { icon: Timer, label: 'Tempo em foco', value: '1h33' },
-        { icon: Check, label: 'Tarefas concluídas', value: '1 tarefa' },
-        { icon: Calendar, label: 'Rotinas ativas', value: '7 rotinas' },
+        { icon: Flame, label: 'Sequência', value: `${userStats.streak} ${userStats.streak === 1 ? 'dia' : 'dias'}` },
+        { icon: Timer, label: 'Tempo em foco', value: `${formatMinutesToHourString(userStats.totalTimeFocused)}` },
+        {
+            icon: Check,
+            label: 'Tarefas concluídas',
+            value: `${userStats.completedTasks} ${userStats.completedTasks === 1 ? 'tarefa' : 'tarefas'}`,
+        },
+        {
+            icon: Calendar,
+            label: 'Rotinas ativas',
+            value: `${userStats.activeRoutines} ${userStats.activeRoutines === 1 ? 'rotina' : 'rotinas'}`,
+        },
     ];
 
     return (
