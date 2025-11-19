@@ -8,8 +8,11 @@ import LevelProgress from '../../components/LevelProgress';
 import QuickActions from '../../components/QuickActions';
 import StatsOverview from '../../components/StatsOverview';
 import TaskList from '../../components/TaskList';
+import { useDashboardOverview } from '../../hooks/useDashboardOverview';
 
 export default function Overview() {
+    const { data, isLoading, error } = useDashboardOverview();
+
     const date = new Date()
         .toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
         .split(' ')

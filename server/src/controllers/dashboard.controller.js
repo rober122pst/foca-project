@@ -9,12 +9,26 @@ export async function getOverviewData(req, res) {
     }
 
     try {
-        const userGamefication = await prisma.gamefication.findUnique({ where: { userId } });
-        const userTasks = await prisma.task.findMany({ where: { userId } });
+        const userData = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                profile: {
+                    select: {
+                        gamefication: true,
+                        routines: true,
+                        tasks: true,
+                        userAchiviements: true,
+                    }
+                }
+            }
+        })
+
+        const userGamefication = userData.profile.gamefication;
+        const userTasks =  userData.profile.tasks;
         const completedTasks = userTasks.filter(task => task.completed).length;
-        const userRoutines = await prisma.routine.findMany({ where: { userId } });
+        const userRoutines = userData.profile.routines;
         const routinesCount = userRoutines.length;
-        const userAchievements = await prisma.userAchiviement.findMany({ where: { userId } })
+        const userAchievements = userData.profile.userAchiviements;
 
         return res.json({
             stats: {
@@ -35,5 +49,6 @@ export async function getOverviewData(req, res) {
         })
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar dados do dashboard' });
+        console.log(error)
     }
 }
