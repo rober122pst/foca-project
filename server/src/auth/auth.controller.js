@@ -114,8 +114,8 @@ export async function login(req, res) {
 }
 
 
+// Atualizar as url do backend
 // login com facebook e google
-
 // login com google
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID || 'CLIENTE-GOOGLE',

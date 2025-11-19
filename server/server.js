@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3000;
 
 // criando um session para login Google e Facebook
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'uma-chave-secreta-de-fallback-muito-longa', 
+  secret: process.env.SESSION_SECRET || 'precisa de uma chave secreta', 
   resave: false, 
   saveUninitialized: false, 
   cookie: { 
