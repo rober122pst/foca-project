@@ -1,6 +1,6 @@
 import { twMerge } from 'tailwind-merge';
 
-export default function Button({ children, className, variant = 'default' }) {
+export default function Button({ children, className = '', variant = 'default' }) {
     let _class;
     switch (variant) {
         case 'outline':
