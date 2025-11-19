@@ -84,6 +84,25 @@ html {
     border-style: groove;
 }
 
+@layer components {
+    .shimmer {
+        @apply
+            bg-night-900
+            bg-linear-to-r from-night-800 via-night-700 to-night-800
+            bg-[length:200%_100%]
+            animate-[shimmer_1.5s_infinite];
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    50% {
+        background-position: -200% 0;
+    }
+}
+
 @keyframes rareAchiviementPulse {
     0%, 100% {
         box-shadow: 0 0 0px var(--color-items-500), 0 0 5px var(--color-items-500), 0 0 12px var(--color-items-500);

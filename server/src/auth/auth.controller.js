@@ -78,6 +78,15 @@ export async function register(req, res) {
                 name,
                 email,
                 password: hashedPassword,
+                profile: { create: {
+                    id: generateId(),
+                    gamefication: { create: {
+                        id: generateId(),
+                    } }
+                } },
+                config: { create: {
+                    id: generateId(),
+                } }
             },
         });
 
