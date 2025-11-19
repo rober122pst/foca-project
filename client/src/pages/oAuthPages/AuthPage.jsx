@@ -237,11 +237,11 @@ export default function AuthPage() {
                                     <span className="label-name">Senha</span>
                                     <span className="underline"></span>
                                     {isVisibleRegister ? (
-                                        <span className="visibility visible" onClick={togglePasswordRegister}>
+                                        <span className="my-visible" onClick={togglePasswordRegister}>
                                             <FaRegEye />
                                         </span>
                                     ) : (
-                                        <span className="visibility-off invisible" onClick={togglePasswordRegister}>
+                                        <span className="my-invisible" onClick={togglePasswordRegister}>
                                             <FaRegEyeSlash />
                                         </span>
                                     )}
@@ -262,11 +262,11 @@ export default function AuthPage() {
                                     <span className="label-name">Confirmar Senha</span>
                                     <span className="underline"></span>
                                     {isVisibleRegister ? (
-                                        <span className="visibility visible" onClick={togglePasswordRegister}>
+                                        <span className="my-visible" onClick={togglePasswordRegister}>
                                             <FaRegEye />
                                         </span>
                                     ) : (
-                                        <span className="visibility-off invisible" onClick={togglePasswordRegister}>
+                                        <span className="my-invisible" onClick={togglePasswordRegister}>
                                             <FaRegEyeSlash />
                                         </span>
                                     )}
@@ -382,11 +382,11 @@ export default function AuthPage() {
                                     <span className="label-name">Senha</span>
                                     <span className="underline"></span>
                                     {isVisibleLogin ? (
-                                        <span className="visibility visible" onClick={togglePasswordLogin}>
+                                        <span className="my-visible" onClick={togglePasswordLogin}>
                                             <FaRegEye />
                                         </span>
                                     ) : (
-                                        <span className="visibility-off invisible" onClick={togglePasswordLogin}>
+                                        <span className="my-invisible" onClick={togglePasswordLogin}>
                                             <FaRegEyeSlash />
                                         </span>
                                     )}
