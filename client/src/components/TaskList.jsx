@@ -1,45 +1,9 @@
-import { Check, MoreVertical, Timer } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Check, MoreVertical, Timer } from 'lucide-react';
 
-import { useState } from 'react';
 import Button from './ui/Button';
 
-export default function TaskList() {
-    const [tasks, setTasks] = useState([
-        {
-            id: '1',
-            title: 'Estudar para prova de Matemática',
-            completed: false,
-            priority: 'high',
-            deadline: '2025-11-17T03:22:10Z',
-            tags: ['Estudos', 'Urgente'],
-        },
-        {
-            id: '2',
-            title: 'Completar exercícios de Física',
-            completed: false,
-            priority: 'medium',
-            deadline: '2025-11-19T14:55:47Z',
-            tags: ['Estudos'],
-        },
-        {
-            id: '3',
-            title: 'Revisar anotações de História',
-            completed: true,
-            priority: 'low',
-            deadline: '2025-11-23T21:10:05Z',
-            tags: ['Revisão'],
-        },
-        {
-            id: '4',
-            title: 'Fazer resumo de Biologia',
-            completed: false,
-            priority: 'medium',
-            deadline: '2025-11-26T08:39:31Z',
-            tags: ['Estudos'],
-        },
-    ]);
-
+export default function TaskList({ tasks, onToggle }) {
     return (
         <Card>
             <CardHeader>
@@ -62,11 +26,7 @@ export default function TaskList() {
                                 type="checkbox"
                                 className="checked:border-accent-500 checked:bg-accent-500 border-cream-300 dark:border-night-700 focus:ring-accent-600 checked:focus:ring-accent-600 h-5 w-5 cursor-pointer appearance-none rounded border-2 transition-all focus:ring-2 focus:outline-none"
                                 checked={task.completed}
-                                onChange={(e) =>
-                                    setTasks((prev) =>
-                                        prev.map((t) => (t.id === task.id ? { ...t, completed: e.target.checked } : t))
-                                    )
-                                }
+                                onChange={onToggle}
                             />
                             <div className="flex-1">
                                 <p

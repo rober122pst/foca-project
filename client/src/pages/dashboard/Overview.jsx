@@ -41,7 +41,7 @@ export default function Overview() {
                         <LevelProgress levelProgress={data.levelProgress} />
                         <QuickActions />
                         <ChardsOverview />
-                        <TaskList />
+                        <TaskList tasks={data.taskList} />
                     </div>
                     {/* Coluna da direita */}
                     <div className="space-y-5">
