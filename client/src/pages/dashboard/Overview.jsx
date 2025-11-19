@@ -5,7 +5,6 @@ import BannerDashboard from '../../components/BannerDashboard';
 import ChardsOverview from '../../components/ChardsOverview';
 import DailyChallenge from '../../components/DailyChallenge';
 import LevelProgress from '../../components/LevelProgress';
-import ProfileHeader from '../../components/ProfileHeader';
 import QuickActions from '../../components/QuickActions';
 import StatsOverview from '../../components/StatsOverview';
 import TaskList from '../../components/TaskList';
@@ -18,14 +17,12 @@ export default function Overview() {
         .join(' ');
 
     return (
-        <div className="bg-cream-200 dark:bg-night-950 m-auto h-auto w-fit p-4 lg:p-6">
-            <header>
-                <ProfileHeader title="Visão Geral" />
-                <BannerDashboard banner={spiderBanner}>
-                    <h1 className="text-2xl font-black md:text-3xl lg:text-4xl 2xl:text-5xl">{date}</h1>
-                    <span>Sua central de foco</span>
-                </BannerDashboard>
-            </header>
+        <>
+            <BannerDashboard banner={spiderBanner}>
+                <h1 className="text-2xl font-black md:text-3xl lg:text-4xl 2xl:text-5xl">{date}</h1>
+                <span>Sua central de foco</span>
+            </BannerDashboard>
+
             <div className="mt-5">
                 <div>
                     <StatsOverview />
@@ -46,6 +43,6 @@ export default function Overview() {
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
