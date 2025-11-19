@@ -50,8 +50,10 @@ export const AuthProvider = ({ children }) => {
             const res = await getMe(token);
             setUser(res.data);
         } catch (error) {
-            setUser(null);
+            logout();
             console.error('Falha ao carregar usuário:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 

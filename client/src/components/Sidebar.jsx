@@ -8,9 +8,12 @@ import { IoMenu } from 'react-icons/io5';
 import { LuBrain } from 'react-icons/lu';
 import focaLogo from '../assets/logos/foca_logo_uncolor.svg';
 import focaLogoTypo from '../assets/logos/foca_logo_uncolor_typo.svg';
+import { useAuth } from '../contexts/AuthContext';
 import { useResponsive } from '../hooks/useResponsive';
 
 export default function Sidebar() {
+    const { logout } = useAuth();
+
     const location = useLocation();
     const isResponsive = useResponsive(1280);
     const [isOpen, setIsOpen] = useState(true);
@@ -76,21 +79,21 @@ export default function Sidebar() {
                             </li>
                         </Link>
                     ))}
-                    <a href="/auth/logout">
-                        <li
-                            title="Sair"
-                            className="hover:shadow-items-500/50 transition-theme box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl hover:shadow-[inset_250px_0_0]"
+
+                    <li
+                        title="Sair"
+                        className="hover:shadow-items-500/50 transition-theme box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl hover:shadow-[inset_250px_0_0]"
+                    >
+                        <span>
+                            <MdLogout />
+                        </span>
+                        <span
+                            className={`transition-theme whitespace-nowrap delay-300 ${!isOpen && '-translate-x-3 opacity-0'}`}
+                            onClick={() => logout()}
                         >
-                            <span>
-                                <MdLogout />
-                            </span>
-                            <span
-                                className={`transition-theme whitespace-nowrap delay-300 ${!isOpen && '-translate-x-3 opacity-0'}`}
-                            >
-                                Sair
-                            </span>
-                        </li>
-                    </a>
+                            Sair
+                        </span>
+                    </li>
                 </ul>
             </nav>
             {!isResponsive && (
