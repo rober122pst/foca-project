@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { getUserAchievements } from "../services/achievements.service.js";
+import { xpToNext } from "../services/xp.services.js";
 
 const prisma = new PrismaClient();
 
@@ -42,7 +43,7 @@ export async function getOverviewData(req, res) {
             levelProgress: {
                 level: userGamefication?.level || 1,
                 currentXp: userGamefication?.currentXp || 0,
-                nextLevelXp: userGamefication ? (userGamefication.level + 1) * 100 : 100
+                nextLevelXp: userGamefication ? xpToNext(userGamefication.level) : xpToNext(1),
             },
             totalTasks: userTasks.length,
             taskList: [
