@@ -22,6 +22,7 @@ export default function AuthPage() {
     const [formLogin, setFormLogin] = useState({
         email: '',
         password: '',
+        rememberMe: false,
     });
     const [formRegister, setFormRegister] = useState({
         name: '',
@@ -395,7 +396,20 @@ export default function AuthPage() {
                             <span id="response-login">{loginError}</span>
                             <div className="input-form check">
                                 <label className="input-check">
-                                    <input type="checkbox" className="remember" id="remember-me" /> Manter logado
+                                    <input
+                                        name="rememberMe"
+                                        type="checkbox"
+                                        className="remember"
+                                        id="remember-me"
+                                        checked={formLogin.rememberMe}
+                                        onChange={(e) =>
+                                            setFormLogin({
+                                                ...formLogin,
+                                                rememberMe: e.target.checked,
+                                            })
+                                        }
+                                    />
+                                    Manter logado
                                 </label>
                             </div>
                             <div className="input-form">

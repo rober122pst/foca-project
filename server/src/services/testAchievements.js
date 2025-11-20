@@ -1,7 +1,7 @@
 // Comentários em português
 
 import { PrismaClient } from "@prisma/client";
-import { generateId } from "./services/generateId.service.js";
+import { generateId } from "./generateId.service.js";
 
 const prisma = new PrismaClient();
 
