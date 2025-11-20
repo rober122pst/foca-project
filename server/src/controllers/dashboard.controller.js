@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { getUserAchievements } from "../services/achievements.service.js";
 
 const prisma = new PrismaClient();
 
@@ -14,6 +15,7 @@ export async function getOverviewData(req, res) {
             select: {
                 profile: {
                     select: {
+                        id: true,
                         gamefication: true,
                         routines: true,
                         tasks: true,
@@ -28,7 +30,7 @@ export async function getOverviewData(req, res) {
         const completedTasks = userTasks.filter(task => task.completed).length;
         const userRoutines = userData.profile.routines;
         const routinesCount = userRoutines.length;
-        const userAchievements = userData.profile.userAchiviements;
+        const achievements = await getUserAchievements(prisma, userData.profile.id);
 
         return res.json({
             stats: {
@@ -42,10 +44,11 @@ export async function getOverviewData(req, res) {
                 currentXp: userGamefication?.currentXp || 0,
                 nextLevelXp: userGamefication ? (userGamefication.level + 1) * 100 : 100
             },
+            totalTasks: userTasks.length,
             taskList: [
                 ...userTasks.slice(0, 4)
             ],
-            achievements: userAchievements,
+            achievements: achievements,
         })
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar dados do dashboard' });
