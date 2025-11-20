@@ -14,7 +14,7 @@ export default function FeedEmpty() {
             </p>
             <Button>
                 <UserPlus className="h-6 w-6" />
-                <span className="text-base">Criar primeira tarefa</span>
+                <span className="text-base">Adicionar amigos</span>
             </Button>
         </div>
     );
