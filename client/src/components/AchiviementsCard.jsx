@@ -62,7 +62,7 @@ export default function AchiviementsCard({ achievements = [] }) {
                     {achievements.map((achievement) => (
                         <div
                             key={achievement.id}
-                            className={`rounded-lg border p-3 transition-colors ${achievement.rarity === 'rare' ? 'border-items-500' : 'border-cream-200 dark:border-night-800'} ${achievement.unlocked ? 'hover:bg-cream-200 dark:hover:bg-night-800' : 'opacity-60'}`}
+                            className={`rounded-lg border p-3 transition-colors ${achievement.rarity === 'RARE' ? 'border-items-500' : 'border-cream-200 dark:border-night-800'} ${achievement.unlocked ? 'hover:bg-cream-200 dark:hover:bg-night-800' : 'opacity-60'}`}
                         >
                             <div className="flex gap-3">
                                 <div
