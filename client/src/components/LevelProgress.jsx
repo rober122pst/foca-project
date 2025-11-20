@@ -1,13 +1,13 @@
 import { Card, CardContent } from './ui/card';
 
-import { ProgressBar } from './ui/progress';
 import { Trophy } from 'lucide-react';
 import { localeNumber } from '../../utils/formatString';
+import { ProgressBar } from './ui/progress';
 
 export default function LevelProgress({ levelProgress }) {
-    const level = levelProgress.level;
-    const xp = levelProgress.currentXp || 0;
-    const xpToNext = levelProgress.nextLevelXp || 0;
+    const level = levelProgress?.level || 0;
+    const xp = levelProgress?.currentXp || 0;
+    const xpToNext = levelProgress?.nextLevelXp || 0;
 
     return (
         <Card className="to-items-900 from-items-700 border-none bg-linear-to-tl">

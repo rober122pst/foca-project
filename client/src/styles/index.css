@@ -88,8 +88,7 @@ html {
 @layer components {
     .shimmer {
         @apply
-            bg-night-900
-            bg-linear-to-r from-night-800 via-night-700 to-night-800
+            bg-linear-to-r from-cream-300 via-cream-200 to-cream-300 dark:from-night-800 dark:via-night-700 dark:to-night-800
             bg-[length:200%_100%]
             animate-[shimmer_1.5s_infinite];
     }
