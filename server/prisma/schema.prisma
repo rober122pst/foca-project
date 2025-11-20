@@ -138,6 +138,8 @@ model UserAchiviement {
     achiviement   Achiviement @relation(fields: [achiviementId], references: [id])
     progress      Int         @default(0)
     achievedAt    DateTime?
+
+    @@unique([profileId, achiviementId])
 }
 
 model refreshToken {

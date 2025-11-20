@@ -1,3 +1,4 @@
+import spiderBanner from '../../assets/spider-man.webp';
 import AchiviementsCard from '../../components/AchiviementsCard';
 import ActivityFeed from '../../components/ActivityFeed';
 import BannerDashboard from '../../components/BannerDashboard';
@@ -7,7 +8,6 @@ import LevelProgress from '../../components/LevelProgress';
 import QuickActions from '../../components/QuickActions';
 import StatsOverview from '../../components/StatsOverview';
 import TaskList from '../../components/TaskList';
-import spiderBanner from '../../assets/spider-man.webp';
 import { useDashboardOverview } from '../../hooks/useDashboardOverview';
 
 export default function Overview() {
@@ -46,7 +46,7 @@ export default function Overview() {
                     {/* Coluna da direita */}
                     <div className="space-y-5">
                         <DailyChallenge />
-                        <AchiviementsCard />
+                        <AchiviementsCard achievements={data.achievements} />
                         <ActivityFeed />
                     </div>
                 </div>
