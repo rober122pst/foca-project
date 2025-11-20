@@ -1,10 +1,8 @@
 import api from './axiosConfig';
 
-export const getOverview = async (token) => {
+export const getOverview = async () => {
     try {
-        const res = await api.get('dashboard/overview', {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get('dashboard/overview');
         return res;
     } catch (e) {
         console.error('Acesso negado.', e);

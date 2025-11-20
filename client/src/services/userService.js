@@ -1,10 +1,8 @@
 import api from './axiosConfig';
 
-export const getMe = async (token) => {
+export const getMe = async () => {
     try {
-        const res = await api.get('user/me', {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get('user/me');
         return res;
     } catch (e) {
         console.error('Nenhum usuário logado.', e);
