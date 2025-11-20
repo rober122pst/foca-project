@@ -33,6 +33,7 @@ export const AuthProvider = ({ children }) => {
             setAccessToken(data.accessToken);
             setRefreshToken(data.refreshToken);
 
+            localStorage.setItem('token', data.accessToken);
             // Atualiza o refresh token
             localStorage.setItem('refreshToken', data.refreshToken);
 
@@ -45,9 +46,9 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const loadUser = async (token) => {
+    const loadUser = async () => {
         try {
-            const res = await getMe(token);
+            const res = await getMe();
             setUser(res.data);
         } catch (error) {
             logout();
@@ -64,6 +65,7 @@ export const AuthProvider = ({ children }) => {
         setAccessToken(res.accessToken);
         setRefreshToken(res.refreshToken);
 
+        localStorage.setItem('token', res.accessToken);
         localStorage.setItem('refreshToken', res.refreshToken);
 
         await loadUser(res.accessToken);
@@ -76,6 +78,7 @@ export const AuthProvider = ({ children }) => {
         setAccessToken(res.accessToken);
         setRefreshToken(res.refreshToken);
 
+        localStorage.setItem('token', res.accessToken);
         localStorage.setItem('refreshToken', res.refreshToken);
 
         await loadUser(res.accessToken);
@@ -90,6 +93,7 @@ export const AuthProvider = ({ children }) => {
 
         navigate('/auth');
 
+        localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
     };
 
