@@ -50,7 +50,7 @@ export default function AchiviementsCard({ achievements = [] }) {
         <Card>
             <CardHeader>
                 <CardTitle>
-                    <Award className="text-items-500 mr-1.5 inline" />
+                    <Award className="text-items-500" />
                     Conquistas
                 </CardTitle>
                 <Button variant="ghost" className="dark:text-cream-100 mr-4">
