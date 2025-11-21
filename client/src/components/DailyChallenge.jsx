@@ -17,7 +17,7 @@ export default function DailyChallenge() {
         <Card>
             <CardHeader>
                 <CardTitle>
-                    <Trophy className="text-items-500 mr-1.5 inline" />
+                    <Trophy className="text-items-500" />
                     Desafio diário
                 </CardTitle>
             </CardHeader>

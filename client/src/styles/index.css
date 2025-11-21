@@ -56,7 +56,6 @@ html {
 
 ::-webkit-scrollbar {
     width: 7px;
-    height: 7px;
 }
 
 ::-webkit-scrollbar-track {
@@ -89,6 +88,14 @@ html {
     @apply text-items-950 dark:text-cream-100
 }
 
+@utility border-border {
+    @apply border-cream-200 dark:border-night-800
+}
+
+@utility bg-muted {
+    @apply bg-cream-200 dark:bg-night-800
+}
+
 .border-groove {
     border-style: groove;
 }
@@ -101,6 +108,20 @@ html {
             animate-[shimmer_1.5s_infinite];
     }
 }
+
+.scrollbar-custom::-webkit-scrollbar {
+    width: 4px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+    @apply bg-medium
+}
+
+
 
 @keyframes shimmer {
     0% {

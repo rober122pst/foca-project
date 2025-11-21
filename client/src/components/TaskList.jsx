@@ -50,7 +50,7 @@ export default function TaskList({ tasks, onToggle }) {
                                         {task.tags.map((tag) => (
                                             <span
                                                 key={tag}
-                                                className="bg-cream-300 dark:bg-night-700 rounded-md px-2 py-1 text-xs"
+                                                className="bg-cream-300 dark:bg-night-700 w-fit rounded-md px-2 py-1 text-xs"
                                             >
                                                 {tag}
                                             </span>

@@ -48,7 +48,7 @@ export default function ActivityFeed({ activities = [] }) {
         <Card>
             <CardHeader>
                 <CardTitle>
-                    <History className="text-items-500 mr-1.5 inline" />
+                    <History className="text-items-500" />
                     Atividades recentes
                 </CardTitle>
             </CardHeader>

@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 
-import { ChevronLeft, ChevronRight, CircleCheck, Clock } from 'lucide-react';
+import { CalendarCheck2, CalendarDays, ChevronLeft, ChevronRight, CircleCheck, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 import { useState } from 'react';
@@ -22,18 +22,6 @@ export default function RoutineCalendar({
             description: 'Revisão de cálculo e exercícios',
             color: 'bg-blue-500',
             days: [3, 5],
-            startTime: '09:00',
-            endTime: '11:00',
-            category: 'Estudos',
-            completed: false,
-            streak: 5,
-        },
-        {
-            id: '6',
-            title: 'Estudar pra portugues',
-            description: 'Revisão',
-            color: 'bg-blue-500',
-            days: [3, 6],
             startTime: '09:00',
             endTime: '11:00',
             category: 'Estudos',
@@ -161,12 +149,13 @@ export default function RoutineCalendar({
     const selectedRoutinesForDay = selectedDate ? getRoutinesForDay(selectedDate.getDay()) : [];
 
     return (
-        <div className="space-y-6">
+        <div className="w-full space-y-6">
             {/* Calendario */}
             <Card>
                 <CardHeader>
                     <div className="flex flex-1 items-center justify-between">
                         <CardTitle className="text-lg">
+                            <CalendarDays className="text-items-500" />
                             {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
                         </CardTitle>
                         <div className="flex gap-1">
@@ -203,10 +192,10 @@ export default function RoutineCalendar({
                                     disabled={day.type !== 'current'}
                                     className={`relative flex min-h-[50px] flex-col items-start rounded-md border p-1 text-left transition-colors sm:min-h-20 sm:rounded-lg sm:p-2 ${
                                         day.type !== 'current'
-                                            ? 'border-cream-200 dark:border-night-800 cursor-default opacity-30'
+                                            ? 'border-border cursor-default opacity-30'
                                             : isToday(day.day)
                                               ? 'border-items-500 bg-items-700/10 cursor-pointer'
-                                              : 'border-cream-200 dark:border-night-800 hover:bg-cream-200 dark:hover:bg-night-800 cursor-pointer'
+                                              : 'border-border hover:bg-muted cursor-pointer'
                                     }`}
                                 >
                                     <span
@@ -240,6 +229,7 @@ export default function RoutineCalendar({
             <Card>
                 <CardHeader>
                     <CardTitle className="text-base sm:text-lg">
+                        <CalendarCheck2 className="text-items-500" />
                         <span className="hidden sm:inline">
                             Rotinas -{' '}
                             {selectedDate.toLocaleDateString('pt-BR', {
@@ -259,18 +249,18 @@ export default function RoutineCalendar({
                 </CardHeader>
                 <CardContent className="p-4">
                     {selectedRoutinesForDay.length > 0 ? (
-                        <div className="space-y-3">
+                        <div className="scrollbar-custom h-full max-h-[350px] space-y-3 overflow-y-auto">
                             {selectedRoutinesForDay.map((routine) => (
                                 <button
                                     key={routine.id}
                                     onClick={() => onSelectRoutine(routine)}
-                                    className="border-cream-200 dark:border-night-800 bg-card hover:bg-cream-200 dark:hover:bg-night-800 w-full rounded-lg border p-3 text-left transition-colors"
+                                    className="border-border bg-card hover:bg-muted w-full cursor-pointer rounded-2xl border p-3 text-left transition-colors"
                                 >
                                     <div className="flex items-start gap-2 sm:gap-3">
-                                        <div className={`h-12 w-1 rounded-full ${routine.color}`} />
+                                        <div className={`h-10 w-1 rounded-full sm:h-12 ${routine.color}`} />
                                         <div className="flex-1">
                                             <div className="flex items-center justify-between">
-                                                <h4 className="font-semibold">{routine.title}</h4>
+                                                <h4 className="text-sm font-semibold sm:text-base">{routine.title}</h4>
                                                 {routine.completed && (
                                                     <span className="bg-cream-300 dark:bg-night-700 flex gap-1 rounded-md px-2 py-1 text-xs">
                                                         <CircleCheck className="size-4" />
@@ -278,10 +268,10 @@ export default function RoutineCalendar({
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="text-medium mt-1 truncate text-sm">{routine.description}</p>
-                                            <div className="text-medium mt-2 flex items-center gap-4 text-xs">
+                                            <p className="text-medium mt-1 text-xs sm:text-sm">{routine.description}</p>
+                                            <div className="text-items-500 mt-2 flex flex-col gap-1 text-xs sm:flex-row sm:items-center sm:gap-4">
                                                 <div className="flex items-center gap-1">
-                                                    <Clock className="size-3" />
+                                                    <Clock className="h-3 w-3" />
                                                     {routine.startTime} - {routine.endTime}
                                                 </div>
                                                 <span className="border-cream-300 dark:border-night-700 text-primary flex gap-1 rounded-md border px-2 py-1 text-xs">
@@ -295,7 +285,7 @@ export default function RoutineCalendar({
                         </div>
                     ) : (
                         <div className="py-8 text-center">
-                            <p className="text-medium text-sm">Nenhuma rotina ou evento programado para este dia</p>
+                            <p className="text-muted-foreground text-sm">Nenhuma rotina programada para este dia</p>
                         </div>
                     )}
                 </CardContent>

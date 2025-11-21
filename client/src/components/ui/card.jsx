@@ -2,8 +2,13 @@ import { twMerge } from 'tailwind-merge';
 
 export function CardTitle({ children, className }) {
     return (
-        <div className={twMerge('text-items-950 dark:text-cream-100 text-lg font-extrabold', className)}>
-            <h1>{children}</h1>
+        <div
+            className={twMerge(
+                'text-items-950 dark:text-cream-100 flex items-center gap-1.5 text-lg font-extrabold',
+                className
+            )}
+        >
+            {children}
         </div>
     );
 }

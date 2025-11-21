@@ -29,7 +29,7 @@ export default function DashboardLayout() {
                 <div className="flex">
                     {isMobile ? <NavbarMobile /> : <Sidebar />}
                     <main className="bg-cream-200 dark:bg-night-950 m-auto h-fit w-full overflow-auto [-webkit-overflow-scrolling:touch] lg:h-screen">
-                        <div className="bg-cream-200 dark:bg-night-950 m-auto h-auto w-fit p-4 lg:p-6">
+                        <div className="bg-cream-200 dark:bg-night-950 m-auto h-auto w-full max-w-[1294px] p-4 lg:p-6">
                             <header className="mt-2">
                                 <ProfileHeader title={title} />
                             </header>

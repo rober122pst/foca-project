@@ -161,7 +161,7 @@ export default function ChardsOverview() {
             <Card className="min-w-0">
                 <CardHeader>
                     <CardTitle>
-                        <ClockFading className="text-items-500 mr-1.5 inline" />
+                        <ClockFading className="text-items-500" />
                         Distribuição de tempo
                     </CardTitle>
                 </CardHeader>

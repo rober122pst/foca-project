@@ -2,6 +2,8 @@ import { useState } from 'react';
 import sportBanner from '../../assets/SPORTRECIFE.webp';
 import BannerDashboard from '../../components/BannerDashboard';
 import RoutineCalendar from '../../components/RoutineCalendar';
+import RoutineDetails from '../../components/RoutineDetails';
+import RoutinesList from '../../components/RoutinesList';
 import StatsRoutine from '../../components/StatsRoutine';
 import ButtonCta from '../../components/ui/ButtonCta';
 
@@ -29,6 +31,14 @@ export default function Routine() {
                             onSelectDate={setSelectedDate}
                             onSelectRoutine={setSelectedRoutine}
                         />
+                    </div>
+                    {/* Sidebar da direita */}
+                    <div className="space-y-6">
+                        <RoutinesList onSelectRoutine={setSelectedRoutine} />
+
+                        {selectedRoutine && (
+                            <RoutineDetails routine={selectedRoutine} onClose={() => setSelectedRoutine(null)} />
+                        )}
                     </div>
                 </div>
             </div>
