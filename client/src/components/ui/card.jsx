@@ -2,14 +2,14 @@ import { twMerge } from 'tailwind-merge';
 
 export function CardTitle({ children, className }) {
     return (
-        <div className={twMerge('text-items-950 dark:text-cream-100 px-4 text-lg font-extrabold', className)}>
+        <div className={twMerge('text-items-950 dark:text-cream-100 text-lg font-extrabold', className)}>
             <h1>{children}</h1>
         </div>
     );
 }
 
 export function CardHeader({ children, className }) {
-    return <div className={twMerge('flex justify-between', className)}>{children}</div>;
+    return <div className={twMerge('flex justify-between px-4', className)}>{children}</div>;
 }
 
 export function CardContent({ children, className }) {

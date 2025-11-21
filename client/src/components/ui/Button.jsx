@@ -1,6 +1,6 @@
 import { twMerge } from 'tailwind-merge';
 
-export default function Button({ children, className = '', variant = 'default' }) {
+export default function Button({ children, onClick, className = '', variant = 'default' }) {
     let _class;
     switch (variant) {
         case 'outline':
@@ -19,10 +19,11 @@ export default function Button({ children, className = '', variant = 'default' }
         <button
             className={twMerge(
                 // eslint-disable-next-line quotes
-                "display-center utline-none aria-invalid:ring-destructive/20 h-9 shrink-0 cursor-pointer gap-2 rounded-md px-4 py-2 text-center align-middle text-sm font-medium whitespace-nowrap transition-all duration-200 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 has-[>svg]:px-3 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-6",
+                "display-center utline-none aria-invalid:ring-destructive/20 text-items-950 dark:text-cream-100 h-9 shrink-0 cursor-pointer gap-2 rounded-md px-4 py-2 text-center align-middle text-sm font-medium whitespace-nowrap transition-all duration-200 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 has-[>svg]:px-3 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-6",
                 _class,
                 className
             )}
+            onClick={onClick}
         >
             {children}
         </button>

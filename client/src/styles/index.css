@@ -81,6 +81,14 @@ html {
 	@apply transition-all duration-300 ease-out;
 }
 
+@utility bg-card {
+    @apply bg-cream-100 dark:bg-night-900
+}
+
+@utility text-primary {
+    @apply text-items-950 dark:text-cream-100
+}
+
 .border-groove {
     border-style: groove;
 }
