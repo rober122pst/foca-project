@@ -36,9 +36,7 @@ export default function Routine() {
                     <div className="space-y-6">
                         <RoutinesList onSelectRoutine={setSelectedRoutine} />
 
-                        {selectedRoutine && (
-                            <RoutineDetails routine={selectedRoutine} onClose={() => setSelectedRoutine(null)} />
-                        )}
+                        <RoutineDetails routine={selectedRoutine} onClose={() => setSelectedRoutine(null)} />
                     </div>
                 </div>
             </div>
