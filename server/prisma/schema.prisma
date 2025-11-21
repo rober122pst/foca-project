@@ -20,6 +20,7 @@ model User {
     profile       Profile?
     config        Config?
     refreshTokens refreshToken[]
+    pomodoros     pomodoro[]
 }
 
 enum Theme {
@@ -149,4 +150,23 @@ model refreshToken {
     user      User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     createdAt DateTime @default(now())
     expiresAt DateTime
+}
+
+enum Status {
+    CONCLUIDO
+    FAZENDO
+    CANCELADO
+}
+
+model Pomodoro {
+    id          String   @id @default(dbgenerated()) @db.Uuid
+    userId      String   @db.Uuid
+    user        User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    time        String   @default("25:00")
+    timeRest    String   @default("5:00")
+    cicle       Int // quantas o pomodoro vai ciclar entre atividade (25:00) e descanço (5:00)
+    status      Status   @default(FAZENDO)
+    createdAt   DateTime @default(now())
+    completedAt DateTime @default(now())
+    tasks       Task?
 }
