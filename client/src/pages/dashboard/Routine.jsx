@@ -6,10 +6,16 @@ import RoutineDetails from '../../components/RoutineDetails';
 import RoutinesList from '../../components/RoutinesList';
 import StatsRoutine from '../../components/StatsRoutine';
 import ButtonCta from '../../components/ui/ButtonCta';
+import { useDashboardRoutines } from '../../hooks/useDashboardRoutines';
 
 export default function Routine() {
+    const { data, isLoading, error } = useDashboardRoutines();
+
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedRoutine, setSelectedRoutine] = useState(null);
+
+    if (isLoading) return <p className="text-white">carregando...</p>;
+    if (error) return <p className="text-white">Ocorreu um erro</p>;
 
     return (
         <>
@@ -21,12 +27,13 @@ export default function Routine() {
                 <ButtonCta>CRIAR ROTINA</ButtonCta>
             </BannerDashboard>
             <div className="mt-5">
-                <StatsRoutine />
+                <StatsRoutine data={data.stats} />
 
                 <div className="mt-5 grid gap-5 lg:grid-cols-3">
                     {/* Calendario */}
                     <div className="lg:col-span-2">
                         <RoutineCalendar
+                            routines={data.routines}
                             selectedDate={selectedDate}
                             onSelectDate={setSelectedDate}
                             onSelectRoutine={setSelectedRoutine}
@@ -34,7 +41,7 @@ export default function Routine() {
                     </div>
                     {/* Sidebar da direita */}
                     <div className="space-y-6">
-                        <RoutinesList onSelectRoutine={setSelectedRoutine} />
+                        <RoutinesList routines={data.routines} onSelectRoutine={setSelectedRoutine} />
 
                         <RoutineDetails routine={selectedRoutine} onClose={() => setSelectedRoutine(null)} />
                     </div>
