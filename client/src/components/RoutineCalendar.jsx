@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 import { useState } from 'react';
 import { useResponsive } from '../hooks/useResponsive.js';
+import RoutineDailyListEmpty from './empty-states/RoutineDailyListEmpty.jsx';
 import Button from './ui/Button';
 
 export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRoutine, routines = [] }) {
@@ -281,9 +282,7 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                             ))}
                         </div>
                     ) : (
-                        <div className="py-8 text-center">
-                            <p className="text-muted-foreground text-sm">Nenhuma rotina programada para este dia</p>
-                        </div>
+                        <RoutineDailyListEmpty />
                     )}
                 </CardContent>
             </Card>
