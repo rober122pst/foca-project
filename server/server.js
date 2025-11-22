@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import authRoutes from './src/auth/auth.routes.js';
 import dashboardRoutes from './src/routes/dashboard.routes.js';
+import routineRoutes from './src/routes/routine.routes.js';
 import userRoutes from './src/routes/user.routes.js';
 
 dotenv.config();
@@ -19,6 +20,7 @@ app.get('/', (req, res) => {
 
 // Usar rotas
 app.use('/auth', authRoutes);
+app.use('/user/routines', routineRoutes);
 app.use('/user', userRoutes);
 app.use('/dashboard', dashboardRoutes);
 

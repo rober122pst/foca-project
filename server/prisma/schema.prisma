@@ -101,13 +101,14 @@ model Routine {
     id              String     @id @default(dbgenerated()) @db.Uuid
     profileId       String     @db.Uuid
     profile         Profile    @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    title           String
     description     String?
     days            Weekday[]  @default([SUN, MON, TUE, WED, THU, FRI, SAT])
     color           String     @default("#ff0546")
-    startTime       String
-    endTime         String
+    startTime       DateTime
+    endTime         DateTime
     streak          Int        @default(0)
-    completedDays   DateTime[]
+    completedDays   DateTime[] @default([])
     lastCompletedAt DateTime
     createAt        DateTime   @default(now())
     updateAt        DateTime   @updatedAt

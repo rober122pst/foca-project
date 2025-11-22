@@ -77,7 +77,7 @@ export async function getRoutinesData(req, res) {
         return res.json({
             stats: {
                 activeRoutines,
-                bestStreak: bestStreak || 0,
+                bestStreak,
                 completionRate: completionRate || 0,
                 thisCompletedWeek: thisCompletedWeek || 0,
                 totalThisWeek: totalThisWeek || 0,
