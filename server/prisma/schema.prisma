@@ -1,11 +1,11 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
 datasource db {
     provider  = "postgresql"
     url       = env("DATABASE_URL")
     directUrl = env("DIRECT_URL")
-}
-
-generator client {
-    provider = "prisma-client-js"
 }
 
 model User {
@@ -20,7 +20,7 @@ model User {
     profile       Profile?
     config        Config?
     refreshTokens refreshToken[]
-    pomodoros     pomodoro[]
+    pomodoros     Pomodoro[]
 }
 
 enum Theme {
@@ -71,25 +71,26 @@ enum Priority {
 }
 
 model Task {
-    id          String    @id @default(dbgenerated()) @db.Uuid
-    profileId   String    @db.Uuid
-    profile     Profile   @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    id          String     @id @default(dbgenerated()) @db.Uuid
+    profileId   String     @db.Uuid
+    profile     Profile    @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     title       String
     description String?
-    completed   Boolean   @default(false)
+    completed   Boolean    @default(false)
     completedAt DateTime?
     deadline    DateTime?
-    priority    Priority  @default(LOW)
+    priority    Priority   @default(LOW)
     tags        String[]
-    isRecurring Boolean   @default(false)
-    createAt    DateTime  @default(now())
-    updateAt    DateTime  @updatedAt
+    isRecurring Boolean    @default(false)
+    createAt    DateTime   @default(now())
+    updateAt    DateTime   @updatedAt
+    pomodoros   Pomodoro[]
 }
 
 enum Weekday {
     SUN
     MON
-    TWE
+    TUE
     WED
     THU
     FRI
@@ -101,10 +102,11 @@ model Routine {
     profileId       String     @db.Uuid
     profile         Profile    @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     description     String?
-    frequency       Weekday[]  @default([SUN, MON, TWE, WED, THU, FRI, SAT])
-    timeStart       String
-    timeEnd         String
-    completedToday  Boolean    @default(false)
+    days            Weekday[]  @default([SUN, MON, TUE, WED, THU, FRI, SAT])
+    color           String     @default("#ff0546")
+    startTime       String
+    endTime         String
+    streak          Int        @default(0)
     completedDays   DateTime[]
     lastCompletedAt DateTime
     createAt        DateTime   @default(now())
@@ -143,15 +145,6 @@ model UserAchiviement {
     @@unique([profileId, achiviementId])
 }
 
-model refreshToken {
-    id        String   @id @default(dbgenerated()) @db.Uuid
-    token     String   @unique
-    userId    String   @db.Uuid
-    user      User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    createdAt DateTime @default(now())
-    expiresAt DateTime
-}
-
 enum Status {
     CONCLUIDO
     FAZENDO
@@ -168,5 +161,15 @@ model Pomodoro {
     status      Status   @default(FAZENDO)
     createdAt   DateTime @default(now())
     completedAt DateTime @default(now())
-    tasks       Task?
+    tasks       Task?    @relation(fields: [taskId], references: [id])
+    taskId      String?  @db.Uuid
+}
+
+model refreshToken {
+    id        String   @id @default(dbgenerated()) @db.Uuid
+    token     String   @unique
+    userId    String   @db.Uuid
+    user      User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    createdAt DateTime @default(now())
+    expiresAt DateTime
 }
