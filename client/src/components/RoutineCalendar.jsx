@@ -7,64 +7,60 @@ import { useState } from 'react';
 import { useResponsive } from '../hooks/useResponsive.js';
 import Button from './ui/Button';
 
-export default function RoutineCalendar({
-    selectedDate = new Date(),
-    onSelectDate = () => {},
-    onSelectRoutine = () => {},
-}) {
+export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRoutine, routines = [] }) {
     const isResponsive = useResponsive(640);
     const [currentMonth, setCurrentMonth] = useState(new Date());
 
-    const routines = [
-        {
-            id: '1',
-            title: 'Estudar Matemática',
-            description: 'Revisão de cálculo e exercícios',
-            color: 'bg-blue-500',
-            days: [3, 5],
-            startTime: '09:00',
-            endTime: '11:00',
-            category: 'Estudos',
-            completed: false,
-            streak: 5,
-        },
-        {
-            id: '2',
-            title: 'Treino Físico',
-            description: 'Academia e cardio',
-            color: 'bg-orange-500',
-            days: [1, 2, 4, 6],
-            startTime: '07:00',
-            endTime: '08:30',
-            category: 'Saúde',
-            completed: false,
-            streak: 12,
-        },
-        {
-            id: '3',
-            title: 'Meditação',
-            description: 'Mindfulness e respiração',
-            color: 'bg-purple-500',
-            days: [0, 1, 2, 3, 4, 5, 6],
-            startTime: '06:00',
-            endTime: '06:30',
-            category: 'Bem-estar',
-            completed: true,
-            streak: 30,
-        },
-        {
-            id: '4',
-            title: 'Leitura',
-            description: 'Ler 30 páginas por dia',
-            color: 'bg-green-500',
-            days: [0, 1, 2, 3, 4, 5, 6],
-            startTime: '21:00',
-            endTime: '22:00',
-            category: 'Desenvolvimento',
-            completed: false,
-            streak: 8,
-        },
-    ];
+    // const routines = [
+    //     {
+    //         id: '1',
+    //         title: 'Estudar Matemática',
+    //         description: 'Revisão de cálculo e exercícios',
+    //         color: 'bg-blue-500',
+    //         days: [3, 5],
+    //         startTime: '09:00',
+    //         endTime: '11:00',
+    //         category: 'Estudos',
+    //         completed: false,
+    //         streak: 5,
+    //     },
+    //     {
+    //         id: '2',
+    //         title: 'Treino Físico',
+    //         description: 'Academia e cardio',
+    //         color: 'bg-orange-500',
+    //         days: [1, 2, 4, 6],
+    //         startTime: '07:00',
+    //         endTime: '08:30',
+    //         category: 'Saúde',
+    //         completed: false,
+    //         streak: 12,
+    //     },
+    //     {
+    //         id: '3',
+    //         title: 'Meditação',
+    //         description: 'Mindfulness e respiração',
+    //         color: 'bg-purple-500',
+    //         days: [0, 1, 2, 3, 4, 5, 6],
+    //         startTime: '06:00',
+    //         endTime: '06:30',
+    //         category: 'Bem-estar',
+    //         completed: true,
+    //         streak: 30,
+    //     },
+    //     {
+    //         id: '4',
+    //         title: 'Leitura',
+    //         description: 'Ler 30 páginas por dia',
+    //         color: 'bg-green-500',
+    //         days: [0, 1, 2, 3, 4, 5, 6],
+    //         startTime: '21:00',
+    //         endTime: '22:00',
+    //         category: 'Desenvolvimento',
+    //         completed: false,
+    //         streak: 8,
+    //     },
+    // ];
 
     const monthNames = [
         'Janeiro',
@@ -122,6 +118,7 @@ export default function RoutineCalendar({
 
     // Pega as rotinas correspodentes aquele dia
     const getRoutinesForDay = (dayOfWeek) => {
+        if (!routines) return;
         return routines.filter((routine) => routine.days.includes(dayOfWeek));
     };
 

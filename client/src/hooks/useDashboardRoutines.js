@@ -1,14 +1,15 @@
+import { getRoutinesDash } from '../services/dashboardService';
+
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../contexts/AuthContext';
-import { getOverview } from '../services/dashboardService';
 
-export function useDashboardOverview() {
+export function useDashboardRoutines() {
     const { accessToken } = useAuth();
 
     return useQuery({
-        queryKey: ['dashboard-overview', accessToken],
+        queryKey: ['dashboard-routines', accessToken],
         queryFn: async () => {
-            const res = await getOverview();
+            const res = await getRoutinesDash();
             return res.data;
         },
         staleTime: 1000 * 60,

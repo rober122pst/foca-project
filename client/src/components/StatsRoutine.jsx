@@ -1,35 +1,27 @@
 import { CheckCircle2, Flame, Target, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 
-export default function StatsRoutine() {
+export default function StatsRoutine({ data }) {
     const stats = [
         {
             icon: Target,
             label: 'Rotinas Ativas',
-            value: '8',
-            color: 'text-blue-500',
-            bgColor: 'bg-blue-500/10',
+            value: `${data.activeRoutines}`,
         },
         {
             icon: Flame,
             label: 'Maior Sequência',
-            value: '30 dias',
-            color: 'text-orange-500',
-            bgColor: 'bg-orange-500/10',
+            value: `${data.bestStreak} ${data.bestStreak !== 1 ? 'dias' : 'dia'}`,
         },
         {
             icon: CheckCircle2,
             label: 'Taxa de Conclusão',
-            value: '85%',
-            color: 'text-green-500',
-            bgColor: 'bg-green-500/10',
+            value: `${data.completionRate}%`,
         },
         {
             icon: TrendingUp,
             label: 'Esta Semana',
-            value: '24/28',
-            color: 'text-purple-500',
-            bgColor: 'bg-purple-500/10',
+            value: `${data.thisCompletedWeek}/${data.totalThisWeek}`,
         },
     ];
 
