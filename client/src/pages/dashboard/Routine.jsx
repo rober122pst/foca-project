@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import sportBanner from '../../assets/SPORTRECIFE.webp';
 import BannerDashboard from '../../components/BannerDashboard';
+import CreateRoutineModal from '../../components/CreateRoutineModal';
 import RoutineCalendar from '../../components/RoutineCalendar';
 import RoutineDetails from '../../components/RoutineDetails';
 import RoutinesList from '../../components/RoutinesList';
@@ -14,17 +15,20 @@ export default function Routine() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedRoutine, setSelectedRoutine] = useState(null);
 
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+
     if (isLoading) return <p className="text-white">carregando...</p>;
     if (error) return <p className="text-white">Ocorreu um erro</p>;
 
     return (
         <>
+            <CreateRoutineModal isOpen={modalIsOpen} onClose={() => setModalIsOpen(false)} />
             <BannerDashboard banner={sportBanner}>
                 <h1 className="text-2xl font-black md:text-3xl lg:text-4xl 2xl:text-5xl">Crie sua rotina</h1>
                 <span>Use nossa IA para criar sua rotina. Você pode também pode criar cards únicos.</span>
                 <br />
                 <br />
-                <ButtonCta>CRIAR ROTINA</ButtonCta>
+                <ButtonCta onClick={() => setModalIsOpen(true)}>CRIAR ROTINA</ButtonCta>
             </BannerDashboard>
             <div className="mt-5">
                 <StatsRoutine data={data.stats} />

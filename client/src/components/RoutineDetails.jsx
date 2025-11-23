@@ -97,7 +97,7 @@ export default function RoutineDetails({ routine, onClose = () => {} }) {
                                         variant="outline"
                                         className="flex flex-1 items-center gap-2 bg-transparent dark:bg-transparent"
                                     >
-                                        <Edit className="mr-1 size-4" />
+                                        <Edit className="size-4" />
                                         Editar
                                     </Button>
                                     <Button
