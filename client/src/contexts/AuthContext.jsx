@@ -91,10 +91,10 @@ export const AuthProvider = ({ children }) => {
         setAccessToken(null);
         setRefreshToken(null);
 
-        navigate('/auth');
-
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
+        navigate('/auth');
+        console.log('Saindo...');
     };
 
     return (

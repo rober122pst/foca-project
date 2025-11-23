@@ -29,7 +29,8 @@ export default function RoutinesList({ onSelectRoutine, routines = [] }) {
                             >
                                 <div className="flex items-start gap-3">
                                     <div
-                                        className={`size-10 rounded-lg ${routine.color} display-center text-cream-100`}
+                                        className={'display-center text-cream-100 size-10 rounded-lg'}
+                                        style={{ background: routine.color }}
                                     >
                                         <Clock className="size-5" />
                                     </div>
@@ -38,7 +39,7 @@ export default function RoutinesList({ onSelectRoutine, routines = [] }) {
                                         <p className="text-medium mt-1 text-xs">{getDayNames(routine.days)}</p>
                                         <div className="mt-2 flex items-center gap-2">
                                             <span className="bg-cream-300 dark:bg-night-700 flex w-fit gap-1 rounded-md px-2 py-1 text-xs">
-                                                {routine.category}
+                                                {routine.tag}
                                             </span>
                                             {routine.streak > 0 && (
                                                 <div className="text-accent-500 flex items-center gap-1 text-xs">

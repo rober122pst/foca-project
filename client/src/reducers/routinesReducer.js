@@ -1,10 +1,11 @@
 export const initialRoutinesFormState = {
     title: '',
     description: '',
-    days: [0, 1, 2, 3, 4, 5, 6],
-    color: '#ff0546',
-    startTime: new Date(),
-    endTime: new Date().setHours(new Date().getHours + 2),
+    days: [],
+    tag: 'Estudo',
+    color: '#fb2c36',
+    startTime: '12:00',
+    endTime: '13:00',
 };
 
 export function routineFormReducer(state, action) {
@@ -14,6 +15,21 @@ export function routineFormReducer(state, action) {
                 ...state,
                 [action.field]: action.value,
             };
+
+        case 'TOGGLE_DAY': {
+            const order = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+            const dayId = action.value;
+            const isDaySelected = state.days.includes(dayId);
+
+            const newDays = isDaySelected ? state.days.filter((d) => d !== dayId) : [...state.days, dayId];
+
+            const sortedDays = newDays.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+
+            return {
+                ...state,
+                days: sortedDays,
+            };
+        }
 
         case 'RESET':
             return initialRoutinesFormState;

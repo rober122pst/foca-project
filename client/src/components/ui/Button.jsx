@@ -1,7 +1,14 @@
 import { motion } from 'motion/react';
 import { twMerge } from 'tailwind-merge';
 
-export default function Button({ children, onClick, className = '', variant = 'default', type = 'button' }) {
+export default function Button({
+    children,
+    onClick,
+    className = '',
+    variant = 'default',
+    type = 'button',
+    disabled = false,
+}) {
     let _class;
     switch (variant) {
         case 'outline':
@@ -28,6 +35,7 @@ export default function Button({ children, onClick, className = '', variant = 'd
             )}
             onClick={onClick}
             type={type}
+            disabled={disabled}
         >
             {children}
         </motion.button>

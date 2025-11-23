@@ -3,22 +3,33 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-export function Label({ children, className = '', required = false }) {
+export function Label({ children, className = '' }) {
     return (
         <label className={twMerge('text-md relative flex flex-col gap-0.5 font-semibold', className)}>{children}</label>
     );
 }
 
-export function InputText({ className = '', type = 'text', name = '', placeholder = '' }) {
+export function InputText({
+    className = '',
+    type = 'text',
+    name = '',
+    placeholder = '',
+    onChange,
+    value = '',
+    autoComplete = 'on',
+}) {
     return (
         <input
             className={twMerge(
                 'text-md border-cream-200 dark:border-night-700 bg-cream-100 dark:bg-night-800 focus:outline-items-500 w-full rounded-lg border-2 px-3 py-2 text-base font-normal ring-0 outline-transparent transition-colors duration-300 focus:outline-2',
                 className
             )}
+            value={value}
             type={type}
             name={name}
             placeholder={placeholder}
+            onChange={onChange}
+            autoComplete={autoComplete}
         />
     );
 }

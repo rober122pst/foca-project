@@ -1,15 +1,24 @@
 import { AnimatePresence, motion } from 'motion/react';
 
+import { useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-export function Modal({ children, className = '', isOpen = false, type = 'default', onClose }) {
-    const handleBackgroundClick = () => {
-        onClose();
+export function Modal({ children, className = '', isOpen = false, onClose }) {
+    // Referência para guardar onde o clique começou
+    const mouseDownTarget = useRef(null);
+
+    // Guarda o elemento onde o botão do rato foi pressionado
+    const handleMouseDown = (e) => {
+        mouseDownTarget.current = e.target;
     };
 
-    const handleContentClick = (e) => {
-        e.stopPropagation();
+    // Só fecha se o clique começou E terminou no background
+    const handleBackgroundClick = (e) => {
+        if (mouseDownTarget.current === e.currentTarget) {
+            onClose();
+        }
     };
+
     return (
         <AnimatePresence initial={false}>
             {isOpen && (
@@ -17,6 +26,7 @@ export function Modal({ children, className = '', isOpen = false, type = 'defaul
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
+                    onMouseDown={handleMouseDown}
                     onClick={handleBackgroundClick}
                     className="display-center absolute top-0 left-0 z-40 min-h-screen w-full bg-black/35"
                 >
@@ -24,7 +34,8 @@ export function Modal({ children, className = '', isOpen = false, type = 'defaul
                         initial={{ opacity: 0, scale: 0 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0 }}
-                        onClick={handleContentClick}
+                        onClick={(e) => e.stopPropagation()}
+                        onMouseDown={(e) => e.stopPropagation()}
                         className={twMerge('bg-card border-border rounded-4xl border py-6', className)}
                     >
                         {children}

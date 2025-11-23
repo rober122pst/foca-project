@@ -2,6 +2,7 @@ import { Calendar, CalendarCog, Check, Clock, Edit, Flame, Trash, X } from 'luci
 import { AnimatePresence, motion } from 'motion/react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
+import { formatHours } from '../../utils/formatTime';
 import Button from './ui/Button';
 import { ProgressBar } from './ui/progress';
 
@@ -36,7 +37,8 @@ export default function RoutineDetails({ routine, onClose = () => {} }) {
                             <div>
                                 <div className="flex items-center gap-3">
                                     <div
-                                        className={`size-12 rounded-lg ${routine.color} display-center text-cream-100`}
+                                        className={'display-center text-cream-100 size-12 rounded-lg'}
+                                        style={{ background: routine.color }}
                                     >
                                         <Clock className="size-6" />
                                     </div>
@@ -51,7 +53,7 @@ export default function RoutineDetails({ routine, onClose = () => {} }) {
                                 <div className="flex items-center gap-2 text-sm">
                                     <Clock className="text-accent-500 size-4" />
                                     <span>
-                                        {routine.startTime} - {routine.endTime}
+                                        {formatHours(routine.startTime)} - {formatHours(routine.endTime)}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2 text-sm">
@@ -67,7 +69,7 @@ export default function RoutineDetails({ routine, onClose = () => {} }) {
 
                                 <div>
                                     <span className="bg-cream-300 dark:bg-night-700 flex w-fit gap-1 rounded-md px-2 py-1 text-xs">
-                                        {routine.category}
+                                        {routine.tag}
                                     </span>
                                 </div>
 

@@ -1,5 +1,5 @@
 // Comentários em português
-export function calculateWeeklyRoutinesCompletion(routines) {
+export function calculateWeeklyProgress(routines) {
     // Pega o início da semana (segunda-feira)
     const now = new Date();
     const day = now.getDay(); // 0 = domingo, 1 = segunda...
@@ -14,22 +14,22 @@ export function calculateWeeklyRoutinesCompletion(routines) {
     weekEnd.setDate(weekStart.getDate() + 6);
     weekEnd.setHours(23, 59, 59, 999);
 
-    let totalPossible = routines.length * 7; // 7 dias por rotina
+    let totalPossible = 0;
     let totalCompleted = 0;
 
     routines.forEach((routine) => {
-        routine.completedDays.forEach((dateStr) => {
-            const date = new Date(dateStr);
-            // Conta apenas se estiver dentro da semana
-            if (date >= weekStart && date <= weekEnd) {
-                totalCompleted++;
-            }
-        });
+        totalPossible += routine.days.length;
+        if (routine.completedDays && routine.completedDays.length > 0) {
+            const completedInWeek = routine.completedDays.filter(dateString => {
+                const completedDate = new Date(dateString);
+                return completedDate >= weekStart && completedDate <= weekEnd;
+            })
+
+            totalCompleted += completedInWeek.length;
+        }
     });
 
-    if (totalPossible === 0) return 0;
-
-    return { totalCompleted, totalPossible, rate: (totalCompleted / totalPossible) * 100 };
+    return { totalCompleted, totalPossible, rate: totalPossible > 0 ? Math.round((totalCompleted / totalPossible) * 100) : 0 };
 }
 
 const weekdayMap = {
@@ -46,7 +46,7 @@ export function mapWeekdaysToNumbers(days) {
     return days.map(d => weekdayMap[d]);
 }
 
-export function calculateRoutineWeeklyPercent(days, completedDates) {
+export function calculateRoutineWeeklyPercent(days, completedDays) {
     // Pega o início da semana (segunda-feira)
     const now = new Date();
     const day = now.getDay(); // 0 = domingo, 1 = segunda...
@@ -77,7 +77,7 @@ export function calculateRoutineWeeklyPercent(days, completedDates) {
     // 2) Contar quantos dias ela realmente foi concluída
     let completed = 0;
 
-    completedDates.forEach(dateStr => {
+    completedDays.forEach(dateStr => {
         const d = new Date(dateStr);
         if (d >= weekStart && d <= weekEnd) {
             completed++;
@@ -90,7 +90,7 @@ export function calculateRoutineWeeklyPercent(days, completedDates) {
     return { completed, expected, rate: (completed / expected) * 100 };
 }
 
-export function checkRoutineToday(days, completedDates) {
+export function checkRoutineToday(days, completedDays) {
     const now = new Date();
     const day = now.getDay();;
 
@@ -98,7 +98,7 @@ export function checkRoutineToday(days, completedDates) {
     const shouldDoToday = days.includes(day);
 
     // 2) Verifica se a rotina já foi concluída hoje
-    const didToday = completedDates.some(dateStr => {
+    const didToday = completedDays.some(dateStr => {
         const d = new Date(dateStr);
         
         return (

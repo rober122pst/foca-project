@@ -1,4 +1,5 @@
 import { generateId, verifyUuid } from "../services/generateId.service.js";
+import { calculateRoutineWeeklyPercent, checkRoutineToday } from "../services/routines.services.js";
 
 import { PrismaClient } from "@prisma/client";
 

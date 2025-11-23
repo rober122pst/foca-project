@@ -83,13 +83,13 @@ export default function Sidebar() {
                     <li
                         title="Sair"
                         className="hover:shadow-items-500/50 transition-theme box-border flex h-15 cursor-pointer items-center gap-4 rounded-l-lg p-4 text-xl hover:shadow-[inset_250px_0_0]"
+                        onClick={() => logout()}
                     >
                         <span>
                             <MdLogout />
                         </span>
                         <span
                             className={`transition-theme whitespace-nowrap delay-300 ${!isOpen && '-translate-x-3 opacity-0'}`}
-                            onClick={() => logout()}
                         >
                             Sair
                         </span>

@@ -103,13 +103,14 @@ model Routine {
     profile         Profile    @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     title           String
     description     String?
-    days            Weekday[]  @default([SUN, MON, TUE, WED, THU, FRI, SAT])
-    color           String     @default("#ff0546")
+    days            Weekday[]
+    tag             String     @default("Estudo")
+    color           String     @default("#fb2c36")
     startTime       DateTime
     endTime         DateTime
     streak          Int        @default(0)
     completedDays   DateTime[] @default([])
-    lastCompletedAt DateTime
+    lastCompletedAt DateTime?
     createAt        DateTime   @default(now())
     updateAt        DateTime   @updatedAt
 }
