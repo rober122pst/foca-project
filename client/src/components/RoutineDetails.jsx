@@ -1,14 +1,15 @@
 import { Calendar, CalendarCog, Check, Clock, Edit, Flame, Trash, X } from 'lucide-react';
+import { usePatchRoutine, useRoutineById } from '../hooks/routineHooks';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
+import { motion } from 'motion/react';
+import { formatHours } from '../../utils/formatTime';
 import Button from './ui/Button';
 import { ProgressBar } from './ui/progress';
-import { formatHours } from '../../utils/formatTime';
-import { motion } from 'motion/react';
-import { useRoutineById } from '../hooks/routineHooks';
 
 export default function RoutineDetails({ routine, onClose = () => {} }) {
     const { data: extra, isLoading, error } = useRoutineById(routine?.id);
+    const { mutate, isPending } = usePatchRoutine(routine?.id);
 
     const getDayNames = (days) => {
         const dayMap = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
@@ -84,14 +85,31 @@ export default function RoutineDetails({ routine, onClose = () => {} }) {
                             </div>
 
                             {!extra.completed && (
-                                <Button className="w-full">
+                                <Button
+                                    className="w-full"
+                                    onClick={() =>
+                                        mutate(
+                                            {
+                                                completedDays: [...routine.completedDays, new Date()],
+                                                lastCompletedAt: new Date(),
+                                            },
+                                            {
+                                                onSuccess: () => {
+                                                    console.log('Atulizado');
+                                                    onClose();
+                                                },
+                                            }
+                                        )
+                                    }
+                                    disabled={isPending}
+                                >
                                     <Check className="mr-2 size-4" />
                                     Marcar como concluído
                                 </Button>
                             )}
 
                             {extra.completed && (
-                                <div className="rounded-lg bg-green-500/10 p-3 text-center text-sm font-medium text-green-600 dark:text-green-400">
+                                <div className="rounded-lg bg-green-500/10 p-3 text-center text-sm font-medium text-green-400">
                                     Concluído hoje
                                 </div>
                             )}

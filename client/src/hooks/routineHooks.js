@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createRoutine, getRoutineById, patchRoutine } from '../services/routinesService';
 
-import { createRoutine } from '../services/routinesService';
-import { getRoutineById } from '../services/routinesService';
-import { useAuth } from '../contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '../contexts/AuthContext';
 
 export function useRoutineById(id) {
     const { accessToken } = useAuth();
@@ -29,6 +28,20 @@ export function useCreateRoutine() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['dashboard-routines']);
+        },
+    });
+}
+
+export function usePatchRoutine(id) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (payload) => {
+            return await patchRoutine(id, payload);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['dashboard-routines']);
+            queryClient.invalidateQueries([`routine-${id}`]);
         },
     });
 }

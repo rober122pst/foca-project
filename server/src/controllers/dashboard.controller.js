@@ -71,8 +71,12 @@ export async function getRoutinesData(req, res) {
         const activeRoutines = routines.length;
         const bestStreak = Math.max(...routines.map(r => r.streak), 0);
         const { rate: completionRate, totalCompleted: thisCompletedWeek, totalPossible: totalThisWeek } = calculateWeeklyProgress(routines);
-        const { rate } = routines.map(routine => calculateRoutineWeeklyPercent(routine.days, routine.completedDays))
-        const { didToday: completed } = routines.map(routine => checkRoutineToday(routine.days, routine.completedDays))
+        const { rate } = routines.map(routine => calculateRoutineWeeklyPercent(routine.days, routine.completedDays));
+        const completed = routines.map(routine => {
+            const routineChecked = checkRoutineToday(routine.days, routine.completedDays)
+            return routineChecked.didToday;
+        });
+
 
         return res.json({
             stats: {

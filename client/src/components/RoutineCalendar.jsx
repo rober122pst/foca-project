@@ -13,57 +13,6 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
     const isResponsive = useResponsive(640);
     const [currentMonth, setCurrentMonth] = useState(new Date());
 
-    // const routines = [
-    //     {
-    //         id: '1',
-    //         title: 'Estudar Matemática',
-    //         description: 'Revisão de cálculo e exercícios',
-    //         color: 'bg-blue-500',
-    //         days: [3, 5],
-    //         startTime: '09:00',
-    //         endTime: '11:00',
-    //         category: 'Estudos',
-    //         completed: false,
-    //         streak: 5,
-    //     },
-    //     {
-    //         id: '2',
-    //         title: 'Treino Físico',
-    //         description: 'Academia e cardio',
-    //         color: 'bg-orange-500',
-    //         days: [1, 2, 4, 6],
-    //         startTime: '07:00',
-    //         endTime: '08:30',
-    //         category: 'Saúde',
-    //         completed: false,
-    //         streak: 12,
-    //     },
-    //     {
-    //         id: '3',
-    //         title: 'Meditação',
-    //         description: 'Mindfulness e respiração',
-    //         color: 'bg-purple-500',
-    //         days: [0, 1, 2, 3, 4, 5, 6],
-    //         startTime: '06:00',
-    //         endTime: '06:30',
-    //         category: 'Bem-estar',
-    //         completed: true,
-    //         streak: 30,
-    //     },
-    //     {
-    //         id: '4',
-    //         title: 'Leitura',
-    //         description: 'Ler 30 páginas por dia',
-    //         color: 'bg-green-500',
-    //         days: [0, 1, 2, 3, 4, 5, 6],
-    //         startTime: '21:00',
-    //         endTime: '22:00',
-    //         category: 'Desenvolvimento',
-    //         completed: false,
-    //         streak: 8,
-    //     },
-    // ];
-
     const monthNames = [
         'Janeiro',
         'Fevereiro',
@@ -265,7 +214,7 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                                             <div className="flex items-center justify-between">
                                                 <h4 className="text-sm font-semibold sm:text-base">{routine.title}</h4>
                                                 {routine.completed && (
-                                                    <span className="bg-cream-300 dark:bg-night-700 flex gap-1 rounded-md px-2 py-1 text-xs">
+                                                    <span className="flex gap-1 rounded-md bg-green-500/10 px-2 py-1 text-xs text-green-400">
                                                         <CircleCheck className="size-4" />
                                                         Concluído
                                                     </span>
@@ -277,7 +226,7 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                                                     <Clock className="h-3 w-3" />
                                                     {formatHours(routine.startTime)} - {formatHours(routine.endTime)}
                                                 </div>
-                                                <span className="border-cream-300 dark:border-night-700 text-primary flex gap-1 rounded-md border px-2 py-1 text-xs">
+                                                <span className="border-cream-300 dark:border-night-700 text-primary flex w-fit gap-1 rounded-md border px-2 py-1 text-xs">
                                                     {routine.tag}
                                                 </span>
                                             </div>
