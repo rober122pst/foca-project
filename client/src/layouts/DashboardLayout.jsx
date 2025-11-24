@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
 
 import LoadingScreen from '../components/LoadingScreen';
+import ModalRoot from './ModalRoot';
 import NavbarMobile from '../components/NavbarMobile';
 import ProfileHeader from '../components/ProfileHeader';
 import Sidebar from '../components/Sidebar';
@@ -24,6 +25,7 @@ export default function DashboardLayout() {
 
     return (
         <>
+            <ModalRoot />
             <LoadingScreen isLoading={isLoading} />
             {!isLoading && (
                 <div className="flex">

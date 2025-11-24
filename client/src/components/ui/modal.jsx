@@ -1,9 +1,8 @@
-import { AnimatePresence, motion } from 'motion/react';
-
+import { motion } from 'motion/react';
 import { twMerge } from 'tailwind-merge';
 import { useRef } from 'react';
 
-export function Modal({ children, className = '', isOpen = false, onClose }) {
+export function Modal({ children, className = '', onClose }) {
     // Referência para guardar onde o clique começou
     const mouseDownTarget = useRef(null);
 
@@ -20,29 +19,25 @@ export function Modal({ children, className = '', isOpen = false, onClose }) {
     };
 
     return (
-        <AnimatePresence initial={false}>
-            {isOpen && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onMouseDown={handleMouseDown}
-                    onClick={handleBackgroundClick}
-                    className="display-center fixed inset-0 z-40 bg-black/50 py-0 sm:py-8"
-                >
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0 }}
-                        onClick={(e) => e.stopPropagation()}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        className={twMerge('bg-card border-border h-full rounded-4xl border py-6', className)}
-                    >
-                        {children}
-                    </motion.div>
-                </motion.div>
-            )}
-        </AnimatePresence>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onMouseDown={handleMouseDown}
+            onClick={handleBackgroundClick}
+            className="display-center fixed inset-0 z-40 bg-black/50 py-0 sm:py-8"
+        >
+            <motion.div
+                initial={{ opacity: 0, scale: 0.7 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.7 }}
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                className={twMerge('bg-card border-border h-full rounded-4xl border py-6', className)}
+            >
+                {children}
+            </motion.div>
+        </motion.div>
     );
 }
 

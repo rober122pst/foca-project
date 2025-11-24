@@ -8,7 +8,7 @@ import { toUTCISOTimeOnly } from '../../utils/formatTime';
 import { useCreateRoutine } from '../hooks/useCreateRoutine';
 import { useReducer } from 'react';
 
-export default function CreateRoutineModal({ isOpen, onClose }) {
+export default function CreateRoutineModal({ onClose }) {
     const { mutate, isPending } = useCreateRoutine();
 
     const [state, dispatch] = useReducer(routineFormReducer, initialRoutinesFormState);
@@ -57,11 +57,7 @@ export default function CreateRoutineModal({ isOpen, onClose }) {
     ];
 
     return (
-        <Modal
-            className="w-full rounded-none sm:max-h-[841px] sm:max-w-lg sm:rounded-4xl"
-            isOpen={isOpen}
-            onClose={onClose}
-        >
+        <Modal className="w-full rounded-none sm:max-h-[841px] sm:max-w-lg sm:rounded-4xl" onClose={onClose}>
             <ModalHeader>
                 <ModalTitle>
                     <CalendarPlus className="text-items-500" />
