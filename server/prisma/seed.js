@@ -1,14 +1,14 @@
 // Comentário em português: seed para achievements usando UUIDv7 gerado no backend
 
 import { PrismaClient } from "@prisma/client";
-import { parse } from "csv-parse/sync";
 import fs from "fs";
 import { generateId } from '../src/services/generateId.service.js';
+import { parse } from "csv-parse/sync";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const file = fs.readFileSync("./seed/achievements.csv", "utf8");
+  const file = fs.readFileSync("./prisma/seed/achievements.csv", "utf8");
 
   const rows = parse(file, {
     columns: true,

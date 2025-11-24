@@ -1,7 +1,8 @@
-import { generateId, verifyUuid } from "../services/generateId.service.js";
 import { calculateRoutineWeeklyPercent, checkRoutineToday } from "../services/routines.services.js";
+import { generateId, verifyUuid } from "../services/generateId.service.js";
 
 import { PrismaClient } from "@prisma/client";
+import { mapWeekdaysToNumbers } from "../services/routines.services.js";
 
 const prisma = new PrismaClient();
 
@@ -75,8 +76,6 @@ export async function getRoutineById(req, res) {
                 id: true,
             },
         });
-
-        console.log(profile)
 
         if (!profile) {
             return res.status(404).json({ message: "Perfil não encontrado" });

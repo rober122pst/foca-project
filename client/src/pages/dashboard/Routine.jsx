@@ -1,3 +1,4 @@
+import { AnimatePresence } from 'motion/react';
 import BannerDashboard from '../../components/BannerDashboard';
 import ButtonCta from '../../components/ui/ButtonCta';
 import RoutineCalendar from '../../components/RoutineCalendar';
@@ -45,7 +46,15 @@ export default function Routine() {
                     <div className="space-y-6">
                         <RoutinesList routines={data.routines} onSelectRoutine={setSelectedRoutine} />
 
-                        <RoutineDetails routine={selectedRoutine} onClose={() => setSelectedRoutine(null)} />
+                        <AnimatePresence>
+                            {selectedRoutine && (
+                                <RoutineDetails
+                                    key={selectedRoutine.id}
+                                    routine={selectedRoutine}
+                                    onClose={() => setSelectedRoutine(null)}
+                                />
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
             </div>
