@@ -1,12 +1,12 @@
 import { CalendarPlus, Palette, Plus, X } from 'lucide-react';
-import { initialRoutinesFormState, routineFormReducer } from '../reducers/routinesReducer';
-import TimePicker, { InputText, Label } from './ui/forms';
 import { Modal, ModalContent, ModalHeader, ModalTitle } from './ui/modal';
+import TimePicker, { InputText, Label } from './ui/forms';
+import { initialRoutinesFormState, routineFormReducer } from '../reducers/routinesReducer';
 
-import { useReducer } from 'react';
+import Button from './ui/Button';
 import { toUTCISOTimeOnly } from '../../utils/formatTime';
 import { useCreateRoutine } from '../hooks/useCreateRoutine';
-import Button from './ui/Button';
+import { useReducer } from 'react';
 
 export default function CreateRoutineModal({ isOpen, onClose }) {
     const { mutate, isPending } = useCreateRoutine();
@@ -57,7 +57,11 @@ export default function CreateRoutineModal({ isOpen, onClose }) {
     ];
 
     return (
-        <Modal className="w-full max-w-lg" isOpen={isOpen} onClose={onClose}>
+        <Modal
+            className="w-full rounded-none sm:max-h-[841px] sm:max-w-lg sm:rounded-4xl"
+            isOpen={isOpen}
+            onClose={onClose}
+        >
             <ModalHeader>
                 <ModalTitle>
                     <CalendarPlus className="text-items-500" />
@@ -67,8 +71,8 @@ export default function CreateRoutineModal({ isOpen, onClose }) {
                     <X className="size-4" />
                 </Button>
             </ModalHeader>
-            <ModalContent className="p-4">
-                <form onSubmit={handleSubmit} className="space-y-8">
+            <ModalContent className="box-border max-h-[97%] p-4">
+                <form onSubmit={handleSubmit} className="scrollbar-custom space-y-8 overflow-x-hidden overflow-y-auto">
                     <Label>
                         Título
                         <InputText

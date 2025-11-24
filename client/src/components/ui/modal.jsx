@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react';
 
-import { useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { useRef } from 'react';
 
 export function Modal({ children, className = '', isOpen = false, onClose }) {
     // Referência para guardar onde o clique começou
@@ -28,7 +28,7 @@ export function Modal({ children, className = '', isOpen = false, onClose }) {
                     exit={{ opacity: 0 }}
                     onMouseDown={handleMouseDown}
                     onClick={handleBackgroundClick}
-                    className="display-center absolute top-0 left-0 z-40 min-h-screen w-full bg-black/35"
+                    className="display-center fixed inset-0 z-40 bg-black/50 py-0 sm:py-8"
                 >
                     <motion.div
                         initial={{ opacity: 0, scale: 0 }}
@@ -36,7 +36,7 @@ export function Modal({ children, className = '', isOpen = false, onClose }) {
                         exit={{ opacity: 0, scale: 0 }}
                         onClick={(e) => e.stopPropagation()}
                         onMouseDown={(e) => e.stopPropagation()}
-                        className={twMerge('bg-card border-border rounded-4xl border py-6', className)}
+                        className={twMerge('bg-card border-border h-full rounded-4xl border py-6', className)}
                     >
                         {children}
                     </motion.div>
