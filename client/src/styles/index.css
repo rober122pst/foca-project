@@ -92,6 +92,10 @@ html {
     @apply border-cream-200 dark:border-night-800
 }
 
+@utility border-muted {
+    @apply border-cream-300 dark:border-night-700
+}
+
 @utility bg-muted {
     @apply bg-cream-200 dark:bg-night-800
 }

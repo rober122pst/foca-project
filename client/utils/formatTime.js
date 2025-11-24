@@ -14,3 +14,23 @@ export function formatMinutesToHourString(totalMinutes) {
 
     return `${hours}h${minutes.toString().padStart(2, '0')}`;
 }
+
+export function toUTCISOTimeOnly(timeString) {
+    const [hour, minute] = timeString.split(':').map(Number);
+
+    // Sempre cria no dia 1 de janeiro de 1970
+    const date = new Date('1970-01-01T00:00:00');
+
+    // Aplica a hora escolhida
+    date.setHours(hour, minute, 0, 0);
+
+    // Retorna o ISO UTC
+    return date.toISOString();
+}
+
+export function formatHours(dateTime) {
+    return new Intl.DateTimeFormat('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+    }).format(new Date(dateTime));
+}

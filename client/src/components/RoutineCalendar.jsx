@@ -4,6 +4,7 @@ import { CalendarCheck2, CalendarDays, ChevronLeft, ChevronRight, CircleCheck, C
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 import { useState } from 'react';
+import { formatHours } from '../../utils/formatTime.js';
 import { useResponsive } from '../hooks/useResponsive.js';
 import RoutineDailyListEmpty from './empty-states/RoutineDailyListEmpty.jsx';
 import Button from './ui/Button';
@@ -205,7 +206,8 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                                         {dayRoutines.slice(0, isResponsive ? 1 : 2).map((routine) => (
                                             <div
                                                 key={routine.id}
-                                                className={`h-0.5 w-full rounded-full sm:h-1 ${routine.color}`}
+                                                className={'h-0.5 w-full rounded-full sm:h-1'}
+                                                style={{ background: routine.color }}
                                                 title={routine.title}
                                             ></div>
                                         ))}
@@ -255,7 +257,10 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                                     className="border-border bg-card hover:bg-muted w-full cursor-pointer rounded-2xl border p-3 text-left transition-colors"
                                 >
                                     <div className="flex items-start gap-2 sm:gap-3">
-                                        <div className={`h-10 w-1 rounded-full sm:h-12 ${routine.color}`} />
+                                        <div
+                                            className={'h-10 w-1 rounded-full sm:h-12'}
+                                            style={{ background: routine.color }}
+                                        />
                                         <div className="flex-1">
                                             <div className="flex items-center justify-between">
                                                 <h4 className="text-sm font-semibold sm:text-base">{routine.title}</h4>
@@ -270,10 +275,10 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                                             <div className="text-items-500 mt-2 flex flex-col gap-1 text-xs sm:flex-row sm:items-center sm:gap-4">
                                                 <div className="flex items-center gap-1">
                                                     <Clock className="h-3 w-3" />
-                                                    {routine.startTime} - {routine.endTime}
+                                                    {formatHours(routine.startTime)} - {formatHours(routine.endTime)}
                                                 </div>
                                                 <span className="border-cream-300 dark:border-night-700 text-primary flex gap-1 rounded-md border px-2 py-1 text-xs">
-                                                    {routine.category}
+                                                    {routine.tag}
                                                 </span>
                                             </div>
                                         </div>
