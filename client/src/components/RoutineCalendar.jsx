@@ -94,6 +94,16 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
         );
     };
 
+    const isSelected = (day) => {
+        if (!day || !selectedDate) return false;
+
+        return (
+            day === selectedDate.getDate() &&
+            currentMonth.getMonth() === selectedDate.getMonth() &&
+            currentMonth.getFullYear() === selectedDate.getFullYear()
+        );
+    };
+
     const selectedRoutinesForDay = selectedDate ? getRoutinesForDay(selectedDate.getDay()) : [];
 
     return (
@@ -138,12 +148,14 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                                         onSelectDate(newDate);
                                     }}
                                     disabled={day.type !== 'current'}
-                                    className={`relative flex min-h-[50px] flex-col items-start rounded-md border p-1 text-left transition-colors sm:min-h-20 sm:rounded-lg sm:p-2 ${
+                                    className={`relative flex min-h-[50px] flex-col items-start rounded-md border-2 p-1 text-left transition-colors sm:min-h-20 sm:rounded-lg sm:p-2 ${
                                         day.type !== 'current'
                                             ? 'border-border cursor-default opacity-30'
                                             : isToday(day.day)
                                               ? 'border-items-500 bg-items-700/10 cursor-pointer'
-                                              : 'border-border hover:bg-muted cursor-pointer'
+                                              : isSelected(day.day)
+                                                ? 'border-accent-500 hover:bg-muted cursor-pointer'
+                                                : 'border-border hover:bg-muted cursor-pointer'
                                     }`}
                                 >
                                     <span
