@@ -1,14 +1,14 @@
 import { AnimatePresence } from 'motion/react';
+import { useState } from 'react';
+import { useModalStore } from '../../../stores/useModalStore';
+import sportBanner from '../../assets/SPORTRECIFE.webp';
 import BannerDashboard from '../../components/BannerDashboard';
-import ButtonCta from '../../components/ui/ButtonCta';
 import RoutineCalendar from '../../components/RoutineCalendar';
 import RoutineDetails from '../../components/RoutineDetails';
 import RoutinesList from '../../components/RoutinesList';
 import StatsRoutine from '../../components/StatsRoutine';
-import sportBanner from '../../assets/SPORTRECIFE.webp';
+import ButtonCta from '../../components/ui/ButtonCta';
 import { useDashboardRoutines } from '../../hooks/useDashboardRoutines';
-import { useModalStore } from '../../../stores/useModalStore';
-import { useState } from 'react';
 
 export default function Routine() {
     const { openModal } = useModalStore();
@@ -19,6 +19,8 @@ export default function Routine() {
 
     if (isLoading) return <p className="text-white">carregando...</p>;
     if (error) return <p className="text-white">Ocorreu um erro</p>;
+
+    const activeRoutine = selectedRoutine ? data.routines.find((r) => r.id === selectedRoutine.id) : null;
 
     return (
         <>
@@ -47,10 +49,10 @@ export default function Routine() {
                         <RoutinesList routines={data.routines} onSelectRoutine={setSelectedRoutine} />
 
                         <AnimatePresence>
-                            {selectedRoutine && (
+                            {activeRoutine && (
                                 <RoutineDetails
-                                    key={selectedRoutine.id}
-                                    routine={selectedRoutine}
+                                    key={activeRoutine.id}
+                                    routine={activeRoutine}
                                     selectedDate={selectedDate}
                                     onClose={() => setSelectedRoutine(null)}
                                 />

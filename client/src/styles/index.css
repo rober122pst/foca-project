@@ -122,7 +122,7 @@ html {
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb {
-    @apply bg-medium
+    @apply bg-medium/50
 }
 
 

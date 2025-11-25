@@ -1,12 +1,12 @@
 import { CalendarPlus, Palette, Plus, X } from 'lucide-react';
-import { Modal, ModalContent, ModalHeader, ModalTitle } from './ui/modal';
-import TimePicker, { InputText, Label } from './ui/forms';
 import { initialRoutinesFormState, routineFormReducer } from '../reducers/routinesReducer';
+import TimePicker, { InputText, Label } from './ui/forms';
+import { Modal, ModalContent, ModalHeader, ModalTitle } from './ui/modal';
 
-import Button from './ui/Button';
+import { useReducer } from 'react';
 import { toUTCISOTimeOnly } from '../../utils/formatTime';
 import { useCreateRoutine } from '../hooks/routineHooks';
-import { useReducer } from 'react';
+import Button from './ui/Button';
 
 export default function CreateRoutineModal({ onClose }) {
     const { mutate, isPending } = useCreateRoutine();
@@ -68,7 +68,10 @@ export default function CreateRoutineModal({ onClose }) {
                 </Button>
             </ModalHeader>
             <ModalContent className="box-border max-h-[97%] p-4">
-                <form onSubmit={handleSubmit} className="scrollbar-custom space-y-8 overflow-x-hidden overflow-y-auto">
+                <form
+                    onSubmit={handleSubmit}
+                    className="scrollbar-custom space-y-8 overflow-x-hidden overflow-y-auto px-3"
+                >
                     <Label>
                         Título
                         <InputText

@@ -1,11 +1,11 @@
 import { CalendarPlus, Palette, Pen, X } from 'lucide-react';
-import { initialRoutinesFormState, routineFormReducer } from '../reducers/routinesReducer';
 import TimePicker, { InputText, Label } from './ui/forms';
 import { Modal, ModalContent, ModalHeader, ModalTitle } from './ui/modal';
 
 import { useReducer } from 'react';
 import { toUTCISOTimeOnly } from '../../utils/formatTime';
 import { usePatchRoutine } from '../hooks/routineHooks';
+import { routineFormReducer } from '../reducers/routinesReducer';
 import Button from './ui/Button';
 
 export default function EditRoutineModal({ onClose, payload }) {
@@ -18,9 +18,12 @@ export default function EditRoutineModal({ onClose, payload }) {
 
         mutate(
             {
-                ...state,
-                startTime: toUTCISOTimeOnly(state.startTime),
-                endTime: toUTCISOTimeOnly(state.endTime),
+                id: payload.id,
+                payload: {
+                    ...state,
+                    startTime: toUTCISOTimeOnly(state.startTime),
+                    endTime: toUTCISOTimeOnly(state.endTime),
+                },
             },
             {
                 onSuccess: () => {
@@ -68,7 +71,10 @@ export default function EditRoutineModal({ onClose, payload }) {
                 </Button>
             </ModalHeader>
             <ModalContent className="box-border max-h-[97%] p-4">
-                <form onSubmit={handleSubmit} className="scrollbar-custom space-y-8 overflow-x-hidden overflow-y-auto">
+                <form
+                    onSubmit={handleSubmit}
+                    className="scrollbar-custom space-y-8 overflow-x-hidden overflow-y-auto px-3"
+                >
                     <Label>
                         Título
                         <InputText

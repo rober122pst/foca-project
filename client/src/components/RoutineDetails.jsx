@@ -4,12 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 import { motion } from 'motion/react';
 import { useModalStore } from '../../stores/useModalStore';
+import { weekDaysToString } from '../../utils/formatDate';
 import { formatHours } from '../../utils/formatTime';
 import Button from './ui/Button';
 import { ProgressBar } from './ui/progress';
 
 export default function RoutineDetails({ routine, selectedDate, onClose = () => {} }) {
-    const { mutate, isPending } = usePatchRoutine(routine?.id);
+    const { mutate, isPending } = usePatchRoutine();
     const { mutate: deleteMutate, isPending: deletePending } = useDeleteRoutine();
 
     const { openModal } = useModalStore();
@@ -127,9 +128,10 @@ export default function RoutineDetails({ routine, selectedDate, onClose = () => 
                                     disabled={deletePending}
                                     onClick={() =>
                                         openModal('edit-routine', {
+                                            id: routine.id,
                                             title: routine.title,
                                             description: routine.description,
-                                            days: [],
+                                            days: weekDaysToString(routine.days),
                                             tag: routine.tag,
                                             color: routine.color,
                                             startTime: formatHours(routine.startTime),
