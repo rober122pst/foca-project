@@ -3,9 +3,9 @@ import { useDeleteRoutine, usePatchRoutine } from '../hooks/routineHooks';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 import { motion } from 'motion/react';
-import { useModalStore } from '../../stores/useModalStore';
-import { weekDaysToString } from '../../utils/formatDate';
-import { formatHours } from '../../utils/formatTime';
+import { useModalStore } from '../stores/useModalStore';
+import { weekDaysToString } from '../utils/formatDate';
+import { formatHours } from '../utils/formatTime';
 import Button from './ui/Button';
 import { ProgressBar } from './ui/progress';
 

@@ -1,7 +1,7 @@
 import { Card, CardContent } from './ui/card';
 
 import { Trophy } from 'lucide-react';
-import { localeNumber } from '../../utils/formatString';
+import { localeNumber } from '../utils/formatString';
 import { ProgressBar } from './ui/progress';
 
 export default function LevelProgress({ levelProgress }) {

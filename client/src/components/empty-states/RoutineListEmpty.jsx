@@ -1,7 +1,7 @@
 import { CalendarX, Plus } from 'lucide-react';
 
+import { useModalStore } from '../../stores/useModalStore';
 import Button from '../ui/Button';
-import { useModalStore } from '../../../stores/useModalStore';
 
 export default function RoutineListEmpty() {
     const { openModal } = useModalStore();

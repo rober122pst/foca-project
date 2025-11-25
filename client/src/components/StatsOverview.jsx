@@ -1,7 +1,7 @@
 import { Calendar, Check, Flame, Timer } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 
-import { formatMinutesToHourString } from '../../utils/formatTime';
+import { formatMinutesToHourString } from '../utils/formatTime';
 
 export default function StatsOverview({ userStats }) {
     const stats = [

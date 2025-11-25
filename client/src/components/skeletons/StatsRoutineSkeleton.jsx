@@ -1,27 +1,25 @@
 import { Calendar, CheckCircle2, Flame, TrendingUp } from 'lucide-react';
-import { Card, CardContent } from './ui/card';
+import { Card, CardContent } from '../ui/card';
 
-export default function StatsRoutine({ data }) {
+import { SkeletonBase } from './SkeletonBase';
+
+export default function StatsRoutineSkeleton() {
     const stats = [
         {
             icon: Calendar,
             label: 'Rotinas Ativas',
-            value: `${data.activeRoutines}`,
         },
         {
             icon: Flame,
             label: 'Maior Sequência',
-            value: `${data.bestStreak} ${data.bestStreak !== 1 ? 'dias' : 'dia'}`,
         },
         {
             icon: CheckCircle2,
             label: 'Taxa de Conclusão',
-            value: `${data.completionRate}%`,
         },
         {
             icon: TrendingUp,
             label: 'Esta Semana',
-            value: `${data.thisCompletedWeek}/${data.totalThisWeek}`,
         },
     ];
 
@@ -35,7 +33,7 @@ export default function StatsRoutine({ data }) {
                                 <p className="text-items-950/70 dark:text-cream-100/30 text-xs font-semibold">
                                     {stat.label}
                                 </p>
-                                <p className="text-items-500 text-xl font-bold xl:text-2xl">{stat.value}</p>
+                                <SkeletonBase className="h-8 w-24" />
                             </div>
                             <div className="bg-items-500/20 rounded-xl p-3">
                                 <stat.icon className="text-items-500 h-8 w-8" />
