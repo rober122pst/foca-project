@@ -1,23 +1,24 @@
 import { Calendar, CalendarCog, Check, Clock, Edit, Flame, Trash, X } from 'lucide-react';
-import { usePatchRoutine, useRoutineById } from '../hooks/routineHooks';
+import { useDeleteRoutine, usePatchRoutine } from '../hooks/routineHooks';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 import { motion } from 'motion/react';
+import { useModalStore } from '../../stores/useModalStore';
 import { formatHours } from '../../utils/formatTime';
 import Button from './ui/Button';
 import { ProgressBar } from './ui/progress';
 
 export default function RoutineDetails({ routine, onClose = () => {} }) {
-    const { data: extra, isLoading, error } = useRoutineById(routine?.id);
     const { mutate, isPending } = usePatchRoutine(routine?.id);
+    const { mutate: deleteMutate, isPending: deletePending } = useDeleteRoutine();
+
+    const { openModal } = useModalStore();
 
     const getDayNames = (days) => {
         const dayMap = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
         if (days.length === 7) return 'Todos os dias';
         return days.map((d) => dayMap[d]).join(', ');
     };
-
-    if (isLoading) return <h1 className="text-primary text-2xl font-bold">Carregando...</h1>;
 
     return (
         routine && (
@@ -79,19 +80,22 @@ export default function RoutineDetails({ routine, onClose = () => {} }) {
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between text-sm">
                                     <span className="text-medium">Progresso semanal</span>
-                                    <span className="font-semibold">{extra.rate}%</span>
+                                    <span className="font-semibold">{routine.rate}%</span>
                                 </div>
-                                <ProgressBar color="bg-items-500" progress={extra.rate} className="h-2" />
+                                <ProgressBar color="bg-items-500" progress={routine.rate} className="h-2" />
                             </div>
 
-                            {!extra.completed && (
+                            {!routine.completed && (
                                 <Button
                                     className="w-full"
                                     onClick={() =>
                                         mutate(
                                             {
-                                                completedDays: [...routine.completedDays, new Date()],
-                                                lastCompletedAt: new Date(),
+                                                id: routine.id,
+                                                payload: {
+                                                    completedDays: [...routine.completedDays, new Date()],
+                                                    lastCompletedAt: new Date(),
+                                                },
                                             },
                                             {
                                                 onSuccess: () => {
@@ -108,7 +112,7 @@ export default function RoutineDetails({ routine, onClose = () => {} }) {
                                 </Button>
                             )}
 
-                            {extra.completed && (
+                            {routine.completed && (
                                 <div className="rounded-lg bg-green-500/10 p-3 text-center text-sm font-medium text-green-400">
                                     Concluído hoje
                                 </div>
@@ -118,6 +122,8 @@ export default function RoutineDetails({ routine, onClose = () => {} }) {
                                 <Button
                                     variant="outline"
                                     className="flex flex-1 items-center gap-2 bg-transparent dark:bg-transparent"
+                                    disabled={deletePending}
+                                    onClick={openModal('edit-routine')}
                                 >
                                     <Edit className="size-4" />
                                     Editar
@@ -125,6 +131,7 @@ export default function RoutineDetails({ routine, onClose = () => {} }) {
                                 <Button
                                     variant="outline"
                                     className="text-items-500 dark:text-items-500 hover:bg-items-500 dark:hover:bg-items-500 hover:text-cream-100 hover:dark:text-cream-100 flex flex-1 items-center gap-2 bg-transparent dark:bg-transparent"
+                                    onClick={() => deleteMutate(routine.id, { onSuccess: () => onClose() })}
                                 >
                                     <Trash className="size-4" />
                                     Excluir

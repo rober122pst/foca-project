@@ -199,41 +199,51 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                 <CardContent className="p-4">
                     {selectedRoutinesForDay.length > 0 ? (
                         <div className="scrollbar-custom h-full max-h-[350px] space-y-3 overflow-y-auto">
-                            {selectedRoutinesForDay.map((routine) => (
-                                <button
-                                    key={routine.id}
-                                    onClick={() => onSelectRoutine(routine)}
-                                    className="border-border bg-card hover:bg-muted w-full cursor-pointer rounded-2xl border p-3 text-left transition-colors"
-                                >
-                                    <div className="flex items-start gap-2 sm:gap-3">
-                                        <div
-                                            className={'h-10 w-1 rounded-full sm:h-12'}
-                                            style={{ background: routine.color }}
-                                        />
-                                        <div className="flex-1">
-                                            <div className="flex items-center justify-between">
-                                                <h4 className="text-sm font-semibold sm:text-base">{routine.title}</h4>
-                                                {routine.completed && (
-                                                    <span className="flex gap-1 rounded-md bg-green-500/10 px-2 py-1 text-xs text-green-400">
-                                                        <CircleCheck className="size-4" />
-                                                        Concluído
-                                                    </span>
-                                                )}
-                                            </div>
-                                            <p className="text-medium mt-1 text-xs sm:text-sm">{routine.description}</p>
-                                            <div className="text-items-500 mt-2 flex flex-col gap-1 text-xs sm:flex-row sm:items-center sm:gap-4">
-                                                <div className="flex items-center gap-1">
-                                                    <Clock className="h-3 w-3" />
-                                                    {formatHours(routine.startTime)} - {formatHours(routine.endTime)}
+                            {selectedRoutinesForDay.map((routine) => {
+                                const now = new Date();
+                                const completedToday =
+                                    now.getDate() === selectedDate.getDate() ? routine.completed : false;
+                                return (
+                                    <button
+                                        key={routine.id}
+                                        onClick={() => onSelectRoutine(routine)}
+                                        className="border-border bg-card hover:bg-muted w-full cursor-pointer rounded-2xl border p-3 text-left transition-colors"
+                                    >
+                                        <div className="flex items-start gap-2 sm:gap-3">
+                                            <div
+                                                className={'h-10 w-1 rounded-full sm:h-12'}
+                                                style={{ background: routine.color }}
+                                            />
+                                            <div className="flex-1">
+                                                <div className="flex items-center justify-between">
+                                                    <h4 className="text-sm font-semibold sm:text-base">
+                                                        {routine.title}
+                                                    </h4>
+                                                    {completedToday && (
+                                                        <span className="flex gap-1 rounded-md bg-green-500/10 px-2 py-1 text-xs text-green-400">
+                                                            <CircleCheck className="size-4" />
+                                                            Concluído
+                                                        </span>
+                                                    )}
                                                 </div>
-                                                <span className="border-cream-300 dark:border-night-700 text-primary flex w-fit gap-1 rounded-md border px-2 py-1 text-xs">
-                                                    {routine.tag}
-                                                </span>
+                                                <p className="text-medium mt-1 text-xs sm:text-sm">
+                                                    {routine.description}
+                                                </p>
+                                                <div className="text-items-500 mt-2 flex flex-col gap-1 text-xs sm:flex-row sm:items-center sm:gap-4">
+                                                    <div className="flex items-center gap-1">
+                                                        <Clock className="h-3 w-3" />
+                                                        {formatHours(routine.startTime)} -{' '}
+                                                        {formatHours(routine.endTime)}
+                                                    </div>
+                                                    <span className="border-cream-300 dark:border-night-700 text-primary flex w-fit gap-1 rounded-md border px-2 py-1 text-xs">
+                                                        {routine.tag}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </button>
-                            ))}
+                                    </button>
+                                );
+                            })}
                         </div>
                     ) : (
                         <RoutineDailyListEmpty />

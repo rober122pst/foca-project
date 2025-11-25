@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createRoutine, getRoutineById, patchRoutine } from '../services/routinesService';
+import { createRoutine, deleteRoutine, getRoutineById, patchRoutine } from '../services/routinesService';
 
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../contexts/AuthContext';
@@ -8,7 +8,7 @@ export function useRoutineById(id) {
     const { accessToken } = useAuth();
 
     return useQuery({
-        queryKey: [`routine-${id}`, accessToken],
+        queryKey: ['routine', accessToken],
         queryFn: async () => {
             const res = await getRoutineById(id);
             return res.data;
@@ -32,16 +32,30 @@ export function useCreateRoutine() {
     });
 }
 
-export function usePatchRoutine(id) {
+export function usePatchRoutine() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (payload) => {
+        mutationFn: async ({ id, payload }) => {
             return await patchRoutine(id, payload);
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['dashboard-routines']);
-            queryClient.invalidateQueries([`routine-${id}`]);
+            queryClient.invalidateQueries(['routine']);
+        },
+    });
+}
+
+export function useDeleteRoutine() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (id) => {
+            return await deleteRoutine(id);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['dashboard-routines']);
+            queryClient.invalidateQueries(['routine']);
         },
     });
 }

@@ -4,6 +4,9 @@ export const useModalStore = create((set) => ({
     currentModal: null,
     modalData: null,
 
-    openModal: (name_, data = null) => set({ currentModal: name_, modalData: data }),
+    openModal: (name_, data = null) => {
+        console.log(data);
+        return set({ currentModal: name_, modalData: data });
+    },
     closeModal: () => set({ currentModal: null, modalData: null }),
 }));

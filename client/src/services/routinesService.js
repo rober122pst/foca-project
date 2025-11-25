@@ -14,3 +14,8 @@ export const patchRoutine = async (id, data) => {
     const res = await api.patch(`/user/routines/${id}`, data);
     return res;
 };
+
+export const deleteRoutine = async (id) => {
+    const res = await api.delete(`/user/routines/${id}`);
+    return res;
+};
