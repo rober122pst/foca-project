@@ -11,7 +11,7 @@ import Button from './ui/Button';
 export default function EditRoutineModal({ onClose, payload }) {
     const { mutate, isPending } = usePatchRoutine();
 
-    const [state, dispatch] = useReducer(routineFormReducer, initialRoutinesFormState);
+    const [state, dispatch] = useReducer(routineFormReducer, payload);
 
     const handleSubmit = (e) => {
         e.preventDefault();

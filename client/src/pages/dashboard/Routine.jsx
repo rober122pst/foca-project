@@ -51,6 +51,7 @@ export default function Routine() {
                                 <RoutineDetails
                                     key={selectedRoutine.id}
                                     routine={selectedRoutine}
+                                    selectedDate={selectedDate}
                                     onClose={() => setSelectedRoutine(null)}
                                 />
                             )}

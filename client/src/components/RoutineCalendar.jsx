@@ -200,9 +200,10 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                     {selectedRoutinesForDay.length > 0 ? (
                         <div className="scrollbar-custom h-full max-h-[350px] space-y-3 overflow-y-auto">
                             {selectedRoutinesForDay.map((routine) => {
-                                const now = new Date();
-                                const completedToday =
-                                    now.getDate() === selectedDate.getDate() ? routine.completed : false;
+                                const formatSelectedDate = selectedDate.toLocaleDateString('en-CA');
+                                const completedToday = routine.completedDays.some(
+                                    (date) => new Date(date).toLocaleDateString('en-CA') === formatSelectedDate
+                                );
                                 return (
                                     <button
                                         key={routine.id}

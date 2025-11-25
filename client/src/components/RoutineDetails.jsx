@@ -8,7 +8,7 @@ import { formatHours } from '../../utils/formatTime';
 import Button from './ui/Button';
 import { ProgressBar } from './ui/progress';
 
-export default function RoutineDetails({ routine, onClose = () => {} }) {
+export default function RoutineDetails({ routine, selectedDate, onClose = () => {} }) {
     const { mutate, isPending } = usePatchRoutine(routine?.id);
     const { mutate: deleteMutate, isPending: deletePending } = useDeleteRoutine();
 
@@ -19,6 +19,8 @@ export default function RoutineDetails({ routine, onClose = () => {} }) {
         if (days.length === 7) return 'Todos os dias';
         return days.map((d) => dayMap[d]).join(', ');
     };
+
+    const now = new Date().toLocaleDateString('en-CA');
 
     return (
         routine && (
@@ -85,7 +87,7 @@ export default function RoutineDetails({ routine, onClose = () => {} }) {
                                 <ProgressBar color="bg-items-500" progress={routine.rate} className="h-2" />
                             </div>
 
-                            {!routine.completed && (
+                            {!routine.completed && now === selectedDate.toLocaleDateString('en-CA') && (
                                 <Button
                                     className="w-full"
                                     onClick={() =>
@@ -123,7 +125,17 @@ export default function RoutineDetails({ routine, onClose = () => {} }) {
                                     variant="outline"
                                     className="flex flex-1 items-center gap-2 bg-transparent dark:bg-transparent"
                                     disabled={deletePending}
-                                    onClick={openModal('edit-routine')}
+                                    onClick={() =>
+                                        openModal('edit-routine', {
+                                            title: routine.title,
+                                            description: routine.description,
+                                            days: [],
+                                            tag: routine.tag,
+                                            color: routine.color,
+                                            startTime: formatHours(routine.startTime),
+                                            endTime: formatHours(routine.endTime),
+                                        })
+                                    }
                                 >
                                     <Edit className="size-4" />
                                     Editar
