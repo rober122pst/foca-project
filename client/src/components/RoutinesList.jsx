@@ -20,7 +20,7 @@ export default function RoutinesList({ onSelectRoutine, routines = [] }) {
             </CardHeader>
             <CardContent className="p-4">
                 {routines.length > 0 ? (
-                    <div className="scrollbar-custom h-full max-h-[445px] space-y-3 overflow-auto">
+                    <div className="scrollbar-custom h-full max-h-[445px] space-y-3 overflow-auto p-2">
                         {routines.map((routine) => (
                             <button
                                 key={routine.id}

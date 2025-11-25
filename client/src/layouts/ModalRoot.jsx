@@ -1,7 +1,7 @@
 import { AnimatePresence } from 'motion/react';
-import { useModalStore } from '../../stores/useModalStore';
 import CreateRoutineModal from '../components/CreateRoutineModal';
 import EditRoutineModal from '../components/EditRoutineModal';
+import { useModalStore } from '../stores/useModalStore';
 
 export default function ModalRoot() {
     const { currentModal, modalData, closeModal } = useModalStore();

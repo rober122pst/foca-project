@@ -4,8 +4,8 @@ import { CalendarCheck2, CalendarDays, ChevronLeft, ChevronRight, CircleCheck, C
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 import { useState } from 'react';
-import { formatHours } from '../../utils/formatTime.js';
 import { useResponsive } from '../hooks/useResponsive.js';
+import { formatHours } from '../utils/formatTime.js';
 import RoutineDailyListEmpty from './empty-states/RoutineDailyListEmpty.jsx';
 import Button from './ui/Button';
 
@@ -210,7 +210,7 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                 </CardHeader>
                 <CardContent className="p-4">
                     {selectedRoutinesForDay.length > 0 ? (
-                        <div className="scrollbar-custom h-full max-h-[350px] space-y-3 overflow-y-auto">
+                        <div className="scrollbar-custom h-full max-h-[350px] space-y-3 overflow-y-auto p-2">
                             {selectedRoutinesForDay.map((routine) => {
                                 const formatSelectedDate = selectedDate.toLocaleDateString('en-CA');
                                 const completedToday = routine.completedDays.some(

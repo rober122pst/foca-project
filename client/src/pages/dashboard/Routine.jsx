@@ -1,14 +1,17 @@
 import { AnimatePresence } from 'motion/react';
 import { useState } from 'react';
-import { useModalStore } from '../../../stores/useModalStore';
 import sportBanner from '../../assets/SPORTRECIFE.webp';
 import BannerDashboard from '../../components/BannerDashboard';
 import RoutineCalendar from '../../components/RoutineCalendar';
 import RoutineDetails from '../../components/RoutineDetails';
 import RoutinesList from '../../components/RoutinesList';
+import RoutineCalendarSkeleton from '../../components/skeletons/RoutineCalendarSkeleton';
+import RoutinesListSkeleton from '../../components/skeletons/RoutinesListSkeleton';
+import StatsRoutineSkeleton from '../../components/skeletons/StatsRoutineSkeleton';
 import StatsRoutine from '../../components/StatsRoutine';
 import ButtonCta from '../../components/ui/ButtonCta';
 import { useDashboardRoutines } from '../../hooks/useDashboardRoutines';
+import { useModalStore } from '../../stores/useModalStore';
 
 export default function Routine() {
     const { openModal } = useModalStore();
@@ -17,7 +20,6 @@ export default function Routine() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedRoutine, setSelectedRoutine] = useState(null);
 
-    if (isLoading) return <p className="text-white">carregando...</p>;
     if (error) return <p className="text-white">Ocorreu um erro</p>;
 
     const activeRoutine = selectedRoutine ? data.routines.find((r) => r.id === selectedRoutine.id) : null;
@@ -32,22 +34,29 @@ export default function Routine() {
                 <ButtonCta onClick={() => openModal('create-routine')}>CRIAR ROTINA</ButtonCta>
             </BannerDashboard>
             <div className="mt-5">
-                <StatsRoutine data={data.stats} />
+                {isLoading ? <StatsRoutineSkeleton /> : <StatsRoutine data={data.stats} />}
 
                 <div className="mt-5 grid gap-5 lg:grid-cols-3">
                     {/* Calendario */}
                     <div className="lg:col-span-2">
-                        <RoutineCalendar
-                            routines={data.routines}
-                            selectedDate={selectedDate}
-                            onSelectDate={setSelectedDate}
-                            onSelectRoutine={setSelectedRoutine}
-                        />
+                        {isLoading ? (
+                            <RoutineCalendarSkeleton />
+                        ) : (
+                            <RoutineCalendar
+                                routines={data.routines}
+                                selectedDate={selectedDate}
+                                onSelectDate={setSelectedDate}
+                                onSelectRoutine={setSelectedRoutine}
+                            />
+                        )}
                     </div>
                     {/* Sidebar da direita */}
                     <div className="space-y-6">
-                        <RoutinesList routines={data.routines} onSelectRoutine={setSelectedRoutine} />
-
+                        {isLoading ? (
+                            <RoutinesListSkeleton />
+                        ) : (
+                            <RoutinesList routines={data.routines} onSelectRoutine={setSelectedRoutine} />
+                        )}
                         <AnimatePresence>
                             {activeRoutine && (
                                 <RoutineDetails

@@ -3,9 +3,9 @@ import TimePicker, { InputText, Label } from './ui/forms';
 import { Modal, ModalContent, ModalHeader, ModalTitle } from './ui/modal';
 
 import { useReducer } from 'react';
-import { toUTCISOTimeOnly } from '../../utils/formatTime';
 import { usePatchRoutine } from '../hooks/routineHooks';
 import { routineFormReducer } from '../reducers/routinesReducer';
+import { toUTCISOTimeOnly } from '../utils/formatTime';
 import Button from './ui/Button';
 
 export default function EditRoutineModal({ onClose, payload }) {
