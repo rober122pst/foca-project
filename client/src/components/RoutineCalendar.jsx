@@ -174,7 +174,13 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                                         ))}
                                         {((isResponsive && dayRoutines.length > 1) ||
                                             (!isResponsive && dayRoutines.length > 2)) && (
-                                            <span className="text-medium text-[10px]">
+                                            <span
+                                                title={dayRoutines
+                                                    .slice(isResponsive ? 1 : 2)
+                                                    .map((routine) => routine.title)
+                                                    .join('\n')}
+                                                className="text-medium text-[10px]"
+                                            >
                                                 +{dayRoutines.length - (isResponsive ? 1 : 2)}
                                             </span>
                                         )}

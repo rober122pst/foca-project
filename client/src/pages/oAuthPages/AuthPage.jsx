@@ -61,7 +61,7 @@ export default function AuthPage() {
             ...formRegister,
             [e.target.name]: e.target.value,
         });
-        setLoginError('');
+        setRegisterErrors('');
     };
 
     const calculateLoginProgress = () => {
@@ -89,7 +89,7 @@ export default function AuthPage() {
             await login(formLogin);
             navigate('/dashboard');
         } catch (error) {
-            setRegisterErrors(error.response?.data?.message || 'Erro ao registrar usuário');
+            setLoginError(error.response?.data?.message || 'Erro ao registrar usuário');
         } finally {
             setIsLoading(false);
         }

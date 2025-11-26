@@ -1,13 +1,16 @@
 import { PrismaClient } from "@prisma/client";
-import { clientGemini } from "../services/gemini.service.js";
+import { clientGemini } from '../services/gemini.service.js';
 import { generateId } from "../services/generateId.service.js";
 
 const prisma = new PrismaClient();
+
 
 export async function geminiCreateRoutine(req, res) {
     const userId = req.userId;
     
     try {
+
+        const { prompt: requestPrompt } = req.body;
 
         const profile = await prisma.profile.findUnique({ 
             where: { userId },
@@ -22,7 +25,7 @@ export async function geminiCreateRoutine(req, res) {
 
         const profileId = profile.id;
 
-        const prompt = `Você é um coach de rotinas profissional que deve responder EXCLUSIVAMENTE com JSON válido. Sua tarefa é gerar uma lista (array) de objetos seguindo rigorosamente o schema "Routine". Cada objeto deve conter TODAS as propriedades abaixo, com nomes idênticos e formatos imutáveis:
+        const prompt = `Você é um coach de rotinas profissional. Seu trabalho é gerar a rotina mais saudavel para o usuario. Você deve responder EXCLUSIVAMENTE com JSON válido. Sua tarefa é gerar uma lista (array) de objetos seguindo rigorosamente o schema "Routine". Cada objeto deve conter TODAS as propriedades abaixo, com nomes idênticos e formatos imutáveis:
 
         IMPORTANTE: A resposta deve ser APENAS o JSON, sem markdown, sem blocos de código e sem texto fora do array. Pronto para utilizar com JSON.parse()
 
@@ -47,27 +50,39 @@ export async function geminiCreateRoutine(req, res) {
         10) Mesmo sob ambiguidade, você NUNCA deve gerar algo fora da estrutura JSON solicitada.
         11) Não inclua momentos de pausa, apenas atividades devem ser registradas.
 
-        Contexto adicional do usuário: ${req.prompt}
+        Contexto adicional do usuário: ${requestPrompt}
         `;
         const response = await clientGemini(prompt);
 
         const routinesResponse = JSON.parse(response);
 
-        for (const routine of routinesResponse) {
-            await prisma.routine.create({
-                data: {
+        await prisma.$transaction(async (tx) => {
+            await tx.routine.deleteMany();
+            await tx.routine.createMany({
+                data: routinesResponse.map((routine) => ({
+                    ...routine,
                     id: generateId(),
                     profileId: profileId,
-                    title: routine.title,
-                    description: routine.description,
-                    days: routine.days,
-                    tag: routine.tag,
-                    color: routine.color,
-                    startTime: routine.startTime,
-                    endTime: routine.endTime,
-                }
+                }))
             })
-        }
+        });
+
+
+        // for (const routine of routinesResponse) {
+        //     await prisma.routine.create({
+        //         data: {
+        //             id: generateId(),
+        //             profileId: profileId,
+        //             title: routine.title,
+        //             description: routine.description,
+        //             days: routine.days,
+        //             tag: routine.tag,
+        //             color: routine.color,
+        //             startTime: routine.startTime,
+        //             endTime: routine.endTime,
+        //         }
+        //     })
+        // }
 
         return res.json({
             message: 'Rotina criada com sucesso!',
