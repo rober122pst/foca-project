@@ -1,20 +1,37 @@
+import { calculateRoutineWeeklyPercent, calculateWeeklyProgress, checkRoutineToday, mapWeekdaysToNumbers } from "../services/routines.services.js";
+
 import { PrismaClient } from "@prisma/client";
+import { getUserAchievements } from "../services/achievements.service.js";
+import { xpToNext } from "../services/xp.services.js";
 
 const prisma = new PrismaClient();
 
 export async function getOverviewData(req, res) {
     const userId = req.userId;
-    if (!userId) {
-        return res.status(401).json({ message: "Acesso Negado" });
-    }
 
     try {
-        const userGamefication = await prisma.gamefication.findUnique({ where: { userId } });
-        const userTasks = await prisma.task.findMany({ where: { userId } });
-        const completedTasks = userTasks.filter(task => task.completed).length;
-        const userRoutines = await prisma.routine.findMany({ where: { userId } });
-        const routinesCount = userRoutines.length;
-        const userAchievements = await prisma.userAchiviement.findMany({ where: { userId } })
+        // Dados do usuario
+        const userData = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                profile: {
+                    select: {
+                        id: true,
+                        gamefication: true,
+                        routines: true,
+                        tasks: true,
+                        userAchiviements: true,
+                    }
+                }
+            }
+        })
+
+        const userGamefication = userData.profile.gamefication; // tabela de gameficação
+        const userTasks =  userData.profile.tasks; // lista de tarefas
+        const completedTasks = userTasks.filter(task => task.completed).length; // tarefas completas
+        const userRoutines = userData.profile.routines; // rotinas
+        const routinesCount = userRoutines.length; // quantidade de rotinas
+        const achievements = await getUserAchievements(prisma, userData.profile.id); // pega conquistas do jogador ordenadas por desbloqueadas e progresso
 
         return res.json({
             stats: {
@@ -26,14 +43,57 @@ export async function getOverviewData(req, res) {
             levelProgress: {
                 level: userGamefication?.level || 1,
                 currentXp: userGamefication?.currentXp || 0,
-                nextLevelXp: userGamefication ? (userGamefication.level + 1) * 100 : 100
+                nextLevelXp: userGamefication ? xpToNext(userGamefication.level) : xpToNext(1),
             },
+            totalTasks: userTasks.length,
             taskList: [
                 ...userTasks.slice(0, 4)
             ],
-            achievements: userAchievements,
+            achievements: achievements,
         })
     } catch (error) {
-        console.error("Erro ao buscar dados do dashboard:", error);
+        res.status(500).json({ message: 'Erro ao buscar dados do dashboard' });
+        console.log(error)
+    }
+}
+
+export async function getRoutinesData(req, res) {
+    const userId = req.userId;
+
+    try {
+        const { routines } = await prisma.profile.findUnique({ 
+            where: { userId },
+            select: {
+                routines: {
+                    orderBy: [
+                        { startTime: 'asc' },
+                        { createAt: 'asc' },
+                    ]
+                },
+            }
+        });
+
+        const activeRoutines = routines.length;
+        const bestStreak = Math.max(...routines.map(r => r.streak), 0);
+        const { rate: completionRate, totalCompleted: thisCompletedWeek, totalPossible: totalThisWeek } = calculateWeeklyProgress(routines);
+
+        return res.json({
+            stats: {
+                activeRoutines,
+                bestStreak,
+                completionRate: completionRate || 0,
+                thisCompletedWeek: thisCompletedWeek || 0,
+                totalThisWeek: totalThisWeek || 0,
+            },
+            routines: routines.map(routine => ({
+                ...routine,
+                days: mapWeekdaysToNumbers(routine.days),
+                rate: calculateRoutineWeeklyPercent(routine.days, routine.completedDays).rate || 0,
+                completed: checkRoutineToday(routine.days, routine.completedDays).didToday,
+            })),
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao buscar dados do dashboard' });
+        console.log(error)
     }
 }

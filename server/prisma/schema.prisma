@@ -1,23 +1,25 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
 datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
-generator client {
-    provider = "prisma-client-js"
-}
-
 model User {
-    id         Int      @id @default(autoincrement())
-    email      String   @unique
-    name       String   @unique
-    password   String
-    role       String   @default("USER")
-    isVerified Boolean  @default(false)
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-    profile    Profile?
-    config     Config?
+    id            String         @id @default(dbgenerated()) @db.Uuid
+    email         String         @unique
+    name          String         @unique
+    password      String
+    role          String         @default("USER")
+    isVerified    Boolean        @default(false)
+    createdAt     DateTime       @default(now())
+    updatedAt     DateTime       @updatedAt
+    profile       Profile?
+    config        Config?
+    refreshTokens refreshToken[]
+    pomodoros     Pomodoro[]
 }
 
 enum Theme {
@@ -27,17 +29,17 @@ enum Theme {
 }
 
 model Config {
-    id       Int   @id @default(autoincrement())
-    userId   Int   @unique
-    user     User  @relation(fields: [userId], references: [id])
-    theme    Theme @default(SYSTEM)
-    language Int   @default(1)
+    id       String @id @default(dbgenerated()) @db.Uuid
+    userId   String @unique @db.Uuid
+    user     User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    theme    Theme  @default(SYSTEM)
+    language Int    @default(1)
 }
 
 model Profile {
-    id               Int               @id @default(autoincrement())
-    userId           Int               @unique
-    user             User              @relation(fields: [userId], references: [id])
+    id               String            @id @default(dbgenerated()) @db.Uuid
+    userId           String            @unique @db.Uuid
+    user             User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     picUrl           String            @default("")
     bannerUrl        String            @default("")
     bio              String            @default("")
@@ -50,9 +52,9 @@ model Profile {
 }
 
 model Gamefication {
-    id            Int     @id @default(autoincrement())
-    profileId     Int     @unique
-    profile       Profile @relation(fields: [profileId], references: [id])
+    id            String  @id @default(dbgenerated()) @db.Uuid
+    profileId     String  @unique @db.Uuid
+    profile       Profile @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     level         Int     @default(1)
     xp            Int     @default(0)
     coins         Float   @default(0)
@@ -68,25 +70,26 @@ enum Priority {
 }
 
 model Task {
-    id          Int       @id @default(autoincrement())
-    profileId   Int
-    profile     Profile   @relation(fields: [profileId], references: [id])
+    id          String     @id @default(dbgenerated()) @db.Uuid
+    profileId   String     @db.Uuid
+    profile     Profile    @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     title       String
     description String?
-    completed   Boolean   @default(false)
+    completed   Boolean    @default(false)
     completedAt DateTime?
     deadline    DateTime?
-    priority    Priority  @default(LOW)
+    priority    Priority   @default(LOW)
     tags        String[]
-    isRecurring Boolean   @default(false)
-    createAt    DateTime  @default(now())
-    updateAt    DateTime  @updatedAt
+    isRecurring Boolean    @default(false)
+    createAt    DateTime   @default(now())
+    updateAt    DateTime   @updatedAt
+    pomodoros   Pomodoro[]
 }
 
 enum Weekday {
     SUN
     MON
-    TWE
+    TUE
     WED
     THU
     FRI
@@ -94,16 +97,19 @@ enum Weekday {
 }
 
 model Routine {
-    id              Int        @id @default(autoincrement())
-    profileId       Int
-    profile         Profile    @relation(fields: [profileId], references: [id])
+    id              String     @id @default(dbgenerated()) @db.Uuid
+    profileId       String     @db.Uuid
+    profile         Profile    @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    title           String
     description     String?
-    frequency       Weekday[]  @default([SUN, MON, TWE, WED, THU, FRI, SAT])
-    timeStart       String
-    timeEnd         String
-    completedToday  Boolean    @default(false)
-    completedDays   DateTime[]
-    lastCompletedAt DateTime
+    days            Weekday[]
+    tag             String     @default("Estudo")
+    color           String     @default("#fb2c36")
+    startTime       DateTime
+    endTime         DateTime
+    streak          Int        @default(0)
+    completedDays   DateTime[] @default([])
+    lastCompletedAt DateTime?
     createAt        DateTime   @default(now())
     updateAt        DateTime   @updatedAt
 }
@@ -114,7 +120,7 @@ enum Rarity {
 }
 
 model Achiviement {
-    id               Int               @id @default(autoincrement())
+    id               String            @id @default(dbgenerated()) @db.Uuid
     name             String
     description      String
     iconUrl          String
@@ -129,11 +135,42 @@ model Achiviement {
 }
 
 model UserAchiviement {
-    id            Int         @id @default(autoincrement())
-    profileId     Int
-    profile       Profile     @relation(fields: [profileId], references: [id])
-    achiviementId Int
-    achiviement   Achiviement @relation(fields: [achiviementId], references: [id])
+    id            String      @id @default(dbgenerated()) @db.Uuid
+    profileId     String      @db.Uuid
+    profile       Profile     @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    achiviementId String      @db.Uuid
+    achiviement   Achiviement @relation(fields: [achiviementId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     progress      Int         @default(0)
     achievedAt    DateTime?
+
+    @@unique([profileId, achiviementId])
+}
+
+enum Status {
+    CONCLUIDO
+    FAZENDO
+    CANCELADO
+}
+
+model Pomodoro {
+    id          String   @id @default(dbgenerated()) @db.Uuid
+    userId      String   @db.Uuid
+    user        User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    time        String   @default("25:00")
+    timeRest    String   @default("5:00")
+    cicle       Int // quantas o pomodoro vai ciclar entre atividade (25:00) e descanço (5:00)
+    status      Status   @default(FAZENDO)
+    createdAt   DateTime @default(now())
+    completedAt DateTime @default(now())
+    tasks       Task?    @relation(fields: [taskId], references: [id])
+    taskId      String?  @db.Uuid
+}
+
+model refreshToken {
+    id        String   @id @default(dbgenerated()) @db.Uuid
+    token     String   @unique
+    userId    String   @db.Uuid
+    user      User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    createdAt DateTime @default(now())
+    expiresAt DateTime
 }

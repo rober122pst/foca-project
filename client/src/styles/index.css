@@ -16,6 +16,7 @@
     --color-night-900: #1D1D1D;
     --color-night-800: #282828;
     --color-night-700: #3D3D3D;
+    --color-medium: #a59f9f;
 }
 
 :root {
@@ -32,6 +33,16 @@
     --text-light: #fdfdfd;
     --text-dark: #17001d;
     --text-theme: #17001d;
+}
+
+button:focus ,a:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+button:focus-visible, a:focus-visible {
+    outline: 2px solid var(--accent-gradient);
+    box-shadow: none;
 }
 
 @custom-variant dark {
@@ -55,7 +66,6 @@ html {
 
 ::-webkit-scrollbar {
     width: 7px;
-    height: 7px;
 }
 
 ::-webkit-scrollbar-track {
@@ -80,8 +90,64 @@ html {
 	@apply transition-all duration-300 ease-out;
 }
 
+@utility bg-card {
+    @apply bg-cream-100 dark:bg-night-900
+}
+
+@utility text-primary {
+    @apply text-items-950 dark:text-cream-100
+}
+
+@utility border-border {
+    @apply border-cream-200 dark:border-night-800
+}
+
+@utility border-muted {
+    @apply border-cream-300 dark:border-night-700
+}
+
+@utility bg-muted {
+    @apply bg-cream-200 dark:bg-night-800
+}
+
 .border-groove {
     border-style: groove;
+}
+
+@layer components {
+    .shimmer {
+        @apply
+            bg-linear-to-r from-cream-300 via-cream-200 to-cream-300 dark:from-night-800 dark:via-night-700 dark:to-night-800
+            bg-[length:200%_100%]
+            animate-[shimmer_1.5s_infinite];
+    }
+}
+
+.scrollbar-custom::-webkit-scrollbar {
+    width: 4px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+    @apply bg-medium/50
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    @apply bg-medium
+}
+
+
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    50% {
+        background-position: -200% 0;
+    }
 }
 
 @keyframes rareAchiviementPulse {

@@ -15,7 +15,7 @@ export default function QuickActions() {
         <Card>
             <CardHeader>
                 <CardTitle>
-                    <Zap className="text-items-500 mr-1.5 inline" />
+                    <Zap className="text-items-500" />
                     Ações rápidas
                 </CardTitle>
             </CardHeader>

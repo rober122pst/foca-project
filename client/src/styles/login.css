@@ -19,7 +19,6 @@
     overflow: hidden;
     background-color: var(--bg-primary);
     box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.2);
-    animation: floating 1.8s ease-in-out infinite alternate;
     z-index: 999;
 }
 
@@ -272,16 +271,16 @@
     transform: translateY(0px);
 }
 
-.input-field:focus ~ .input-label .visible,
-.input-field:not(:placeholder-shown) ~ .input-label .visible {
+.input-field:focus ~ .input-label .my-visible,
+.input-field:not(:placeholder-shown) ~ .input-label .my-visible {
     color: var(--color-items-primary);
 }
-.input-field:focus ~ .input-label .invisible,
-.input-field:not(:placeholder-shown) ~ .input-label .invisible {
+.input-field:focus ~ .input-label .my-invisible,
+.input-field:not(:placeholder-shown) ~ .input-label .my-invisible {
     color: var(--color-items-primary);
 }
 
-.input-label .visible,.input-label .invisible {
+.input-label .my-visible,.input-label .my-invisible {
     position: absolute;
     right: 5px;
     bottom: 2px;
@@ -293,7 +292,7 @@
     transition: 200ms;
 }
 
-.input-label .visible {
+.input-label .my-visible {
     display: block;
     color: var(--color-items-primary);
 }
@@ -651,15 +650,6 @@ input:-webkit-autofill {
         & img {
             display: none;
         }
-    }
-}
-
-@keyframes floating {
-    0% {
-        transform: translateY(0px);
-    }
-    100% {
-        transform: translateY(-10px);
     }
 }
 

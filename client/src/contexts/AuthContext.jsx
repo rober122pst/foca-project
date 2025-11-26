@@ -1,38 +1,103 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+
+import { createContext, useContext, useEffect, useState } from 'react';
+import { loginUser, logoutServer, registerUser } from '../services/oauthService.js';
+
+import { useNavigate } from 'react-router-dom';
+import { refresh } from '../services/oauthService.js';
 import { getMe } from '../services/userService.js';
-import { loginUser, registerUser } from '../services/oauthService.js';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+    const navigate = useNavigate();
+
     const [user, setUser] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [accessToken, setAccessToken] = useState(null);
+    const [refreshToken, setRefreshToken] = useState(localStorage.getItem('refreshToken') || null);
 
     useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const res = await getMe();
-                setIsLoggedIn(true);
-                setUser(res.data);
-            } catch (error) {
-                setIsLoggedIn(false);
-                setUser(null);
-                console.error('Falha na auteticação:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        checkAuth();
+        if (refreshToken) {
+            refreshSession();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const refreshSession = async () => {
+        try {
+            setIsLoading(true);
+            const data = await refresh(refreshToken);
+
+            setAccessToken(data.accessToken);
+            setRefreshToken(data.refreshToken);
+
+            localStorage.setItem('token', data.accessToken);
+            // Atualiza o refresh token
+            localStorage.setItem('refreshToken', data.refreshToken);
+
+            await loadUser(data.accessToken);
+        } catch (error) {
+            console.log('Sessão expirada: ', error);
+            logout();
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const loadUser = async () => {
+        try {
+            const res = await getMe();
+            setUser(res.data);
+        } catch (error) {
+            logout();
+            console.error('Falha ao carregar usuário:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const login = async (data) => {
-        await loginUser(data);
+        const res = await loginUser(data);
         setIsLoggedIn(true);
+
+        setAccessToken(res.accessToken);
+        setRefreshToken(res.refreshToken);
+
+        localStorage.setItem('token', res.accessToken);
+        localStorage.setItem('refreshToken', res.refreshToken);
+
+        await loadUser(res.accessToken);
     };
 
     const register = async (data) => {
-        await registerUser(data);
+        const res = await registerUser(data);
+        setIsLoggedIn(true);
+
+        setAccessToken(res.accessToken);
+        setRefreshToken(res.refreshToken);
+
+        localStorage.setItem('token', res.accessToken);
+        localStorage.setItem('refreshToken', res.refreshToken);
+
+        await loadUser(res.accessToken);
+    };
+
+    const logout = async () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+
+        navigate('/auth', { replace: true });
+
+        setUser(null);
+        setIsLoading(false);
+        setIsLoggedIn(false);
+        setAccessToken(null);
+        setRefreshToken(null);
+
+        await logoutServer(refreshToken).catch((err) => console.error('Erro ao fazer logout no servidor', err));
+        console.log('Saindo...');
     };
 
     return (
@@ -41,8 +106,11 @@ export const AuthProvider = ({ children }) => {
                 isLoggedIn,
                 user,
                 isLoading,
+                accessToken,
                 login,
                 register,
+                logout,
+                refreshSession,
             }}
         >
             {children}
@@ -51,6 +119,6 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => {
-    // novo hook (acho que se chama assim)
+    // novo hook
     return useContext(AuthContext);
 };
