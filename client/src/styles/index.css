@@ -135,6 +135,10 @@ html {
     @apply bg-medium/50
 }
 
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    @apply bg-medium
+}
+
 
 
 @keyframes shimmer {

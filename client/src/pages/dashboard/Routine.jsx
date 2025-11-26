@@ -31,7 +31,12 @@ export default function Routine() {
                 <span>Use nossa IA para criar sua rotina. Você pode também pode criar cards únicos.</span>
                 <br />
                 <br />
-                <ButtonCta onClick={() => openModal('create-routine')}>CRIAR ROTINA</ButtonCta>
+                <div className="flex gap-2">
+                    <ButtonCta onClick={() => openModal('create-routine')}>CRIAR ROTINA</ButtonCta>
+                    <ButtonCta invert onClick={() => openModal('create-routine-ai')}>
+                        USAR FOCÃO AI
+                    </ButtonCta>
+                </div>
             </BannerDashboard>
             <div className="mt-5">
                 {isLoading ? <StatsRoutineSkeleton /> : <StatsRoutine data={data.stats} />}

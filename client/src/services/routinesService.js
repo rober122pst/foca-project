@@ -5,6 +5,11 @@ export const createRoutine = async (data) => {
     return res.data;
 };
 
+export const createRoutineWithAi = async (data) => {
+    const res = await api.post('/ai/gemini-routine', data);
+    return res.data;
+};
+
 export const getRoutineById = async (id) => {
     const res = await api.get(`/user/routines/${id}`);
     return res;

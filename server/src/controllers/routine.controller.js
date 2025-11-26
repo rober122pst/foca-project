@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 export async function createRoutine(req, res) {
     const userId = req.userId;
-    const { title, description, days, color, startTime, endTime } = req.body;
+    const { title, description, days, color, startTime, endTime, tag } = req.body;
 
     try {
 
@@ -19,6 +19,7 @@ export async function createRoutine(req, res) {
                 id: generateId(),
                 profileId,
                 title,
+                tag,
                 description,
                 days,
                 color,

@@ -64,7 +64,12 @@ export async function getRoutinesData(req, res) {
         const { routines } = await prisma.profile.findUnique({ 
             where: { userId },
             select: {
-                routines: true,
+                routines: {
+                    orderBy: [
+                        { startTime: 'asc' },
+                        { createAt: 'asc' },
+                    ]
+                },
             }
         });
 

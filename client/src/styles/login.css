@@ -19,7 +19,6 @@
     overflow: hidden;
     background-color: var(--bg-primary);
     box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.2);
-    animation: floating 1.8s ease-in-out infinite alternate;
     z-index: 999;
 }
 
@@ -651,15 +650,6 @@ input:-webkit-autofill {
         & img {
             display: none;
         }
-    }
-}
-
-@keyframes floating {
-    0% {
-        transform: translateY(0px);
-    }
-    100% {
-        transform: translateY(-10px);
     }
 }
 
