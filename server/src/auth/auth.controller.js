@@ -167,3 +167,19 @@ export async function login(req, res) {
         console.log(error)
     }
 }
+
+export async function logout(req, res) {
+    try {
+        const { refreshToken } = req.body;
+
+        if (refreshToken) { 
+            await prisma.refreshToken.deleteMany({
+                where: { token: refreshToken }
+            })
+        }
+
+        return res.json({ message: 'Deslogado com sucesso' })
+    } catch (error) {
+        return res.json({ message: 'Deslogado com sucesso' })
+    }
+}

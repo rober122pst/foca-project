@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { loginUser, registerUser } from '../services/oauthService.js';
+import { loginUser, logoutServer, registerUser } from '../services/oauthService.js';
 
 import { useNavigate } from 'react-router-dom';
 import { refresh } from '../services/oauthService.js';
@@ -84,16 +84,19 @@ export const AuthProvider = ({ children }) => {
         await loadUser(res.accessToken);
     };
 
-    const logout = () => {
+    const logout = async () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+
+        navigate('/auth', { replace: true });
+
         setUser(null);
         setIsLoading(false);
         setIsLoggedIn(false);
         setAccessToken(null);
         setRefreshToken(null);
 
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        navigate('/auth');
+        await logoutServer(refreshToken).catch((err) => console.error('Erro ao fazer logout no servidor', err));
         console.log('Saindo...');
     };
 
