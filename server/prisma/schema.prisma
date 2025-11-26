@@ -9,8 +9,10 @@ datasource db {
 
 model User {
     id            String         @id @default(dbgenerated()) @db.Uuid
+    googleId      String?
+    facebookId    String?
     email         String         @unique
-    name          String         @unique
+    name          String
     password      String
     role          String         @default("USER")
     isVerified    Boolean        @default(false)

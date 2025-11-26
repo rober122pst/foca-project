@@ -15,16 +15,17 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [accessToken, setAccessToken] = useState(null);
+    const [accessToken, setAccessToken] = useState(localStorage.getItem('token') || null);
     const [refreshToken, setRefreshToken] = useState(localStorage.getItem('refreshToken') || null);
 
     useEffect(() => {
         if (refreshToken) {
-            refreshSession();
+            loadUser();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // ! Não utilizada
     const refreshSession = async () => {
         try {
             setIsLoading(true);
@@ -110,7 +111,7 @@ export const AuthProvider = ({ children }) => {
                 login,
                 register,
                 logout,
-                refreshSession,
+                loadUser,
             }}
         >
             {children}

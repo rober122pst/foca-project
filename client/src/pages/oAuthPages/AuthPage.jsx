@@ -184,7 +184,7 @@ export default function AuthPage() {
                             <img src="/logos/foca_logo_uncolor.svg" alt="" />
                             <h1>Criar Conta</h1>
                             <div className="social-icons">
-                                <a href="http://localhost:3000/auth/auth/google" className="social-icon">
+                                <a href={import.meta.env.VITE_GOOGLE_AUTH_URI} className="social-icon">
                                     <FaGoogle />
                                 </a>
                                 <a href="http://localhost:3000/auth/auth/facebook" className="social-icon">
@@ -347,7 +347,7 @@ export default function AuthPage() {
                             <img src="/logos/foca_logo.svg" alt="" />
                             <h1>Login</h1>
                             <div className="social-icons">
-                                <a href="#" className="social-icon">
+                                <a href={import.meta.env.VITE_GOOGLE_AUTH_URI} className="social-icon">
                                     <FcGoogle />
                                 </a>
                                 <a href="#" className="social-icon">

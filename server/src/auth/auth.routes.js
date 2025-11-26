@@ -1,9 +1,7 @@
-import passport from 'passport';
-import session from 'express-session';
-
-import { login, logout, register } from './auth.controller.js';
+import { googleAuth, login, logout, register } from './auth.controller.js';
 
 import express from 'express';
+import passport from 'passport';
 import { refresh } from './refresh.controller.js';
 
 const router = express.Router();
@@ -14,10 +12,8 @@ router.post('/refresh', refresh);
 router.post('/logout', logout)
 
 
-router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-  res.redirect('/');
-});
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: `${process.env.CLIENT_URL}/auth`, session: false }), googleAuth);
 
 router.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 router.get('/auth/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), (req, res) => {
