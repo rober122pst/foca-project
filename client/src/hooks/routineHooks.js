@@ -1,5 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createRoutine, deleteRoutine, getRoutineById, patchRoutine } from '../services/routinesService';
+import {
+    createRoutine,
+    createRoutineWithAi,
+    deleteRoutine,
+    getRoutineById,
+    patchRoutine,
+} from '../services/routinesService';
 
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../contexts/AuthContext';
@@ -25,6 +31,19 @@ export function useCreateRoutine() {
     return useMutation({
         mutationFn: async (newRoutine) => {
             return await createRoutine(newRoutine);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['dashboard-routines']);
+        },
+    });
+}
+
+export function useCreateRoutineWithAi() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (prompt) => {
+            return await createRoutineWithAi(prompt);
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['dashboard-routines']);

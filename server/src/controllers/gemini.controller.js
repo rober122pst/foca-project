@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { clientGemini } from "../services/gemini.service.js";
+import { generateId } from "../services/generateId.service.js";
 
 const prisma = new PrismaClient();
 
@@ -7,12 +8,19 @@ export async function geminiCreateRoutine(req, res) {
     const userId = req.userId;
     
     try {
-        const { routines } = await prisma.profile.findUnique({ 
+
+        const profile = await prisma.profile.findUnique({ 
             where: { userId },
             select: {
-                routines: true,
+                id: true,
             },
         });
+
+        if (!profile) {
+            return res.status(404).json({ message: "Perfil não encontrado" });
+        }
+
+        const profileId = profile.id;
 
         const prompt = `Você é um coach de rotinas profissional que deve responder EXCLUSIVAMENTE com JSON válido. Sua tarefa é gerar uma lista (array) de objetos seguindo rigorosamente o schema "Routine". Cada objeto deve conter TODAS as propriedades abaixo, com nomes idênticos e formatos imutáveis:
 
@@ -45,8 +53,24 @@ export async function geminiCreateRoutine(req, res) {
 
         const routinesResponse = JSON.parse(response);
 
+        for (const routine of routinesResponse) {
+            await prisma.routine.create({
+                data: {
+                    id: generateId(),
+                    profileId: profileId,
+                    title: routine.title,
+                    description: routine.description,
+                    days: routine.days,
+                    tag: routine.tag,
+                    color: routine.color,
+                    startTime: routine.startTime,
+                    endTime: routine.endTime,
+                }
+            })
+        }
+
         return res.json({
-            routines: routinesResponse,
+            message: 'Rotina criada com sucesso!',
         })
     } catch (error) {
         console.log(error);
