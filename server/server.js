@@ -8,6 +8,7 @@ import authRoutes from './src/auth/auth.routes.js';
 import dashboardRoutes from './src/routes/dashboard.routes.js';
 import geminiRoutes from './src/routes/gemini.routes.js';
 import routineRoutes from './src/routes/routine.routes.js';
+import taskRoutes from './src/routes/task.routes.js';
 import userRoutes from './src/routes/user.routes.js';
 
 dotenv.config();
@@ -30,6 +31,7 @@ app.get('/', (req, res) => {
 // Usar rotas
 app.use('/auth', authRoutes);
 app.use('/user/routines', routineRoutes);
+app.use('/user/tasks', taskRoutes);
 app.use('/user', userRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/ai', geminiRoutes);

@@ -190,6 +190,15 @@ export default function CreateRoutineModal({ onClose }) {
                             <Plus className="size-4" />
                             Criar rotina
                         </Button>
+                        <Button
+                            className="flex flex-1 gap-2"
+                            disabled={isPending}
+                            onClick={() => onClose()}
+                            variant="outline"
+                        >
+                            <X className="size-4" />
+                            Cancelar
+                        </Button>
                     </div>
                 </form>
             </ModalContent>

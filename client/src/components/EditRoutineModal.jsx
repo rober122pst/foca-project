@@ -193,6 +193,15 @@ export default function EditRoutineModal({ onClose, payload }) {
                             <Pen className="size-4" />
                             Editar rotina
                         </Button>
+                        <Button
+                            className="flex flex-1 gap-2"
+                            disabled={isPending}
+                            onClick={() => onClose()}
+                            variant="outline"
+                        >
+                            <X className="size-4" />
+                            Cancelar
+                        </Button>
                     </div>
                 </form>
             </ModalContent>
