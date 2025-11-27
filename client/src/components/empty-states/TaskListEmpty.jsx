@@ -1,8 +1,10 @@
 import { ClipboardList, Plus } from 'lucide-react';
 
+import { useModalStore } from '../../stores/useModalStore';
 import Button from '../ui/Button';
 
 export default function TaskListEmpty() {
+    const { openModal } = useModalStore();
     return (
         <div className="display-center flex-col py-12 text-center">
             <div className="display-center bg-cream-200 dark:bg-night-800 mb-4 size-20 rounded-full">
@@ -12,7 +14,7 @@ export default function TaskListEmpty() {
             <p className="text-medium text-md mb-4 max-w-sm font-medium">
                 Comece sua jornada de produtividade criando sua primeira tarefa.
             </p>
-            <Button>
+            <Button onClick={() => openModal('create-task')}>
                 <Plus className="h-6 w-6" />
                 <span className="text-base">Criar primeira tarefa</span>
             </Button>
