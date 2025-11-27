@@ -1,6 +1,5 @@
-// src/pages/CallbackHandler.jsx
+import { useEffect, useRef } from 'react';
 
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -15,25 +14,28 @@ const getCookie = (name) => {
 };
 
 function CallbackHandler() {
-    const { loadUser } = useAuth();
+    const { handleLoginSuccess } = useAuth();
     const navigate = useNavigate();
 
+    const hasCalled = useRef(false);
+
     useEffect(() => {
+        if (hasCalled.current) return;
+        hasCalled.current = true;
+
         const token = getCookie(import.meta.env.VITE_TOKEN_COOKIE);
         const refreshToken = getCookie(import.meta.env.VITE_REFRESH_TOKEN_COOKIE);
 
         if (token && refreshToken) {
-            localStorage.setItem('token', token);
-            localStorage.setItem('refreshToken', refreshToken);
-
-            console.log('JWT armazenado no localStorage.');
-
             document.cookie = `${import.meta.env.VITE_TOKEN_COOKIE}=; Max-Age=0; path=/;`;
             document.cookie = `${import.meta.env.VITE_REFRESH_TOKEN_COOKIE}=; Max-Age=0; path=/;`;
 
-            console.log('Cookie temporário removido.');
+            console.log('Cookies temporários removidos.');
 
-            loadUser();
+            handleLoginSuccess(token, refreshToken).then(() => {
+                console.log('Estado sincronizado, redirecionando...');
+                navigate('/dashboard', { replace: true });
+            });
 
             navigate('/dashboard', { replace: true });
         } else {
@@ -41,7 +43,7 @@ function CallbackHandler() {
 
             navigate('/auth', { replace: true });
         }
-    }, [navigate]);
+    }, [navigate, handleLoginSuccess]);
 
     return (
         <div>

@@ -101,6 +101,20 @@ export const AuthProvider = ({ children }) => {
         console.log('Saindo...');
     };
 
+    const handleLoginSuccess = async (token, refreshToken) => {
+        // 1. Atualiza localStorage
+        localStorage.setItem('token', token);
+        localStorage.setItem('refreshToken', refreshToken);
+
+        // 2. Atualiza o Estado do React (Crucial para a reatividade)
+        setAccessToken(token);
+        setRefreshToken(refreshToken);
+        setIsLoggedIn(true);
+
+        // 3. Carrega o usuário
+        await loadUser();
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -112,6 +126,7 @@ export const AuthProvider = ({ children }) => {
                 register,
                 logout,
                 loadUser,
+                handleLoginSuccess,
             }}
         >
             {children}

@@ -187,7 +187,7 @@ export default function AuthPage() {
                                 <a href={import.meta.env.VITE_GOOGLE_AUTH_URI} className="social-icon">
                                     <FaGoogle />
                                 </a>
-                                <a href="http://localhost:3000/auth/auth/facebook" className="social-icon">
+                                <a href={import.meta.env.VITE_FACEBOOK_AUTH_URI} className="social-icon">
                                     <FaFacebook />
                                 </a>
                             </div>
@@ -350,7 +350,7 @@ export default function AuthPage() {
                                 <a href={import.meta.env.VITE_GOOGLE_AUTH_URI} className="social-icon">
                                     <FcGoogle />
                                 </a>
-                                <a href="#" className="social-icon">
+                                <a href={import.meta.env.VITE_FACEBOOK_AUTH_URI} className="social-icon">
                                     <FaFacebook />
                                 </a>
                             </div>

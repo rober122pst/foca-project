@@ -16,7 +16,7 @@ passport.use(new GoogleStrategy({
 },
 async (_, __, profile, cb) => {
     try {
-        console.log("conta do google")
+        console.log(profile)
         const userEmail = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
 
         if (!userEmail) {
@@ -26,10 +26,12 @@ async (_, __, profile, cb) => {
         const user = await prisma.user.findUnique({ where: { email: userEmail } });
 
         if (user) {
-            await prisma.user.update({ 
-                where: { id: user.id },
-                data: { googleId: profile.id }, 
-            });
+            if (!user.googleId) {
+                await prisma.user.update({
+                    where: { id: user.id },
+                    data: { googleId: profile.id }, 
+                });
+            }
             return cb(null, user);
         } else {
             const newPassword = await bcrypt.hash(`google-profile-${profile.id}`, 10);
@@ -42,7 +44,7 @@ async (_, __, profile, cb) => {
                     password: newPassword,
                     profile: { create: {
                         id: generateId(),
-                        picUrl: profile.photos[0].value,
+                        picUrl: profile.photos[0].value || '',
                         gamefication: { create: {
                             id: generateId(),
                         } }
@@ -64,36 +66,56 @@ async (_, __, profile, cb) => {
 
 // login com Facebook
 passport.use(new FacebookStrategy({
-    clientID: process.env.FACEBOOK_APP_ID || 'CLIENTE-FACEOOK', 
-    clientSecret: process.env.FACEBOOK_APP_SECRET || 'CLIENT-SECRET-FACEBOOK',
-    callbackURL: "http://localhost:3000/auth/auth/facebook/callback",
-    profileFields: ['id', 'displayName', 'emails']
+    clientID: process.env.FACEBOOK_APP_ID, 
+    clientSecret: process.env.FACEBOOK_APP_SECRET,
+    callbackURL: process.env.FACEBOOK_CALLBACK,
+    profileFields: ['id', 'displayName', 'name', 'email', 'photos']
 }, async (accessToken, refreshToken, profile, cb) => {
     try {
+        console.log(profile)
         const userEmail = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
 
         if (!userEmail) {
             return cb(new Error("Facebook não mandou um endereço de email."));
         }
 
-        const user = await User.findOne({ email: userEmail });
+        const user = await prisma.user.findUnique({ where: { email: userEmail } });
 
         if (user) {
-            user.name = profile.displayName;
-            await user.save();
+            if (!user.facebookId) {
+                await prisma.user.update({ 
+                    where: { id: user.id },
+                    data: { facebookId: profile.id }, 
+                });
+            }
             return cb(null, user);
         } else {
-            const newUser = new User({
-                name: profile.displayName,
-                email: userEmail,
-                password: 'social-login-' + Date.now() 
+            const newPassword = await bcrypt.hash(`facebook-profile-${profile.id}`, 10);
+            const newUser = await prisma.user.create({
+                data: {
+                    id: generateId(),
+                    facebookId: profile.id,
+                    name: profile.displayName,
+                    email: profile.emails[0].value,
+                    password: newPassword,
+                    profile: { create: {
+                        id: generateId(),
+                        picUrl: profile.photos[0].value || '',
+                        gamefication: { create: {
+                            id: generateId(),
+                        } }
+                    } },
+                    config: { create: {
+                        id: generateId(),
+                    } }
+                },
             });
 
-            await newUser.save();
             return cb(null, newUser);
         }
     } catch (error) {
-        return cb(error);
+        console.log(error)
+        return cb(error, null);
     }
 }));
 
