@@ -61,7 +61,7 @@ export default function AuthPage() {
             ...formRegister,
             [e.target.name]: e.target.value,
         });
-        setLoginError('');
+        setRegisterErrors('');
     };
 
     const calculateLoginProgress = () => {
@@ -89,7 +89,7 @@ export default function AuthPage() {
             await login(formLogin);
             navigate('/dashboard');
         } catch (error) {
-            setRegisterErrors(error.response?.data?.message || 'Erro ao registrar usuário');
+            setLoginError(error.response?.data?.message || 'Erro ao registrar usuário');
         } finally {
             setIsLoading(false);
         }
@@ -184,10 +184,10 @@ export default function AuthPage() {
                             <img src="/logos/foca_logo_uncolor.svg" alt="" />
                             <h1>Criar Conta</h1>
                             <div className="social-icons">
-                                <a href="#" className="social-icon">
+                                <a href={import.meta.env.VITE_GOOGLE_AUTH_URI} className="social-icon">
                                     <FaGoogle />
                                 </a>
-                                <a href="#" className="social-icon">
+                                <a href={import.meta.env.VITE_FACEBOOK_AUTH_URI} className="social-icon">
                                     <FaFacebook />
                                 </a>
                             </div>
@@ -347,10 +347,10 @@ export default function AuthPage() {
                             <img src="/logos/foca_logo.svg" alt="" />
                             <h1>Login</h1>
                             <div className="social-icons">
-                                <a href="#" className="social-icon">
+                                <a href={import.meta.env.VITE_GOOGLE_AUTH_URI} className="social-icon">
                                     <FcGoogle />
                                 </a>
-                                <a href="#" className="social-icon">
+                                <a href={import.meta.env.VITE_FACEBOOK_AUTH_URI} className="social-icon">
                                     <FaFacebook />
                                 </a>
                             </div>

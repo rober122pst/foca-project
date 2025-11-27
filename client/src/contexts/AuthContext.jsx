@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { loginUser, registerUser } from '../services/oauthService.js';
+import { loginUser, logoutServer, registerUser } from '../services/oauthService.js';
 
 import { useNavigate } from 'react-router-dom';
 import { refresh } from '../services/oauthService.js';
@@ -15,16 +15,17 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [accessToken, setAccessToken] = useState(null);
+    const [accessToken, setAccessToken] = useState(localStorage.getItem('token') || null);
     const [refreshToken, setRefreshToken] = useState(localStorage.getItem('refreshToken') || null);
 
     useEffect(() => {
         if (refreshToken) {
-            refreshSession();
+            loadUser();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // ! Não utilizada
     const refreshSession = async () => {
         try {
             setIsLoading(true);
@@ -84,17 +85,34 @@ export const AuthProvider = ({ children }) => {
         await loadUser(res.accessToken);
     };
 
-    const logout = () => {
+    const logout = async () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+
+        navigate('/auth', { replace: true });
+
         setUser(null);
         setIsLoading(false);
         setIsLoggedIn(false);
         setAccessToken(null);
         setRefreshToken(null);
 
-        navigate('/auth');
+        await logoutServer(refreshToken).catch((err) => console.error('Erro ao fazer logout no servidor', err));
+        console.log('Saindo...');
+    };
 
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
+    const handleLoginSuccess = async (token, refreshToken) => {
+        // 1. Atualiza localStorage
+        localStorage.setItem('token', token);
+        localStorage.setItem('refreshToken', refreshToken);
+
+        // 2. Atualiza o Estado do React (Crucial para a reatividade)
+        setAccessToken(token);
+        setRefreshToken(refreshToken);
+        setIsLoggedIn(true);
+
+        // 3. Carrega o usuário
+        await loadUser();
     };
 
     return (
@@ -107,7 +125,8 @@ export const AuthProvider = ({ children }) => {
                 login,
                 register,
                 logout,
-                refreshSession,
+                loadUser,
+                handleLoginSuccess,
             }}
         >
             {children}

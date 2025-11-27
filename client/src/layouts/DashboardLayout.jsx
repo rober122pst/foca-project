@@ -6,11 +6,12 @@ import ProfileHeader from '../components/ProfileHeader';
 import Sidebar from '../components/Sidebar';
 import { useAuth } from '../contexts/AuthContext';
 import { useResponsive } from '../hooks/useResponsive';
+import ModalRoot from './ModalRoot';
 
 export default function DashboardLayout() {
     const isMobile = useResponsive(1024);
     const { pathname } = useLocation();
-    const { isLoading } = useAuth();
+    const { isLoading, user } = useAuth();
 
     const titles = {
         '/dashboard': 'Visão Geral',
@@ -24,8 +25,9 @@ export default function DashboardLayout() {
 
     return (
         <>
-            <LoadingScreen isLoading={isLoading} />
-            {!isLoading && (
+            <ModalRoot />
+            <LoadingScreen isLoading={isLoading || !user} />
+            {!isLoading && user && (
                 <div className="flex">
                     {isMobile ? <NavbarMobile /> : <Sidebar />}
                     <main className="bg-cream-200 dark:bg-night-950 m-auto h-fit w-full overflow-auto [-webkit-overflow-scrolling:touch] lg:h-screen">

@@ -1,4 +1,4 @@
-import { calculateRoutineWeeklyPercent, calculateWeeklyRoutinesCompletion, checkRoutineToday, mapWeekdaysToNumbers } from "../services/routines.services.js";
+import { calculateRoutineWeeklyPercent, calculateWeeklyProgress, checkRoutineToday, mapWeekdaysToNumbers } from "../services/routines.services.js";
 
 import { PrismaClient } from "@prisma/client";
 import { getUserAchievements } from "../services/achievements.service.js";
@@ -64,15 +64,18 @@ export async function getRoutinesData(req, res) {
         const { routines } = await prisma.profile.findUnique({ 
             where: { userId },
             select: {
-                routines: true,
+                routines: {
+                    orderBy: [
+                        { startTime: 'asc' },
+                        { createAt: 'asc' },
+                    ]
+                },
             }
         });
 
         const activeRoutines = routines.length;
         const bestStreak = Math.max(...routines.map(r => r.streak), 0);
-        const { rate: completionRate, totalCompleted: thisCompletedWeek, totalPossible: totalThisWeek } = calculateWeeklyRoutinesCompletion(routines);
-        const { rate } = routines.map(routine => calculateRoutineWeeklyPercent(routine.days, routine.completedDays))
-        const { didToday: completed } = routines.map(routine => checkRoutineToday(routine.days, routine.completedDays))
+        const { rate: completionRate, totalCompleted: thisCompletedWeek, totalPossible: totalThisWeek } = calculateWeeklyProgress(routines);
 
         return res.json({
             stats: {
@@ -85,8 +88,8 @@ export async function getRoutinesData(req, res) {
             routines: routines.map(routine => ({
                 ...routine,
                 days: mapWeekdaysToNumbers(routine.days),
-                rate: rate || 0,
-                completed,
+                rate: calculateRoutineWeeklyPercent(routine.days, routine.completedDays).rate || 0,
+                completed: checkRoutineToday(routine.days, routine.completedDays).didToday,
             })),
         });
     } catch (error) {

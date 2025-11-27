@@ -35,6 +35,16 @@
     --text-theme: #17001d;
 }
 
+button:focus ,a:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+button:focus-visible, a:focus-visible {
+    outline: 2px solid var(--accent-gradient);
+    box-shadow: none;
+}
+
 @custom-variant dark {
 	&:where([data-theme="dark"] *) {
 		@slot;
@@ -92,6 +102,10 @@ html {
     @apply border-cream-200 dark:border-night-800
 }
 
+@utility border-muted {
+    @apply border-cream-300 dark:border-night-700
+}
+
 @utility bg-muted {
     @apply bg-cream-200 dark:bg-night-800
 }
@@ -118,6 +132,10 @@ html {
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb {
+    @apply bg-medium/50
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
     @apply bg-medium
 }
 

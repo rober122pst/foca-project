@@ -50,10 +50,16 @@ api.interceptors.response.use(
 
                 return api(originalRequest);
             } catch (refreshError) {
+                const refreshToken = localStorage.getItem('refreshToken');
                 console.error('Sessão expirada', refreshError);
+                await axios
+                    .post(`${import.meta.env.VITE_API_URL}/auth/logout`, {
+                        refreshToken: refreshToken,
+                    })
+                    .catch((err) => console.error('Erro ao contactar a API', err));
                 localStorage.removeItem('token');
                 localStorage.removeItem('refreshToken');
-                // window.location.href = '/auth';
+                window.location.href = '/auth';
                 return Promise.reject(refreshError);
             }
         }

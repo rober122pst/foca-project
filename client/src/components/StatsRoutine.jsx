@@ -1,10 +1,10 @@
-import { CheckCircle2, Flame, Target, TrendingUp } from 'lucide-react';
+import { Calendar, CheckCircle2, Flame, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 
 export default function StatsRoutine({ data }) {
     const stats = [
         {
-            icon: Target,
+            icon: Calendar,
             label: 'Rotinas Ativas',
             value: `${data.activeRoutines}`,
         },
