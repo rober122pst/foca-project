@@ -57,7 +57,7 @@ export async function geminiCreateRoutine(req, res) {
         const routinesResponse = JSON.parse(response);
 
         await prisma.$transaction(async (tx) => {
-            await tx.routine.deleteMany();
+            await tx.routine.deleteMany({ where: { profileId: profileId } });
             await tx.routine.createMany({
                 data: routinesResponse.map((routine) => ({
                     ...routine,

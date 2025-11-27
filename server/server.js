@@ -1,6 +1,9 @@
+import './src/auth/passport.config.js';
+
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import passport from 'passport';
 import authRoutes from './src/auth/auth.routes.js';
 import dashboardRoutes from './src/routes/dashboard.routes.js';
 import geminiRoutes from './src/routes/gemini.routes.js';
@@ -14,6 +17,11 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
+
+// inicialização do passport do Google e facebook
+app.use(passport.initialize()); 
+
+
 
 app.get('/', (req, res) => {
     res.send('Server is running');

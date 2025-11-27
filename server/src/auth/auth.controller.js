@@ -168,6 +168,60 @@ export async function login(req, res) {
     }
 }
 
+// Auth com google
+export async function googleAuth(req, res) {
+    const token = generateToken(req.user.id);
+    const refreshToken = generateRefreshToken('30d');
+    res.cookie('token', token, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+    });
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+    });
+    const decoded = jwt.decode(refreshToken);
+    // Salva o refresh token no banco de dados
+    await prisma.refreshToken.create({
+        data: {
+            id: generateId(),
+            token: refreshToken,
+            userId: req.user.id,
+            expiresAt: new Date(decoded.exp * 1000),
+        },
+    });
+    res.redirect(`${process.env.CLIENT_URL}/auth/callback-handler`);
+}
+
+// Auth com facebook
+export async function facebookAuth(req, res) {
+    const token = generateToken(req.user.id);
+    const refreshToken = generateRefreshToken('30d');
+    res.cookie('token', token, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+    });
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+    });
+    const decoded = jwt.decode(refreshToken);
+    // Salva o refresh token no banco de dados
+    await prisma.refreshToken.create({
+        data: {
+            id: generateId(),
+            token: refreshToken,
+            userId: req.user.id,
+            expiresAt: new Date(decoded.exp * 1000),
+        },
+    });
+    res.redirect(`${process.env.CLIENT_URL}/auth/callback-handler`);
+}
+
 export async function logout(req, res) {
     try {
         const { refreshToken } = req.body;

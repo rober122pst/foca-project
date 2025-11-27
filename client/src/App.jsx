@@ -7,6 +7,7 @@ import Class from './pages/dashboard/Class.jsx';
 import Overview from './pages/dashboard/Overview.jsx';
 import Routine from './pages/dashboard/Routine.jsx';
 import Tasks from './pages/dashboard/Tasks.jsx';
+import CallbackHandler from './pages/oAuthPages/CallbackHandler.jsx';
 
 const LandingPage = lazy(() => import('./pages/LandingPage.jsx'));
 const AuthPage = lazy(() => import('./pages/oAuthPages/AuthPage.jsx'));
@@ -17,6 +18,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/auth" element={<AuthPage />} />
+                <Route path="/auth/callback-handler" element={<CallbackHandler />} />
                 <Route path="/dashboard" element={<DashboardLayout />}>
                     <Route index element={<Overview />} />
                     <Route path="rotina" element={<Routine />} />

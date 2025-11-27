@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import spiderBanner from '../../assets/spider-man.webp';
 import AchiviementsCard from '../../components/AchiviementsCard';
 import ActivityFeed from '../../components/ActivityFeed';
@@ -22,7 +23,10 @@ export default function Overview() {
         .map((p, i) => (i === 0 ? p.charAt(0).toUpperCase() + p.slice(1) : p))
         .join(' ');
 
-    console.log(data);
+    useEffect(() => {
+        console.log('Carregando: ', isLoading);
+        console.log(data);
+    }, [data, isLoading]);
 
     if (error) return <h1>Deu erro</h1>;
 
@@ -34,7 +38,7 @@ export default function Overview() {
             </BannerDashboard>
 
             <div className="mt-5">
-                <div>{isLoading ? <StatsOverviewSkeleton /> : <StatsOverview userStats={data.stats} />}</div>
+                <div>{isLoading || !data ? <StatsOverviewSkeleton /> : <StatsOverview userStats={data.stats} />}</div>
 
                 <div className="mt-5 grid gap-5 lg:grid-cols-3">
                     {/* Coluna na esquerda */}
@@ -42,12 +46,12 @@ export default function Overview() {
                         <LevelProgress levelProgress={data?.levelProgress} />
                         <QuickActions />
                         <ChardsOverview />
-                        {isLoading ? <TaskListSkeleton /> : <TaskList tasks={data.taskList} />}
+                        {isLoading || !data ? <TaskListSkeleton /> : <TaskList tasks={data.taskList} />}
                     </div>
                     {/* Coluna da direita */}
                     <div className="space-y-5">
                         <DailyChallenge />
-                        {isLoading ? (
+                        {isLoading || !data ? (
                             <AchievementsCardSkeleton />
                         ) : (
                             <AchiviementsCard achievements={data.achievements} />
