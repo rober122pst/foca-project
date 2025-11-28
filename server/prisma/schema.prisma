@@ -48,7 +48,7 @@ model Profile {
     followers        Int               @default(0)
     following        Int               @default(0)
     userAchiviements UserAchiviement[]
-    routines         Routine[]
+    event            Event[]
     tasks            Task[]
     gamefication     Gamefication?
 }
@@ -98,22 +98,33 @@ enum Weekday {
     SAT
 }
 
-model Routine {
-    id              String     @id @default(dbgenerated()) @db.Uuid
-    profileId       String     @db.Uuid
-    profile         Profile    @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    title           String
-    description     String?
-    days            Weekday[]
-    tag             String     @default("Estudo")
-    color           String     @default("#fb2c36")
-    startTime       DateTime
-    endTime         DateTime
-    streak          Int        @default(0)
-    completedDays   DateTime[] @default([])
-    lastCompletedAt DateTime?
-    createAt        DateTime   @default(now())
-    updateAt        DateTime   @updatedAt
+model Event {
+    id               String            @id @default(dbgenerated()) @db.Uuid
+    profileId        String            @db.Uuid
+    profile          Profile           @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    title            String
+    description      String?
+    dtstart          DateTime
+    dtend            DateTime
+    rrule            String?
+    tz               String            @default("America/Sao_Paulo")
+    util             DateTime?
+    tag              String            @default("Estudo")
+    color            String            @default("#fb2c36")
+    streak           Int               @default(0)
+    createdAt        DateTime          @default(now())
+    updatedAt        DateTime          @updatedAt
+    eventCompletions EventCompletion[]
+}
+
+model EventCompletion {
+    id             String   @id @default(dbgenerated()) @db.Uuid
+    eventId        String
+    occurrenceDate DateTime
+    createdAt      DateTime @default(now())
+    event          Event    @relation(fields: [eventId], references: [id])
+
+    @@unique([eventId, occurrenceDate])
 }
 
 enum Rarity {
