@@ -6,7 +6,7 @@ export default function StatsRoutine({ data }) {
         {
             icon: Calendar,
             label: 'Rotinas Ativas',
-            value: `${data.activeRoutines}`,
+            value: `${data.activeEvents}`,
         },
         {
             icon: Flame,

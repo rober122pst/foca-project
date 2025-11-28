@@ -1,5 +1,3 @@
-import { calculateEventWeeklyPercent, calculateWeeklyProgress, checkEventToday, mapWeekdaysToNumbers } from "../services/events.services.js";
-
 import { PrismaClient } from "@prisma/client";
 import { getUserAchievements } from "../services/achievements.service.js";
 import { xpToNext } from "../services/xp.services.js";
@@ -66,8 +64,8 @@ export async function getEventsData(req, res) {
             select: {
                 events: {
                     orderBy: [
-                        { startTime: 'asc' },
-                        { createAt: 'asc' },
+                        { dtstart: 'asc' },
+                        { createdAt: 'asc' },
                     ]
                 },
             }
@@ -75,22 +73,16 @@ export async function getEventsData(req, res) {
 
         const activeEvents = events.length;
         const bestStreak = Math.max(...events.map(r => r.streak), 0);
-        const { rate: completionRate, totalCompleted: thisCompletedWeek, totalPossible: totalThisWeek } = calculateWeeklyProgress(events);
 
         return res.json({
             stats: {
                 activeEvents,
                 bestStreak,
-                completionRate: completionRate || 0,
-                thisCompletedWeek: thisCompletedWeek || 0,
-                totalThisWeek: totalThisWeek || 0,
+                completionRate: 0,
+                thisCompletedWeek: 0,
+                totalThisWeek: 0,
             },
-            events: events.map(event => ({
-                ...event,
-                days: mapWeekdaysToNumbers(event.days),
-                rate: calculateEventWeeklyPercent(event.days, event.completedDays).rate || 0,
-                completed: checkEventToday(event.days, event.completedDays).didToday,
-            })),
+            events,
         });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar dados do dashboard' });

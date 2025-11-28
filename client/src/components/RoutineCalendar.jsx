@@ -3,13 +3,14 @@
 import { CalendarCheck2, CalendarDays, ChevronLeft, ChevronRight, CircleCheck, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
-import { useState } from 'react';
-import { useResponsive } from '../hooks/useResponsive.js';
-import { formatHours } from '../utils/formatTime.js';
-import RoutineDailyListEmpty from './empty-states/RoutineDailyListEmpty.jsx';
 import Button from './ui/Button';
+import RoutineDailyListEmpty from './empty-states/RoutineDailyListEmpty.jsx';
+import { formatHours } from '../utils/formatTime.js';
+import { rrulestr } from 'rrule';
+import { useResponsive } from '../hooks/useResponsive.js';
+import { useState } from 'react';
 
-export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRoutine, routines = [] }) {
+export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRoutine, events = [] }) {
     const isResponsive = useResponsive(640);
     const [currentMonth, setCurrentMonth] = useState(new Date());
 
@@ -67,10 +68,37 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
         return days;
     };
 
+    const isEventOnDate = (event, targetDate) => {
+        try {
+            const startOfDay = new Date(targetDate);
+            startOfDay.setHours(0, 0, 0, 0);
+
+            const endOfDay = new Date(targetDate);
+            endOfDay.setHours(23, 59, 59, 999);
+
+            const dtStart = new Date(event.dtstart);
+
+            if (!event.rrule) {
+                return dtStart >= startOfDay && dtStart <= endOfDay;
+            }
+
+            const rule = rrulestr(event.rrule, {
+                dtstart: dtStart,
+            });
+
+            const occurences = rule.between(startOfDay, endOfDay, true);
+
+            return occurences.length > 0;
+        } catch (error) {}
+    };
+
     // Pega as rotinas correspodentes aquele dia
-    const getRoutinesForDay = (dayOfWeek) => {
-        if (!routines) return;
-        return routines.filter((routine) => routine.days.includes(dayOfWeek));
+    const getEventsForDay = (calendarDay, type) => {
+        if (!events || type !== 'current') return [];
+
+        const targetDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), calendarDay);
+
+        return events.filter((event) => isEventOnDate(event, targetDate));
     };
 
     const days = getDaysInMonth(currentMonth);
