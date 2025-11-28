@@ -1,13 +1,13 @@
 import './src/auth/passport.config.js';
 
-import cors from 'cors';
-import dotenv from 'dotenv';
-import express from 'express';
-import passport from 'passport';
 import authRoutes from './src/auth/auth.routes.js';
+import cors from 'cors';
 import dashboardRoutes from './src/routes/dashboard.routes.js';
+import dotenv from 'dotenv';
+import eventRoutes from './src/routes/event.routes.js';
+import express from 'express';
 import geminiRoutes from './src/routes/gemini.routes.js';
-import routineRoutes from './src/routes/routine.routes.js';
+import passport from 'passport';
 import taskRoutes from './src/routes/task.routes.js';
 import userRoutes from './src/routes/user.routes.js';
 
@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 
 // Usar rotas
 app.use('/auth', authRoutes);
-app.use('/user/routines', routineRoutes);
+app.use('/user/events', eventRoutes);
 app.use('/user/tasks', taskRoutes);
 app.use('/user', userRoutes);
 app.use('/dashboard', dashboardRoutes);

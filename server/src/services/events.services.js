@@ -1,5 +1,5 @@
 // Comentários em português
-export function calculateWeeklyProgress(routines) {
+export function calculateWeeklyProgress(events) {
     // Pega o início da semana (domingo)
     const now = new Date();
     const day = now.getDay(); // 0 = domingo, 1 = segunda...
@@ -17,10 +17,10 @@ export function calculateWeeklyProgress(routines) {
     let totalPossible = 0;
     let totalCompleted = 0;
 
-    routines.forEach((routine) => {
-        totalPossible += routine.days.length;
-        if (routine.completedDays && routine.completedDays.length > 0) {
-            const completedInWeek = routine.completedDays.filter(dateString => {
+    events.forEach((event) => {
+        totalPossible += event.days.length;
+        if (event.completedDays && event.completedDays.length > 0) {
+            const completedInWeek = event.completedDays.filter(dateString => {
                 const completedDate = new Date(dateString);
                 return completedDate >= weekStart && completedDate <= weekEnd;
             })
@@ -46,7 +46,7 @@ export function mapWeekdaysToNumbers(days) {
     return days.map(d => weekdayMap[d]);
 }
 
-export function calculateRoutineWeeklyPercent(days, completedDays) {
+export function calculateEventWeeklyPercent(days, completedDays) {
      // Pega o início da semana (domingo)
     const now = new Date();
     const day = now.getDay(); // 0 = domingo, 1 = segunda...
@@ -80,7 +80,7 @@ export function calculateRoutineWeeklyPercent(days, completedDays) {
     return { completed, expected, rate: expected > 0 ? Math.round((completed / expected) * 100) : 0 };
 }
 
-export function checkRoutineToday(days, completedDays) {
+export function checkEventToday(days, completedDays) {
     const now = new Date();
     const day = now.getDay();
 

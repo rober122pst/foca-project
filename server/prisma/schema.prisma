@@ -48,7 +48,7 @@ model Profile {
     followers        Int               @default(0)
     following        Int               @default(0)
     userAchiviements UserAchiviement[]
-    event            Event[]
+    events           Event[]
     tasks            Task[]
     gamefication     Gamefication?
 }
@@ -108,7 +108,7 @@ model Event {
     dtend            DateTime
     rrule            String?
     tz               String            @default("America/Sao_Paulo")
-    util             DateTime?
+    until            DateTime?
     tag              String            @default("Estudo")
     color            String            @default("#fb2c36")
     streak           Int               @default(0)
@@ -119,7 +119,7 @@ model Event {
 
 model EventCompletion {
     id             String   @id @default(dbgenerated()) @db.Uuid
-    eventId        String
+    eventId        String   @db.Uuid
     occurrenceDate DateTime
     createdAt      DateTime @default(now())
     event          Event    @relation(fields: [eventId], references: [id])
