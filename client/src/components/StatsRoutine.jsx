@@ -5,7 +5,7 @@ export default function StatsRoutine({ data }) {
     const stats = [
         {
             icon: Calendar,
-            label: 'Rotinas Ativas',
+            label: 'Eventos Ativos',
             value: `${data.activeEvents}`,
         },
         {

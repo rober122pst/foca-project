@@ -27,8 +27,8 @@ export default function Routine() {
     return (
         <>
             <BannerDashboard banner={sportBanner}>
-                <h1 className="text-2xl font-black md:text-3xl lg:text-4xl 2xl:text-5xl">Crie sua rotina</h1>
-                <span>Use nossa IA para criar sua rotina. Você pode também pode criar cards únicos.</span>
+                <h1 className="text-2xl font-black md:text-3xl lg:text-4xl 2xl:text-5xl">Monte sua rotina</h1>
+                <span>Use nossa IA para gerar sua rotina. Você pode também pode criar eventos por contra própria.</span>
                 <br />
                 <br />
                 <div className="flex gap-2">

@@ -1,7 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
+import Button from './Button';
 
 export function Label({ children, className = '' }) {
     return (
@@ -80,13 +82,13 @@ export function TimePicker({ value, onChange, className = '' }) {
     };
 
     return (
-        <div className="relative inline-block">
+        <div className="relative inline-block w-full">
             {/* Campo */}
             <button
                 type="button"
                 onClick={() => setOpen(!open)}
                 className={twMerge(
-                    'border-cream-200 dark:border-night-700 bg-cream-100 dark:bg-night-800 hover:border-items-500 w-full cursor-pointer rounded-lg border-2 px-3 py-2 text-left transition',
+                    'border-cream-200 dark:border-night-700 bg-cream-100 dark:bg-night-800 hover:border-items-500 w-full cursor-pointer rounded-lg border-2 px-3 py-2 text-left text-sm transition',
                     className
                 )}
             >
@@ -104,12 +106,12 @@ export function TimePicker({ value, onChange, className = '' }) {
                         className="border-border bg-muted absolute z-50 mt-2 flex w-full gap-2 rounded-2xl border p-3 shadow-xl"
                     >
                         <div className="scrollbar-custom max-h-40 flex-1 overflow-y-auto pr-1">
-                            {time.map((t) => (
+                            {time.map((t, i) => (
                                 <button
                                     type="button"
-                                    key={t}
+                                    key={i}
                                     onClick={() => handleSelect(t.hours, t.minutes)}
-                                    className="hover:bg-card text-primary block w-full rounded-md px-2 py-1 text-left"
+                                    className="hover:bg-card text-primary block w-full rounded-md px-2 py-1 text-left text-sm"
                                 >
                                     {t.hours}:{t.minutes}
                                 </button>
@@ -123,20 +125,19 @@ export function TimePicker({ value, onChange, className = '' }) {
 }
 
 export function DayPicker({ value, onChange, className = '' }) {
+    const [currentMonth, setCurrentMonth] = useState(new Date(value));
+    const selectedDate = new Date(value);
     const [isOpen, setIsOpen] = useState();
 
-    const date = new Date(value);
+    const date = selectedDate;
 
     const dateString = date
-        .toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
+        .toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: '2-digit' })
         .split(' ')
         .map((p, i) => (i === 0 ? p.charAt(0).toUpperCase() + p.slice(1) : p))
         .join(' ');
 
     const MiniCalendar = () => {
-        const [currentMonth, setCurrentMonth] = useState(new Date());
-        const [selectedDate, setSelectedDate] = useState(new Date());
-
         const monthNames = [
             'Janeiro',
             'Fevereiro',
@@ -222,35 +223,94 @@ export function DayPicker({ value, onChange, className = '' }) {
         };
 
         return (
-            <div className="bg-muted absolute z-50 mt-2 grid grid-cols-7 gap-1.5 p-2">
-                {dayNames.map((day) => (
-                    <div key={day} className="text-medium p-2 text-center text-xs font-semibold">
-                        {day}
+            <div className="bg-muted w-2xs px-4 py-1">
+                <div className="flex flex-1 items-center justify-between">
+                    <h1 className="text-sm">
+                        {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                    </h1>
+                    <div className="flex">
+                        <Button className="px-1 py-1" variant="ghost" onClick={goToPreviousMonth}>
+                            <ChevronLeft className="size-4" />
+                        </Button>
+                        <Button variant="ghost" onClick={goToNextMonth}>
+                            <ChevronRight className="size-4" />
+                        </Button>
                     </div>
-                ))}
-                {days.map((dayObj, index) => (
-                    <button key={index} className="text-sm">
-                        {dayObj.day}
-                    </button>
-                ))}
+                </div>
+                <div className="grid grid-cols-7 gap-1.5">
+                    {dayNames.map((day, i) => (
+                        <div key={i} className="text-medium p-2 text-center text-[10px] font-semibold">
+                            {day}
+                        </div>
+                    ))}
+                    {days.map((dayObj, index) => {
+                        let addClass = '';
+
+                        if (dayObj.type === 'current') {
+                            if (isToday(dayObj.day)) {
+                                addClass = 'bg-items-500/50';
+                            } else {
+                                if (isSelected(dayObj.day)) {
+                                    addClass = 'bg-accent-500';
+                                } else {
+                                    addClass = 'hover:bg-card';
+                                }
+                            }
+                        } else {
+                            addClass = 'opacity-30';
+                        }
+
+                        return (
+                            <button
+                                disabled={dayObj.type !== 'current'}
+                                key={index}
+                                className={`aspect-square cursor-pointer rounded-full p-1.5 text-center align-middle text-[10px] transition-colors duration-300 disabled:cursor-default ${addClass}`}
+                                type="button"
+                                onClick={() => {
+                                    const newDate = new Date(
+                                        currentMonth.getFullYear(),
+                                        currentMonth.getMonth(),
+                                        dayObj.day
+                                    );
+                                    setIsOpen(false);
+                                    onChange?.(newDate);
+                                }}
+                            >
+                                {dayObj.day}
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
         );
     };
 
     return (
-        <div className="relative inline-block">
+        <div className="relative inline-block w-full">
             <button
                 type="button"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => setIsOpen(true)}
                 className={twMerge(
-                    'border-cream-200 dark:border-night-700 bg-cream-100 dark:bg-night-800 hover:border-items-500 w-full cursor-pointer rounded-lg border-2 px-3 py-2 text-left transition',
+                    'border-cream-200 dark:border-night-700 bg-cream-100 dark:bg-night-800 hover:border-items-500 w-full cursor-pointer rounded-lg border-2 px-3 py-2 text-left text-sm transition',
                     className
                 )}
                 onChange={onChange}
             >
                 {dateString}
             </button>
-            <AnimatePresence>{isOpen && <MiniCalendar />}</AnimatePresence>
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -6, height: 0 }}
+                        animate={{ opacity: 1, y: 0, height: 160 }}
+                        exit={{ opacity: 0, y: -6, height: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute z-60 mt-2"
+                    >
+                        <MiniCalendar />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

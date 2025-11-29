@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 export async function createEvent(req, res) {
     const userId = req.userId;
-    const { title, description, dtstart, dtend, rrule, until, color, tag } = req.body;
+    const { title, description, type, deadline, dtstart, dtend, rrule, color, tag } = req.body;
 
     try {
 
@@ -19,13 +19,14 @@ export async function createEvent(req, res) {
                 id: generateId(),
                 profileId,
                 title,
+                type,
                 description,
                 dtstart,
                 dtend,
+                deadline,
                 rrule,
-                until,
-                color,
                 tag,
+                color,
             }
         });
 
