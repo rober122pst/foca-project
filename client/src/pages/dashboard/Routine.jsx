@@ -18,11 +18,11 @@ export default function Routine() {
     const { data, isLoading, error } = useDashboardRoutines();
 
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [selectedRoutine, setSelectedRoutine] = useState(null);
+    const [selectedEvent, setSelectedEvent] = useState(null);
 
     if (error) return <p className="text-white">Ocorreu um erro</p>;
 
-    const activeRoutine = selectedRoutine ? data.routines.find((r) => r.id === selectedRoutine.id) : null;
+    const activeEvent = selectedEvent ? data.events.find((e) => e.id === selectedEvent.id) : null;
 
     return (
         <>
@@ -48,10 +48,10 @@ export default function Routine() {
                             <RoutineCalendarSkeleton />
                         ) : (
                             <RoutineCalendar
-                                routines={data.routines}
+                                events={data.events}
                                 selectedDate={selectedDate}
                                 onSelectDate={setSelectedDate}
-                                onSelectRoutine={setSelectedRoutine}
+                                onSelectEvent={setSelectedEvent}
                             />
                         )}
                     </div>
@@ -60,15 +60,15 @@ export default function Routine() {
                         {isLoading ? (
                             <RoutinesListSkeleton />
                         ) : (
-                            <RoutinesList routines={data.routines} onSelectRoutine={setSelectedRoutine} />
+                            <RoutinesList events={data.events} onSelectEvent={setSelectedEvent} />
                         )}
                         <AnimatePresence>
-                            {activeRoutine && (
+                            {activeEvent && (
                                 <RoutineDetails
-                                    key={activeRoutine.id}
-                                    routine={activeRoutine}
+                                    key={activeEvent.id}
+                                    event={activeEvent}
                                     selectedDate={selectedDate}
-                                    onClose={() => setSelectedRoutine(null)}
+                                    onClose={() => setSelectedEvent(null)}
                                 />
                             )}
                         </AnimatePresence>

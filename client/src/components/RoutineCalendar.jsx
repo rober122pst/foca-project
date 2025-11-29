@@ -3,14 +3,14 @@
 import { CalendarCheck2, CalendarDays, ChevronLeft, ChevronRight, CircleCheck, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
-import Button from './ui/Button';
-import RoutineDailyListEmpty from './empty-states/RoutineDailyListEmpty.jsx';
-import { formatHours } from '../utils/formatTime.js';
+import { useState } from 'react';
 import { rrulestr } from 'rrule';
 import { useResponsive } from '../hooks/useResponsive.js';
-import { useState } from 'react';
+import { formatHours } from '../utils/formatTime.js';
+import RoutineDailyListEmpty from './empty-states/RoutineDailyListEmpty.jsx';
+import Button from './ui/Button';
 
-export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRoutine, events = [] }) {
+export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectEvent, events = [] }) {
     const isResponsive = useResponsive(640);
     const [currentMonth, setCurrentMonth] = useState(new Date());
 
@@ -89,7 +89,10 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
             const occurences = rule.between(startOfDay, endOfDay, true);
 
             return occurences.length > 0;
-        } catch (error) {}
+        } catch (error) {
+            console.error(`Error ao processar regra do evento ${event.title}:`, error);
+            return false;
+        }
     };
 
     // Pega as rotinas correspodentes aquele dia
@@ -132,7 +135,7 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
         );
     };
 
-    const selectedRoutinesForDay = selectedDate ? getRoutinesForDay(selectedDate.getDay()) : [];
+    const selectedEventsForDay = selectedDate ? events.filter((event) => isEventOnDate(event, selectedDate)) : [];
 
     return (
         <div className="w-full space-y-6">
@@ -162,8 +165,8 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                             </div>
                         ))}
                         {days.map((day, index) => {
-                            const dayOfWeek = index % 7;
-                            const dayRoutines = day.day ? getRoutinesForDay(dayOfWeek) : [];
+                            const dayEvents = getEventsForDay(day.day, day.type);
+
                             return (
                                 <button
                                     key={index}
@@ -192,7 +195,7 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                                         {day.day}
                                     </span>
                                     <div className="mt-1 flex w-full flex-col gap-0.5 sm:gap-1">
-                                        {dayRoutines.slice(0, isResponsive ? 1 : 2).map((routine) => (
+                                        {dayEvents.slice(0, isResponsive ? 1 : 2).map((routine) => (
                                             <div
                                                 key={routine.id}
                                                 className={'h-0.5 w-full rounded-full sm:h-1'}
@@ -200,16 +203,16 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                                                 title={routine.title}
                                             ></div>
                                         ))}
-                                        {((isResponsive && dayRoutines.length > 1) ||
-                                            (!isResponsive && dayRoutines.length > 2)) && (
+                                        {((isResponsive && dayEvents.length > 1) ||
+                                            (!isResponsive && dayEvents.length > 2)) && (
                                             <span
-                                                title={dayRoutines
+                                                title={dayEvents
                                                     .slice(isResponsive ? 1 : 2)
                                                     .map((routine) => routine.title)
                                                     .join('\n')}
                                                 className="text-medium text-[10px]"
                                             >
-                                                +{dayRoutines.length - (isResponsive ? 1 : 2)}
+                                                +{dayEvents.length - (isResponsive ? 1 : 2)}
                                             </span>
                                         )}
                                     </div>
@@ -226,7 +229,7 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                     <CardTitle className="text-base sm:text-lg">
                         <CalendarCheck2 className="text-items-500" />
                         <span className="hidden sm:inline">
-                            Rotinas -{' '}
+                            Eventos -{' '}
                             {selectedDate.toLocaleDateString('pt-BR', {
                                 weekday: 'long',
                                 day: 'numeric',
@@ -243,28 +246,32 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
-                    {selectedRoutinesForDay.length > 0 ? (
+                    {selectedEventsForDay.length > 0 ? (
                         <div className="scrollbar-custom h-full max-h-[350px] space-y-3 overflow-y-auto p-2">
-                            {selectedRoutinesForDay.map((routine) => {
+                            {selectedEventsForDay.map((event) => {
                                 const formatSelectedDate = selectedDate.toLocaleDateString('en-CA');
-                                const completedToday = routine.completedDays.some(
-                                    (date) => new Date(date).toLocaleDateString('en-CA') === formatSelectedDate
-                                );
+                                const completedToday = event.eventCompletions
+                                    ? event.eventCompletions.some(
+                                          (completion) =>
+                                              new Date(completion.occurrenceDate).toLocaleDateString('en-CA') ===
+                                              formatSelectedDate
+                                      )
+                                    : false;
                                 return (
                                     <button
-                                        key={routine.id}
-                                        onClick={() => onSelectRoutine(routine)}
+                                        key={event.id}
+                                        onClick={() => onSelectEvent(event)}
                                         className="border-border bg-card hover:bg-muted w-full cursor-pointer rounded-2xl border p-3 text-left transition-colors"
                                     >
                                         <div className="flex items-start gap-2 sm:gap-3">
                                             <div
                                                 className={'h-10 w-1 rounded-full sm:h-12'}
-                                                style={{ background: routine.color }}
+                                                style={{ background: event.color }}
                                             />
                                             <div className="flex-1">
                                                 <div className="flex items-center justify-between">
                                                     <h4 className="text-sm font-semibold sm:text-base">
-                                                        {routine.title}
+                                                        {event.title}
                                                     </h4>
                                                     {completedToday && (
                                                         <span className="flex gap-1 rounded-md bg-green-500/10 px-2 py-1 text-xs text-green-400">
@@ -274,16 +281,15 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectRo
                                                     )}
                                                 </div>
                                                 <p className="text-medium mt-1 text-xs sm:text-sm">
-                                                    {routine.description}
+                                                    {event.description}
                                                 </p>
                                                 <div className="text-items-500 mt-2 flex flex-col gap-1 text-xs sm:flex-row sm:items-center sm:gap-4">
                                                     <div className="flex items-center gap-1">
                                                         <Clock className="h-3 w-3" />
-                                                        {formatHours(routine.startTime)} -{' '}
-                                                        {formatHours(routine.endTime)}
+                                                        {formatHours(event.dtstart)} - {formatHours(event.dtend)}
                                                     </div>
                                                     <span className="border-cream-300 dark:border-night-700 text-primary flex w-fit gap-1 rounded-md border px-2 py-1 text-xs">
-                                                        {routine.tag}
+                                                        {event.tag}
                                                     </span>
                                                 </div>
                                             </div>

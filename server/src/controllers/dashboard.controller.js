@@ -59,20 +59,33 @@ export async function getEventsData(req, res) {
     const userId = req.userId;
 
     try {
-        const { events } = await prisma.profile.findUnique({ 
-            where: { userId },
-            select: {
-                events: {
-                    orderBy: [
-                        { dtstart: 'asc' },
-                        { createdAt: 'asc' },
-                    ]
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999)
+
+        const events = await prisma.event.findMany({ 
+            where: { profile: { userId } },
+            orderBy: [
+                { dtstart: 'asc' },
+                { createdAt: 'asc' },
+            ],
+            include: {
+                eventCompletions: {
+                    where: {
+                        occurrenceDate: {
+                            gte: todayStart,
+                            lte: todayEnd,
+                        },
+                    },
                 },
-            }
+            },
         });
 
         const activeEvents = events.length;
-        const bestStreak = Math.max(...events.map(r => r.streak), 0);
+        const bestStreak = Math.max(...events.map(e => e.streak), 0);
+
 
         return res.json({
             stats: {
@@ -82,7 +95,11 @@ export async function getEventsData(req, res) {
                 thisCompletedWeek: 0,
                 totalThisWeek: 0,
             },
-            events,
+            events: events.map((event) => ({
+                ...event,
+                eventCompletions: undefined,
+                completed: event.eventCompletions.length > 0,
+            })),
         });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar dados do dashboard' });

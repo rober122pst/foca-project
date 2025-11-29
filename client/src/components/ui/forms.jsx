@@ -61,11 +61,17 @@ export function TextArea({
     );
 }
 
-export default function TimePicker({ value, onChange, className = '' }) {
+export function TimePicker({ value, onChange, className = '' }) {
     const [open, setOpen] = useState(false);
 
-    const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
-    const minutes = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
+    const time = [];
+
+    for (let i = 0; i < 24 * 60; i += 30) {
+        time.push({
+            hours: String(Math.floor(i / 60)).padStart(2, '0'),
+            minutes: String(i % 60).padStart(2, '0'),
+        });
+    }
 
     const handleSelect = (hour, minute) => {
         const newValue = `${hour}:${minute}`;
@@ -97,36 +103,154 @@ export default function TimePicker({ value, onChange, className = '' }) {
                         transition={{ duration: 0.15 }}
                         className="border-border bg-muted absolute z-50 mt-2 flex w-full gap-2 rounded-2xl border p-3 shadow-xl"
                     >
-                        {/* Horas */}
                         <div className="scrollbar-custom max-h-40 flex-1 overflow-y-auto pr-1">
-                            {hours.map((h) => (
+                            {time.map((t) => (
                                 <button
                                     type="button"
-                                    key={h}
-                                    onClick={() => handleSelect(h, value?.split(':')[1] || '00')}
+                                    key={t}
+                                    onClick={() => handleSelect(t.hours, t.minutes)}
                                     className="hover:bg-card text-primary block w-full rounded-md px-2 py-1 text-left"
                                 >
-                                    {h}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Minutos */}
-                        <div className="scrollbar-custom max-h-40 flex-1 overflow-y-auto">
-                            {minutes.map((m) => (
-                                <button
-                                    key={m}
-                                    type="button"
-                                    onClick={() => handleSelect(value?.split(':')[0] || '00', m)}
-                                    className="hover:bg-card text-primary block w-full rounded-md px-2 py-1 text-left"
-                                >
-                                    {m}
+                                    {t.hours}:{t.minutes}
                                 </button>
                             ))}
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
+        </div>
+    );
+}
+
+export function DayPicker({ value, onChange, className = '' }) {
+    const [isOpen, setIsOpen] = useState();
+
+    const date = new Date(value);
+
+    const dateString = date
+        .toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
+        .split(' ')
+        .map((p, i) => (i === 0 ? p.charAt(0).toUpperCase() + p.slice(1) : p))
+        .join(' ');
+
+    const MiniCalendar = () => {
+        const [currentMonth, setCurrentMonth] = useState(new Date());
+        const [selectedDate, setSelectedDate] = useState(new Date());
+
+        const monthNames = [
+            'Janeiro',
+            'Fevereiro',
+            'Março',
+            'Abril',
+            'Maio',
+            'Junho',
+            'Julho',
+            'Agosto',
+            'Setembro',
+            'Outubro',
+            'Novembro',
+            'Dezembro',
+        ];
+        const dayNames = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+
+        // Pega os dias daquele mês
+        const getDaysInMonth = (date) => {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay(); // ex.: se dia 1 for segunda começa na segunda
+            const prevMonthDays = new Date(year, month, 0).getDate(); // dias do mês anterior
+
+            const days = []; // guarda do mês aqui
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                const day = prevMonthDays - startingDayOfWeek + i + 1;
+
+                days.push({
+                    day,
+                    type: 'prev', // indica que este dia é DO MÊS ANTERIOR
+                });
+            }
+            for (let i = 1; i <= daysInMonth; i++) {
+                // Guarda os dias
+                days.push({
+                    day: i,
+                    type: 'current',
+                });
+            }
+
+            const nextDaysNeeded = 42 - days.length;
+            for (let i = 1; i <= nextDaysNeeded; i++) {
+                days.push({
+                    day: i,
+                    type: 'next', // indica que pertence ao PRÓXIMO mês
+                });
+            }
+
+            return days;
+        };
+
+        const days = getDaysInMonth(currentMonth);
+
+        const goToPreviousMonth = () => {
+            setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
+        };
+
+        const goToNextMonth = () => {
+            setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
+        };
+
+        const isToday = (day) => {
+            if (!day) return false;
+            const today = new Date();
+            return (
+                day === today.getDate() && // Se o dia é o mesmo
+                currentMonth.getMonth() === today.getMonth() && // Do mesmo mês
+                currentMonth.getFullYear() === today.getFullYear() // Do mesmo ano
+            );
+        };
+
+        const isSelected = (day) => {
+            if (!day || !selectedDate) return false;
+
+            return (
+                day === selectedDate.getDate() &&
+                currentMonth.getMonth() === selectedDate.getMonth() &&
+                currentMonth.getFullYear() === selectedDate.getFullYear()
+            );
+        };
+
+        return (
+            <div className="bg-muted absolute z-50 mt-2 grid grid-cols-7 gap-1.5 p-2">
+                {dayNames.map((day) => (
+                    <div key={day} className="text-medium p-2 text-center text-xs font-semibold">
+                        {day}
+                    </div>
+                ))}
+                {days.map((dayObj, index) => (
+                    <button key={index} className="text-sm">
+                        {dayObj.day}
+                    </button>
+                ))}
+            </div>
+        );
+    };
+
+    return (
+        <div className="relative inline-block">
+            <button
+                type="button"
+                onClick={() => setIsOpen(!isOpen)}
+                className={twMerge(
+                    'border-cream-200 dark:border-night-700 bg-cream-100 dark:bg-night-800 hover:border-items-500 w-full cursor-pointer rounded-lg border-2 px-3 py-2 text-left transition',
+                    className
+                )}
+                onChange={onChange}
+            >
+                {dateString}
+            </button>
+            <AnimatePresence>{isOpen && <MiniCalendar />}</AnimatePresence>
         </div>
     );
 }

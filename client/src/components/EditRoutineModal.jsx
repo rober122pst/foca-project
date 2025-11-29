@@ -1,5 +1,5 @@
 import { CalendarPlus, Palette, Pen, X } from 'lucide-react';
-import TimePicker, { InputText, Label } from './ui/forms';
+import { InputText, Label, TimePicker } from './ui/forms';
 import { Modal, ModalContent, ModalHeader, ModalTitle } from './ui/modal';
 
 import { useReducer } from 'react';
@@ -64,7 +64,7 @@ export default function EditRoutineModal({ onClose, payload }) {
             <ModalHeader>
                 <ModalTitle>
                     <CalendarPlus className="text-items-500" />
-                    Criar rotina
+                    Criar evento
                 </ModalTitle>
                 <Button variant="ghost" onClick={onClose} className="size-8">
                     <X className="size-4" />

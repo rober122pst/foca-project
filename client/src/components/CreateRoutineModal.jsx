@@ -1,6 +1,6 @@
 import { CalendarPlus, Palette, Plus, X } from 'lucide-react';
 import { initialRoutinesFormState, routineFormReducer } from '../reducers/routinesReducer';
-import TimePicker, { InputText, Label } from './ui/forms';
+import { DayPicker, InputText, Label, TimePicker } from './ui/forms';
 import { Modal, ModalContent, ModalHeader, ModalTitle } from './ui/modal';
 
 import { useReducer } from 'react';
@@ -57,11 +57,11 @@ export default function CreateRoutineModal({ onClose }) {
     ];
 
     return (
-        <Modal className="w-full rounded-none sm:max-h-[841px] sm:max-w-lg sm:rounded-4xl" onClose={onClose}>
+        <Modal className="w-full rounded-none sm:max-h-fit sm:max-w-lg sm:rounded-4xl" onClose={onClose}>
             <ModalHeader>
                 <ModalTitle>
                     <CalendarPlus className="text-items-500" />
-                    Criar rotina
+                    Criar evento
                 </ModalTitle>
                 <Button variant="ghost" onClick={onClose} className="size-8">
                     <X className="size-4" />
@@ -94,34 +94,7 @@ export default function CreateRoutineModal({ onClose }) {
                             autoComplete="off"
                         />
                     </Label>
-                    <Label>
-                        Dias da semana
-                        <div className="flex flex-wrap justify-around gap-2">
-                            {weekDays.map((day) => {
-                                const isSelected = state.days.includes(day.id);
-                                return (
-                                    <Button
-                                        variant="outline"
-                                        key={day.id}
-                                        type="button"
-                                        onClick={() => dispatch({ type: 'TOGGLE_DAY', value: day.id })}
-                                        className={`flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold transition-all duration-200 ${
-                                            isSelected
-                                                ? 'bg-accent-500 dark:bg-accent-500 hover:bg-accent-600 dark:hover:bg-accent-600 scale-105 text-white shadow-md'
-                                                : ''
-                                        }`}
-                                    >
-                                        {day.label.slice(0, 1)}
-                                    </Button>
-                                );
-                            })}
-                        </div>
-                        <p className="text-medium mt-1 ml-1 text-xs">
-                            {state.days.length === 0
-                                ? 'Selecione pelo menos um dia'
-                                : `${state.days.length} dia(s) selecionado(s)`}
-                        </p>
-                    </Label>
+
                     <Label>
                         Etiqueta
                         <div className="flex flex-wrap justify-around gap-2">
@@ -144,6 +117,12 @@ export default function CreateRoutineModal({ onClose }) {
                     <div className="flex gap-2">
                         <Label className="flex-1">
                             Início
+                            <DayPicker
+                                value={state.dtstart}
+                                onChange={(newDate) => {
+                                    dispatch({ type: 'SET_FIELD', field: 'dtstart', value: newDate });
+                                }}
+                            />
                             <TimePicker
                                 value={state.startTime}
                                 onChange={(newTime) => {

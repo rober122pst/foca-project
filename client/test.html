@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Eventos (Google Calendar Style)</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel para JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Custom scrollbar para ficar mais elegante */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #bbb; }
+        
+        .fade-in { animation: fadeIn 0.2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans h-screen overflow-hidden">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // --- ENUMS & CONSTANTS ---
+        const EventType = {
+            TASK: 'TASK',
+            HABIT: 'HABIT',
+            EVENT: 'EVENT',
+            PROJECT: 'PROJECT'
+        };
+
+        const Colors = [
+            "#fb2c36", "#f97316", "#facc15", "#4ade80", "#22d3ee", "#818cf8", "#c084fc", "#f472b6", "#a8a29e"
+        ];
+
+        // --- HELPER FUNCTIONS ---
+        const generateUUID = () => crypto.randomUUID();
+
+        // Formata data para input datetime-local
+        const formatForInput = (date) => {
+            if (!date) return '';
+            return new Date(date).toISOString().slice(0, 16);
+        };
+
+        // Parse simples de RRULE visual para String
+        const buildRRule = (config) => {
+            if (!config.enabled) return null;
+            
+            let rule = `FREQ=${config.freq}`;
+            if (config.interval > 1) rule += `;INTERVAL=${config.interval}`;
+            
+            if (config.freq === 'WEEKLY' && config.byDay.length > 0) {
+                rule += `;BYDAY=${config.byDay.join(',')}`;
+            }
+
+            if (config.endType === 'UNTIL' && config.untilDate) {
+                // RRule precisa de formato YYYYMMDDTHHMMSSZ geralmente, simplificando:
+                const d = new Date(config.untilDate);
+                const iso = d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                rule += `;UNTIL=${iso}`;
+            } else if (config.endType === 'COUNT' && config.count) {
+                rule += `;COUNT=${config.count}`;
+            }
+
+            return rule;
+        };
+
+        // --- COMPONENTS ---
+
+        // Ícone por tipo
+        const TypeIcon = ({ type, className = "w-5 h-5" }) => {
+            switch(type) {
+                case EventType.TASK: return <i data-lucide="check-square" className={className}></i>;
+                case EventType.HABIT: return <i data-lucide="repeat" className={className}></i>;
+                case EventType.PROJECT: return <i data-lucide="briefcase" className={className}></i>; 
+                default: return <i data-lucide="calendar" className={className}></i>;
+            }
+        };
+
+        const App = () => {
+            const [events, setEvents] = useState([]);
+            const [selectedEvent, setSelectedEvent] = useState(null);
+
+            // Estado do Formulário
+            const [formState, setFormState] = useState({
+                title: '',
+                description: '',
+                type: EventType.TASK,
+                dtstart: new Date().toISOString(),
+                dtend: new Date(new Date().getTime() + 60 * 60 * 1000).toISOString(), // +1 hora
+                deadline: '',
+                tz: "America/Sao_Paulo",
+                tag: "Estudo",
+                color: "#fb2c36",
+                // Estado interno para construir o RRULE
+                rruleConfig: {
+                    enabled: false,
+                    freq: 'WEEKLY',
+                    interval: 1,
+                    byDay: [],
+                    endType: 'NEVER', // NEVER, UNTIL, COUNT
+                    untilDate: '',
+                    count: 10
+                }
+            });
+
+            // Atualiza ícones quando o DOM mudar
+            useEffect(() => {
+                if (window.lucide) window.lucide.createIcons();
+            }, [events, selectedEvent, formState.type]);
+
+            // Handlers
+            const handleChange = (e) => {
+                const { name, value } = e.target;
+                setFormState(prev => ({ ...prev, [name]: value }));
+            };
+
+            const handleRRuleChange = (field, value) => {
+                setFormState(prev => ({
+                    ...prev,
+                    rruleConfig: { ...prev.rruleConfig, [field]: value }
+                }));
+            };
+
+            const toggleDay = (day) => {
+                setFormState(prev => {
+                    const currentDays = prev.rruleConfig.byDay;
+                    const newDays = currentDays.includes(day) 
+                        ? currentDays.filter(d => d !== day)
+                        : [...currentDays, day];
+                    return {
+                        ...prev,
+                        rruleConfig: { ...prev.rruleConfig, byDay: newDays }
+                    };
+                });
+            };
+
+            // Lógica de Negócio e Reset de Campos ao mudar o tipo
+            const handleTypeChange = (newType) => {
+                let newRRuleConfig = { ...formState.rruleConfig };
+                let newDeadline = formState.deadline;
+
+                // Reset padrões baseados nas regras
+                if (newType === EventType.TASK) {
+                    newRRuleConfig.enabled = false;
+                    // Task precisa de deadline, se não tiver, sugere o fim do evento
+                    if (!newDeadline) newDeadline = formState.dtend;
+                } else if (newType === EventType.EVENT) {
+                    newRRuleConfig.enabled = false;
+                    newDeadline = '';
+                } else if (newType === EventType.HABIT) {
+                    newRRuleConfig.enabled = true;
+                    // Habito não pode ter UNTIL
+                    if (newRRuleConfig.endType === 'UNTIL') newRRuleConfig.endType = 'NEVER';
+                    newDeadline = '';
+                } else if (newType === EventType.PROJECT) {
+                    newRRuleConfig.enabled = true;
+                    // Project TEM que ter UNTIL
+                    newRRuleConfig.endType = 'UNTIL';
+                    if (!newRRuleConfig.untilDate) newRRuleConfig.untilDate = formState.dtend;
+                    newDeadline = '';
+                }
+
+                setFormState(prev => ({
+                    ...prev,
+                    type: newType,
+                    rruleConfig: newRRuleConfig,
+                    deadline: newDeadline
+                }));
+            };
+
+            // Computed Payload (O que será salvo)
+            const payload = useMemo(() => {
+                const rruleString = buildRRule(formState.rruleConfig);
+                
+                return {
+                    id: generateUUID(),
+                    profileId: generateUUID(), // Mock
+                    title: formState.title,
+                    description: formState.description,
+                    type: formState.type,
+                    dtstart: new Date(formState.dtstart),
+                    dtend: new Date(formState.dtend),
+                    rrule: rruleString,
+                    tz: formState.tz,
+                    deadline: formState.deadline ? new Date(formState.deadline) : null,
+                    tag: formState.tag,
+                    color: formState.color,
+                    streak: 0,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                };
+            }, [formState]);
+
+            // Validação
+            const errors = useMemo(() => {
+                const errs = [];
+                if (!formState.title) errs.push("Título é obrigatório.");
+                if (!formState.dtstart) errs.push("Data de início é obrigatória.");
+                if (!formState.dtend) errs.push("Data de fim é obrigatória.");
+                if (new Date(formState.dtend) <= new Date(formState.dtstart)) errs.push("Fim deve ser após o início.");
+
+                // Regras Específicas
+                if (formState.type === EventType.TASK) {
+                    if (!formState.deadline) errs.push("Tarefas exigem um Deadline.");
+                    if (formState.rruleConfig.enabled) errs.push("Tarefas não podem ter recorrência.");
+                }
+                if (formState.type === EventType.EVENT) {
+                    if (formState.rruleConfig.enabled) errs.push("Eventos únicos não podem ter recorrência.");
+                }
+                if (formState.type === EventType.HABIT) {
+                    if (formState.rruleConfig.endType === 'UNTIL') errs.push("Hábitos não podem ter data de término (UNTIL).");
+                    if (!formState.rruleConfig.enabled) errs.push("Hábitos precisam de recorrência.");
+                }
+                if (formState.type === EventType.PROJECT) {
+                    if (formState.rruleConfig.endType !== 'UNTIL') errs.push("Projetos exigem data de término na recorrência.");
+                    if (!formState.rruleConfig.untilDate) errs.push("Defina a data final da recorrência do projeto.");
+                }
+
+                return errs;
+            }, [formState]);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (errors.length === 0) {
+                    setEvents([payload, ...events]);
+                    // Reset form (mantendo algumas preferencias)
+                    setFormState(prev => ({
+                        ...prev,
+                        title: '',
+                        description: '',
+                        id: generateUUID()
+                    }));
+                }
+            };
+
+            return (
+                <div className="flex h-full w-full">
+                    
+                    {/* COLUNA ESQUERDA: FORMULÁRIO */}
+                    <div className="w-1/2 lg:w-5/12 h-full overflow-y-scroll border-r border-gray-200 bg-white p-6 shadow-sm z-10">
+                        <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                            <i data-lucide="plus-circle" className="text-blue-600"></i>
+                            Novo Item
+                        </h1>
+
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            
+                            {/* Título e Tipo */}
+                            <div className="space-y-4">
+                                <input 
+                                    type="text" 
+                                    name="title" 
+                                    placeholder="Adicionar título" 
+                                    className="w-full text-xl font-medium border-b-2 border-gray-200 focus:border-blue-500 outline-none pb-2 transition-colors placeholder-gray-400"
+                                    value={formState.title}
+                                    onChange={handleChange}
+                                />
+                                
+                                <div className="flex gap-2">
+                                    {Object.values(EventType).map(t => (
+                                        <button
+                                            key={t}
+                                            type="button"
+                                            onClick={() => handleTypeChange(t)}
+                                            className={`px-3 py-1.5 text-sm font-medium rounded-full border transition-all flex items-center gap-1.5 ${
+                                                formState.type === t 
+                                                ? 'bg-blue-50 border-blue-200 text-blue-700 ring-2 ring-blue-100' 
+                                                : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            <TypeIcon type={t} className="w-3 h-3"/>
+                                            {t}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Data e Hora */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-semibold text-gray-500 uppercase">Início</label>
+                                    <input 
+                                        type="datetime-local" 
+                                        name="dtstart"
+                                        value={formatForInput(formState.dtstart)}
+                                        onChange={handleChange}
+                                        className="w-full p-2 bg-gray-50 rounded border border-gray-200 focus:ring-2 focus:ring-blue-100 outline-none"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-semibold text-gray-500 uppercase">Fim</label>
+                                    <input 
+                                        type="datetime-local" 
+                                        name="dtend"
+                                        value={formatForInput(formState.dtend)}
+                                        onChange={handleChange}
+                                        className="w-full p-2 bg-gray-50 rounded border border-gray-200 focus:ring-2 focus:ring-blue-100 outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Deadline (Apenas Task) */}
+                            {formState.type === EventType.TASK && (
+                                <div className="fade-in bg-red-50 p-4 rounded-lg border border-red-100">
+                                    <div className="flex items-center gap-2 mb-2 text-red-800">
+                                        <i data-lucide="alert-circle" className="w-4 h-4"></i>
+                                        <span className="font-semibold text-sm">Deadline Obrigatório</span>
+                                    </div>
+                                    <input 
+                                        type="datetime-local" 
+                                        name="deadline"
+                                        value={formatForInput(formState.deadline)}
+                                        onChange={handleChange}
+                                        className="w-full p-2 bg-white rounded border border-red-200 focus:ring-2 focus:ring-red-100 outline-none"
+                                    />
+                                </div>
+                            )}
+
+                            {/* Configuração de Recorrência (RRULE) */}
+                            {(formState.type === EventType.HABIT || formState.type === EventType.PROJECT) && (
+                                <div className="fade-in bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <span className="font-semibold text-gray-700 flex items-center gap-2">
+                                            <i data-lucide="repeat" className="w-4 h-4"></i> Recorrência
+                                        </span>
+                                    </div>
+
+                                    <div className="flex gap-4">
+                                        <div className="w-1/2">
+                                            <label className="text-xs text-gray-500 mb-1 block">Frequência</label>
+                                            <select 
+                                                value={formState.rruleConfig.freq}
+                                                onChange={(e) => handleRRuleChange('freq', e.target.value)}
+                                                className="w-full p-2 bg-white rounded border border-gray-300 text-sm"
+                                            >
+                                                <option value="DAILY">Diária</option>
+                                                <option value="WEEKLY">Semanal</option>
+                                                <option value="MONTHLY">Mensal</option>
+                                                <option value="YEARLY">Anual</option>
+                                            </select>
+                                        </div>
+                                        <div className="w-1/2">
+                                            <label className="text-xs text-gray-500 mb-1 block">A cada</label>
+                                            <div className="flex items-center gap-2">
+                                                <input 
+                                                    type="number" min="1"
+                                                    value={formState.rruleConfig.interval}
+                                                    onChange={(e) => handleRRuleChange('interval', parseInt(e.target.value))}
+                                                    className="w-full p-2 bg-white rounded border border-gray-300 text-sm"
+                                                />
+                                                <span className="text-sm text-gray-500">
+                                                    {formState.rruleConfig.freq === 'DAILY' ? 'dias' : 
+                                                     formState.rruleConfig.freq === 'WEEKLY' ? 'semanas' : 
+                                                     formState.rruleConfig.freq === 'MONTHLY' ? 'meses' : 'anos'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Seletor de Dias da Semana */}
+                                    {formState.rruleConfig.freq === 'WEEKLY' && (
+                                        <div>
+                                            <label className="text-xs text-gray-500 mb-2 block">Repetir em</label>
+                                            <div className="flex justify-between">
+                                                {['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'].map(day => (
+                                                    <button 
+                                                        key={day}
+                                                        type="button"
+                                                        onClick={() => toggleDay(day)}
+                                                        className={`w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center transition-colors ${
+                                                            formState.rruleConfig.byDay.includes(day)
+                                                            ? 'bg-blue-600 text-white'
+                                                            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                                        }`}
+                                                    >
+                                                        {day[0]}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Condição de Fim */}
+                                    <div className="pt-2 border-t border-gray-200">
+                                        <label className="text-xs text-gray-500 mb-2 block">Termina</label>
+                                        <div className="space-y-2">
+                                            {/* Habit não pode ter Until */}
+                                            {formState.type !== EventType.PROJECT && (
+                                                <label className="flex items-center gap-2">
+                                                    <input 
+                                                        type="radio" 
+                                                        checked={formState.rruleConfig.endType === 'NEVER'}
+                                                        onChange={() => handleRRuleChange('endType', 'NEVER')}
+                                                        disabled={formState.type === EventType.PROJECT} // Project PRECISA terminar
+                                                    />
+                                                    <span className="text-sm">Nunca</span>
+                                                </label>
+                                            )}
+                                            
+                                            {/* Project PRECISA ter Until, Habit NÃO pode */}
+                                            {formState.type !== EventType.HABIT && (
+                                                <div className="flex items-center gap-2">
+                                                    <input 
+                                                        type="radio" 
+                                                        checked={formState.rruleConfig.endType === 'UNTIL'}
+                                                        onChange={() => handleRRuleChange('endType', 'UNTIL')}
+                                                    />
+                                                    <span className="text-sm">Em</span>
+                                                    <input 
+                                                        type="date"
+                                                        value={formState.rruleConfig.untilDate ? new Date(formState.rruleConfig.untilDate).toISOString().slice(0, 10) : ''}
+                                                        onChange={(e) => handleRRuleChange('untilDate', e.target.value)}
+                                                        disabled={formState.rruleConfig.endType !== 'UNTIL'}
+                                                        className="p-1 bg-white border border-gray-300 rounded text-sm"
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {/* Count - Opcional para ambos se quiser permitir */}
+                                            {formState.type !== EventType.PROJECT && formState.type !== EventType.HABIT && (
+                                                <div className="flex items-center gap-2">
+                                                    <input 
+                                                        type="radio" 
+                                                        checked={formState.rruleConfig.endType === 'COUNT'}
+                                                        onChange={() => handleRRuleChange('endType', 'COUNT')}
+                                                    />
+                                                    <span className="text-sm">Após</span>
+                                                    <input 
+                                                        type="number" min="1"
+                                                        value={formState.rruleConfig.count}
+                                                        onChange={(e) => handleRRuleChange('count', e.target.value)}
+                                                        disabled={formState.rruleConfig.endType !== 'COUNT'}
+                                                        className="w-16 p-1 bg-white border border-gray-300 rounded text-sm"
+                                                    />
+                                                    <span className="text-sm">ocorrências</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Aviso de Regra */}
+                                    {formState.type === EventType.HABIT && (
+                                        <p className="text-xs text-orange-600 italic">Hábitos devem ser contínuos (sem data final).</p>
+                                    )}
+                                    {formState.type === EventType.PROJECT && (
+                                        <p className="text-xs text-blue-600 italic">Projetos devem ter data de encerramento.</p>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Detalhes Visuais */}
+                            <div className="flex gap-4">
+                                <div className="flex-1">
+                                    <label className="text-xs font-semibold text-gray-500 uppercase block mb-1">Tag</label>
+                                    <input 
+                                        type="text" name="tag" 
+                                        value={formState.tag} onChange={handleChange}
+                                        className="w-full p-2 bg-gray-50 rounded border border-gray-200 text-sm"
+                                    />
+                                </div>
+                                <div className="flex-1">
+                                    <label className="text-xs font-semibold text-gray-500 uppercase block mb-1">Cor</label>
+                                    <div className="flex gap-2 flex-wrap">
+                                        {Colors.map(c => (
+                                            <button
+                                                key={c} type="button"
+                                                onClick={() => setFormState(prev => ({...prev, color: c}))}
+                                                className={`w-6 h-6 rounded-full border-2 ${formState.color === c ? 'border-gray-600 scale-110' : 'border-transparent'}`}
+                                                style={{backgroundColor: c}}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <textarea 
+                                name="description"
+                                placeholder="Descrição / Notas"
+                                value={formState.description}
+                                onChange={handleChange}
+                                className="w-full p-3 bg-gray-50 rounded border border-gray-200 text-sm h-24 resize-none focus:ring-2 focus:ring-blue-100 outline-none"
+                            ></textarea>
+
+                            {/* Botão Salvar e Erros */}
+                            <div className="pt-4">
+                                {errors.length > 0 && (
+                                    <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded border border-red-100">
+                                        <ul className="list-disc pl-4">
+                                            {errors.map((e, i) => <li key={i}>{e}</li>)}
+                                        </ul>
+                                    </div>
+                                )}
+                                <button 
+                                    type="submit" 
+                                    disabled={errors.length > 0}
+                                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded shadow transition-colors"
+                                >
+                                    Criar {formState.type}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    {/* COLUNA DIREITA: LISTA E DEBUG */}
+                    <div className="w-1/2 lg:w-7/12 h-full flex flex-col bg-gray-100 overflow-hidden">
+                        
+                        {/* Lista de Eventos */}
+                        <div className="flex-1 overflow-y-auto p-6">
+                            <h2 className="text-lg font-bold text-gray-700 mb-4">Minhas Rotinas</h2>
+                            
+                            {events.length === 0 ? (
+                                <div className="text-center py-20 text-gray-400">
+                                    <i data-lucide="calendar-days" className="w-16 h-16 mx-auto mb-2 opacity-20"></i>
+                                    <p>Nenhum evento criado ainda.</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {events.map(evt => (
+                                        <div 
+                                            key={evt.id} 
+                                            onClick={() => setSelectedEvent(evt)}
+                                            className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md cursor-pointer border-l-4 transition-all"
+                                            style={{borderLeftColor: evt.color}}
+                                        >
+                                            <div className="flex justify-between items-start mb-2">
+                                                <span className="text-xs font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-600 flex items-center gap-1">
+                                                    <TypeIcon type={evt.type} className="w-3 h-3"/> {evt.type}
+                                                </span>
+                                                {evt.rrule && <i data-lucide="repeat" className="w-3 h-3 text-gray-400"></i>}
+                                            </div>
+                                            <h3 className="font-bold text-gray-800 truncate">{evt.title}</h3>
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                {new Date(evt.dtstart).toLocaleDateString()} • {new Date(evt.dtstart).toLocaleTimeString().slice(0,5)}
+                                            </p>
+                                            <div className="mt-3 flex gap-2">
+                                                <span className="text-[10px] bg-gray-50 text-gray-500 px-1.5 py-0.5 rounded border border-gray-100">{evt.tag}</span>
+                                                {evt.streak > 0 && <span className="text-[10px] bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded flex items-center gap-1">🔥 {evt.streak}</span>}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Painel de Debug */}
+                        <div className="h-1/3 bg-gray-900 text-green-400 p-4 font-mono text-xs overflow-auto border-t border-gray-800">
+                            <div className="sticky top-0 bg-gray-900 pb-2 border-b border-gray-800 mb-2 font-bold text-white flex justify-between">
+                                <span>PAYLOAD DEBUGGER</span>
+                                <span className={errors.length > 0 ? "text-red-400" : "text-green-500"}>
+                                    {errors.length > 0 ? "INVALID STATE" : "VALID STATE"}
+                                </span>
+                            </div>
+                            <pre>{JSON.stringify(payload, null, 2)}</pre>
+                        </div>
+                    </div>
+
+                    {/* MODAL DE DETALHES */}
+                    {selectedEvent && (
+                        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setSelectedEvent(null)}>
+                            <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden fade-in" onClick={e => e.stopPropagation()}>
+                                <div className="h-24 relative" style={{backgroundColor: selectedEvent.color}}>
+                                    <button onClick={() => setSelectedEvent(null)} className="absolute top-2 right-2 bg-black/20 hover:bg-black/40 text-white rounded-full p-1 transition">
+                                        <i data-lucide="x" className="w-5 h-5"></i>
+                                    </button>
+                                </div>
+                                <div className="p-6 -mt-10 relative">
+                                    <div className="bg-white rounded shadow-sm border border-gray-100 p-1 w-fit mb-4">
+                                        <div className="bg-gray-50 p-2 rounded">
+                                            <TypeIcon type={selectedEvent.type} className="w-8 h-8 text-gray-700"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <h2 className="text-2xl font-bold text-gray-900">{selectedEvent.title}</h2>
+                                    <div className="flex gap-2 mt-2 mb-4">
+                                        <span className="text-xs font-bold px-2 py-1 rounded bg-gray-100 text-gray-600">{selectedEvent.type}</span>
+                                        <span className="text-xs px-2 py-1 rounded bg-blue-50 text-blue-700">{selectedEvent.tag}</span>
+                                    </div>
+
+                                    <div className="space-y-3 text-sm text-gray-600">
+                                        <p className="flex items-center gap-2">
+                                            <i data-lucide="clock" className="w-4 h-4 text-gray-400"></i>
+                                            {new Date(selectedEvent.dtstart).toLocaleString()} 
+                                            <span className="mx-1">➔</span>
+                                            {new Date(selectedEvent.dtend).toLocaleTimeString().slice(0,5)}
+                                        </p>
+                                        
+                                        {selectedEvent.deadline && (
+                                            <p className="flex items-center gap-2 text-red-600 font-medium">
+                                                <i data-lucide="alert-triangle" className="w-4 h-4"></i>
+                                                Deadline: {new Date(selectedEvent.deadline).toLocaleString()}
+                                            </p>
+                                        )}
+
+                                        {selectedEvent.rrule && (
+                                            <div className="bg-gray-50 p-3 rounded text-xs font-mono break-all border border-gray-200">
+                                                <span className="block font-bold text-gray-400 mb-1">RRULE STRING:</span>
+                                                {selectedEvent.rrule}
+                                            </div>
+                                        )}
+
+                                        {selectedEvent.description && (
+                                            <p className="mt-4 p-3 bg-yellow-50 rounded text-gray-700 italic border border-yellow-100">
+                                                "{selectedEvent.description}"
+                                            </p>
+                                        )}
+                                    </div>
+                                    
+                                    <div className="mt-6 pt-4 border-t border-gray-100 text-xs text-gray-400 flex justify-between">
+                                        <span>ID: {selectedEvent.id.slice(0,8)}...</span>
+                                        <span>Created: {new Date(selectedEvent.createdAt).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

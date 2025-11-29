@@ -98,17 +98,25 @@ enum Weekday {
     SAT
 }
 
+enum Type {
+    TASK
+    HABIT
+    EVENT
+    PROJECT
+}
+
 model Event {
     id               String            @id @default(dbgenerated()) @db.Uuid
     profileId        String            @db.Uuid
     profile          Profile           @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     title            String
     description      String?
+    type             Type              @default(TASK)
     dtstart          DateTime
     dtend            DateTime
     rrule            String?
     tz               String            @default("America/Sao_Paulo")
-    until            DateTime?
+    deadline         DateTime?
     tag              String            @default("Estudo")
     color            String            @default("#fb2c36")
     streak           Int               @default(0)

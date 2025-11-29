@@ -2,6 +2,7 @@ export const initialRoutinesFormState = {
     title: '',
     description: '',
     days: [],
+    dtstart: '2025-12-03',
     tag: 'Estudo',
     color: '#fb2c36',
     startTime: '12:00',
