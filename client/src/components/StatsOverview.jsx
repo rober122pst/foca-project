@@ -6,16 +6,16 @@ import { formatMinutesToHourString } from '../utils/formatTime';
 export default function StatsOverview({ userStats }) {
     const stats = [
         { icon: Flame, label: 'Sequência', value: `${userStats.streak} ${userStats.streak === 1 ? 'dia' : 'dias'}` },
-        { icon: Timer, label: 'Tempo em foco', value: `${formatMinutesToHourString(userStats.totalTimeFocused)}` },
+        { icon: Timer, label: 'Tempo em Foco', value: `${formatMinutesToHourString(userStats.totalTimeFocused)}` },
         {
             icon: Check,
-            label: 'Tarefas concluídas',
+            label: 'Tarefas Concluídas',
             value: `${userStats.completedTasks} ${userStats.completedTasks === 1 ? 'tarefa' : 'tarefas'}`,
         },
         {
             icon: Calendar,
-            label: 'Rotinas ativas',
-            value: `${userStats.activeRoutines} ${userStats.activeRoutines === 1 ? 'rotina' : 'rotinas'}`,
+            label: 'Eventos Ativos',
+            value: `${userStats.activeEvents} ${userStats.activeEvents === 1 ? 'rotina' : 'rotinas'}`,
         },
     ];
 

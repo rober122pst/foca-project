@@ -1,73 +1,67 @@
+import { calculateEventWeeklyPercent, checkEventToday } from "../services/events.services.js";
 import { generateId, verifyUuid } from "../services/generateId.service.js";
-import { calculateRoutineWeeklyPercent, checkRoutineToday } from "../services/routines.services.js";
 
 import { PrismaClient } from "@prisma/client";
-import { mapWeekdaysToNumbers } from "../services/routines.services.js";
+import { mapWeekdaysToNumbers } from "../services/events.services.js";
 
 const prisma = new PrismaClient();
 
-export async function createRoutine(req, res) {
+export async function createEvent(req, res) {
     const userId = req.userId;
-    const { title, description, days, color, startTime, endTime, tag } = req.body;
+    const { title, description, type, deadline, dtstart, dtend, rrule, color, tag } = req.body;
 
     try {
 
         const { id: profileId } = await prisma.profile.findUnique({ where: { userId }, select: { id: true } })
 
-        const newRoutine = await prisma.routine.create({
+        const newEvent = await prisma.event.create({
             data: {
                 id: generateId(),
                 profileId,
                 title,
-                tag,
+                type,
                 description,
-                days,
+                dtstart,
+                dtend,
+                deadline,
+                rrule,
+                tag,
                 color,
-                startTime,
-                endTime
             }
         });
 
-        return res.status(201).json(newRoutine);
+        return res.status(201).json(newEvent);
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: 'Erro ao postar dados' });
     }
 }  
 
-export async function getRoutines(req, res) {
+export async function getEvents(req, res) {
     const userId = req.userId;
     
     try {
-        const { routines } = await prisma.profile.findUnique({ 
+        const { events } = await prisma.profile.findUnique({ 
             where: { userId },
             select: {
-                routines: true,
+                events: true,
             },
         });
 
-        const { rate } = routines.map(routine => calculateRoutineWeeklyPercent(routine.days, routine.completedDays));
-        const { didToday: completed } = routines.map(routine => checkRoutineToday(routine.days, routine.completedDays));
-
-        return res.json(routines.map(routine => ({
-            ...routine,
-            days: mapWeekdaysToNumbers(routine.days),
-            rate: rate || 0,
-            completed,
-        })));
+        return res.json(events);
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Erro no servidor" });
     }
 }
 
-export async function getRoutineById(req, res) {
+export async function getEventById(req, res) {
     const userId = req.userId;
     
     try {
-        const { routineId } = req.params
+        const { eventId } = req.params
 
-        if (!verifyUuid(routineId)) {
+        if (!verifyUuid(eventId)) {
             return res.status(400).json({ message: "ID inválido." });
         }
 
@@ -84,23 +78,23 @@ export async function getRoutineById(req, res) {
 
         const profileId = profile.id;
 
-        const routine = await prisma.routine.findUnique({
+        const event = await prisma.event.findUnique({
             where: {
                 profileId,
-                id: routineId,
+                id: eventId,
             },
         });
 
-        if (!routine) {
+        if (!event) {
             return res.status(404).json({ message: "Rotina não encontrada" });
         }
 
-        const { rate } = calculateRoutineWeeklyPercent(routine.days, routine.completedDays)
-        const { didToday: completed } = checkRoutineToday(routine.days, routine.completedDays)
+        const { rate } = calculateEventWeeklyPercent(event.days, event.completedDays)
+        const { didToday: completed } = checkEventToday(event.days, event.completedDays)
 
         return res.json({
-            ...routine,
-            days: mapWeekdaysToNumbers(routine.days),
+            ...event,
+            days: mapWeekdaysToNumbers(event.days),
             rate: rate || 0,
             completed,
         });
@@ -110,13 +104,13 @@ export async function getRoutineById(req, res) {
     }
 }
 
-export async function updateRoutine(req, res) {
+export async function updateEvent(req, res) {
     const userId = req.userId;
     
     try {
-        const { routineId } = req.params;
+        const { eventId } = req.params;
 
-        if (!verifyUuid(routineId)) {
+        if (!verifyUuid(eventId)) {
             return res.status(400).json({ message: "ID inválido." });
         }
 
@@ -133,24 +127,24 @@ export async function updateRoutine(req, res) {
 
         const profileId = profile.id;
 
-        const updateRoutine = await prisma.routine.update({
+        const updateEvent = await prisma.event.update({
             where: {
                 profileId,
-                id: routineId,
+                id: eventId,
             },
             data: req.body,
         });
 
-        if (!updateRoutine) {
+        if (!updateEvent) {
             return res.status(404).json({ message: "Rotina não encontrada" });
         }
 
-        const { rate } = calculateRoutineWeeklyPercent(updateRoutine.days, updateRoutine.completedDays);
-        const { didToday: completed } = checkRoutineToday(updateRoutine.days, updateRoutine.completedDays);
+        const { rate } = calculateEventWeeklyPercent(updateEvent.days, updateEvent.completedDays);
+        const { didToday: completed } = checkEventToday(updateEvent.days, updateEvent.completedDays);
 
         return res.json({
-            ...updateRoutine,
-            days: mapWeekdaysToNumbers(updateRoutine.days),
+            ...updateEvent,
+            days: mapWeekdaysToNumbers(updateEvent.days),
             rate: rate || 0,
             completed,
         });
@@ -160,13 +154,13 @@ export async function updateRoutine(req, res) {
     }
 }
 
-export async function deleteRoutine(req, res) {
+export async function deleteEvent(req, res) {
         const userId = req.userId;
     
     try {
-        const { routineId } = req.params;
+        const { eventId } = req.params;
 
-        if (!verifyUuid(routineId)) {
+        if (!verifyUuid(eventId)) {
             return res.status(400).json({ message: "ID inválido." });
         }
 
@@ -183,8 +177,8 @@ export async function deleteRoutine(req, res) {
 
         const profileId = profile.id;
 
-        const result = await prisma.routine.delete({ 
-            where: { profileId, id: routineId },
+        const result = await prisma.event.delete({ 
+            where: { profileId, id: eventId },
         })
 
         if (!result) {
