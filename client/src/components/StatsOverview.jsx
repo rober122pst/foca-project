@@ -10,12 +10,12 @@ export default function StatsOverview({ userStats }) {
         {
             icon: Check,
             label: 'Tarefas Concluídas',
-            value: `${userStats.completedTasks} ${userStats.completedTasks === 1 ? 'tarefa' : 'tarefas'}`,
+            value: `${userStats.completedTasks}`,
         },
         {
             icon: Calendar,
-            label: 'Eventos Ativos',
-            value: `${userStats.activeEvents} ${userStats.activeEvents === 1 ? 'rotina' : 'rotinas'}`,
+            label: 'Projetos Ativos',
+            value: `${userStats.activeEvents}`,
         },
     ];
 

@@ -1,12 +1,15 @@
 import { Calendar, Plus, Sparkles, Timer, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
+import { useModalStore } from '../stores/useModalStore';
 import Button from './ui/Button';
 
 export default function QuickActions() {
+    const { openModal } = useModalStore();
+
     const actions = [
         { icon: Timer, label: 'Iniciar Pomodoro', variant: 'default' },
-        { icon: Plus, label: 'Nova Tarefa', variant: 'outline' },
+        { icon: Plus, label: 'Nova Atividade', variant: 'outline', action: () => openModal('create-routine') },
         { icon: Sparkles, label: 'Gerar Rotina IA', variant: 'outline' },
         { icon: Calendar, label: 'Ver Calendário', variant: 'outline' },
     ];

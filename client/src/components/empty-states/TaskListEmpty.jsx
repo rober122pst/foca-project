@@ -14,7 +14,7 @@ export default function TaskListEmpty() {
             <p className="text-medium text-md mb-4 max-w-sm font-medium">
                 Comece sua jornada de produtividade criando sua primeira tarefa.
             </p>
-            <Button onClick={() => openModal('create-task')}>
+            <Button onClick={() => openModal('create-routine')}>
                 <Plus className="h-6 w-6" />
                 <span className="text-base">Criar primeira tarefa</span>
             </Button>
