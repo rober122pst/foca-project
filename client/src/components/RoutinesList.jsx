@@ -15,7 +15,7 @@ export default function RoutinesList({ onSelectEvent, events = [] }) {
             <CardHeader>
                 <CardTitle className="text-lg">
                     <CalendarRange className="text-items-500" />
-                    Todas as Rotinas
+                    Todas as Atividades
                 </CardTitle>
             </CardHeader>
             <CardContent className="p-4">

@@ -1,17 +1,19 @@
 import { Calendar, Plus, Sparkles, Timer, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
+import { useNavigate } from 'react-router-dom';
 import { useModalStore } from '../stores/useModalStore';
 import Button from './ui/Button';
 
 export default function QuickActions() {
     const { openModal } = useModalStore();
+    const navigate = useNavigate();
 
     const actions = [
-        { icon: Timer, label: 'Iniciar Pomodoro', variant: 'default' },
+        { icon: Timer, label: 'Iniciar Pomodoro', variant: 'default', action: () => navigate('/pomodoro') },
         { icon: Plus, label: 'Nova Atividade', variant: 'outline', action: () => openModal('create-routine') },
-        { icon: Sparkles, label: 'Gerar Rotina IA', variant: 'outline' },
-        { icon: Calendar, label: 'Ver Calendário', variant: 'outline' },
+        { icon: Sparkles, label: 'Gerar Rotina IA', variant: 'outline', action: () => openModal('create-routine-ai') },
+        { icon: Calendar, label: 'Ver Calendário', variant: 'outline', action: () => navigate('/dashboard/rotina') },
     ];
 
     return (

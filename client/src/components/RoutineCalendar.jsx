@@ -229,7 +229,7 @@ export default function RoutineCalendar({ selectedDate, onSelectDate, onSelectEv
                     <CardTitle className="text-base sm:text-lg">
                         <CalendarCheck2 className="text-items-500" />
                         <span className="hidden sm:inline">
-                            Eventos -{' '}
+                            Atividades -{' '}
                             {selectedDate.toLocaleDateString('pt-BR', {
                                 weekday: 'long',
                                 day: 'numeric',

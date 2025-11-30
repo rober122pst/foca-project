@@ -10,13 +10,13 @@ export async function getOverviewData(req, res) {
     try {
         // Dados do usuario
         const userData = await prisma.user.findUnique({
-            where: { id: userId },
+            where: { id: userId, },
             select: {
                 profile: {
                     select: {
                         id: true,
                         gamefication: true,
-                        events: true,
+                        events: { where: { type: { in: ['TASK', 'PROJECT'] } } },
                         tasks: true,
                         userAchiviements: true,
                     }
@@ -25,18 +25,18 @@ export async function getOverviewData(req, res) {
         })
 
         const userGamefication = userData.profile.gamefication; // tabela de gameficação
-        const userTasks =  userData.profile.tasks; // lista de tarefas
-        const completedTasks = userTasks.filter(task => task.completed).length; // tarefas completas
         const userEvents = userData.profile.events; // rotinas
-        const eventsCount = userEvents.length; // quantidade de rotinas
+        const userTasks =  userEvents.filter((e) => e.type === 'TASK'); // lista de tarefas
+        const userProjects =  userEvents.filter((e) => e.type === 'PROJECT');
+        const projectsCount = userProjects.length; // quantidade de projetos
         const achievements = await getUserAchievements(prisma, userData.profile.id); // pega conquistas do jogador ordenadas por desbloqueadas e progresso
 
         return res.json({
             stats: {
                 streak: userGamefication?.streakCurrent || 0,
-                totalTimeFocused: 93, // TODO: fazer isso aqui depois
-                completedTasks: completedTasks,
-                activeEvents: eventsCount
+                totalTimeFocused: 0, // TODO: fazer isso aqui depois
+                completedTasks: 0,
+                activeEvents: projectsCount
             },
             levelProgress: {
                 level: userGamefication?.level || 1,

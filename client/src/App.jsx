@@ -8,6 +8,7 @@ import Overview from './pages/dashboard/Overview.jsx';
 import Routine from './pages/dashboard/Routine.jsx';
 import Tasks from './pages/dashboard/Tasks.jsx';
 import CallbackHandler from './pages/oAuthPages/CallbackHandler.jsx';
+import PomodoroPage from './pages/PomodoroPage.jsx';
 
 const LandingPage = lazy(() => import('./pages/LandingPage.jsx'));
 const AuthPage = lazy(() => import('./pages/oAuthPages/AuthPage.jsx'));
@@ -27,6 +28,7 @@ function App() {
                     <Route path="ai" element={<AiPage />} />
                     <Route path="*" element={<h1>Error 404</h1>} />
                 </Route>
+                <Route path="/pomodoro" element={<PomodoroPage />} />
             </Routes>
         </>
     );
