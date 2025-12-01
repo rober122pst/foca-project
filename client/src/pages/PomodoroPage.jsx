@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
 import { ShieldAlert } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import ContextZone from '../components/ContextZone';
 import ControlsZone from '../components/ControlsZone';
@@ -9,6 +10,7 @@ import HeaderZone from '../components/HeaderZone';
 import LoadingScreen from '../components/LoadingScreen';
 import TimerZone from '../components/TimerZone';
 import { useAuth } from '../contexts/AuthContext';
+import { useRoutineById } from '../hooks/routineHooks';
 
 const FOCUS_TIME = 10; // 25 minutes
 const BREAK_TIME = 5; // 5 minutos
@@ -16,6 +18,8 @@ const BREAK_TIME = 5; // 5 minutos
 // --- COMPONENTE PRINCIPAL ---
 
 export default function PomodoroPage() {
+    const [searchParams] = useSearchParams();
+
     const { user, isLoading } = useAuth();
     // Estado Mental e do Timer
     const [timeLeft, setTimeLeft] = useState(FOCUS_TIME);
@@ -24,15 +28,17 @@ export default function PomodoroPage() {
     const [sessionCount, setSessionCount] = useState(2); // Simulado como o "2º do dia"
     const [blockerActive, setBlockerActive] = useState(true);
 
-    // Gamificação (XP e Nível)
-    const [xp, setXp] = useState(1250);
-    const [level, setLevel] = useState(5);
-
     // Estado da Conclusão
     const [isCycleComplete, setIsCycleComplete] = useState(false);
 
+    const [xp, setXp] = useState(1250);
+
     // Referência para o intervalo
     const timerRef = useRef(null);
+
+    const eventId = searchParams.get('event');
+
+    const { data, isPending } = useRoutineById(eventId);
 
     // Formatação do tempo MM:SS
     const formatTime = (seconds) => {

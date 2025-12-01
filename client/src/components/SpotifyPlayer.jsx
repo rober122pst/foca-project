@@ -51,7 +51,7 @@ export default function SpotifyPlayer() {
                 initial="initial"
                 animate="initial"
                 variants={{ hover: {}, initial: {} }}
-                className="relative size-32"
+                className="relative size-28"
             >
                 <motion.div
                     variants={cdVariants}
@@ -68,21 +68,21 @@ export default function SpotifyPlayer() {
                 {/* O Furo do CD (Centro) */}
                 <motion.div
                     variants={holeVariants}
-                    className="absolute top-1/2 left-1/2 flex h-12 w-12 items-center justify-center rounded-full border-3 border-neutral-700/50 bg-neutral-800"
+                    className="absolute top-1/2 left-1/2 flex h-10 w-10 items-center justify-center rounded-full border-3 border-neutral-700/50 bg-neutral-800"
                     style={{ x: '-50%', y: '-50%' }} // Centralização absoluta
                 >
                     {/* Furo interno vazado (simulado com a cor do fundo do player) */}
-                    <div className="bg-items-950/80 h-6 w-6 rounded-full shadow-inner" />
+                    <div className="bg-items-950/80 h-4 w-4 rounded-full shadow-inner" />
                 </motion.div>
             </motion.div>
             <div className="flex-1">
-                <p className="leading-none font-bold">Hailie's Song</p>
+                <p className="leading-none font-bold">Cleanin' Out My Closet</p>
                 <span className="text-medium truncate text-sm">Eminem</span>
 
                 <div className="mt-2 flex items-center gap-1">
-                    <span className="text-xs">3:49</span>
+                    <span className="text-xs">3:28</span>
                     <ProgressBar className="h-0.5" progress={70} />
-                    <span className="text-xs">5:20</span>
+                    <span className="text-xs">4:57</span>
                 </div>
             </div>
         </div>

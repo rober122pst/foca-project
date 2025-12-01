@@ -269,6 +269,7 @@ export default function CreateRoutineModal({ onClose }) {
                                                 control: (base) => ({
                                                     ...base,
                                                     backgroundColor: '#1d1d1d',
+                                                    color: '#fff',
                                                 }),
                                                 menu: (base) => ({
                                                     ...base,

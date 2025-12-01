@@ -26,7 +26,7 @@ export default defineConfig([
             },
         },
         rules: {
-            'no-unused-vars': ['warn', { varsIgnorePattern: '^[A-Z_]' }],
+            'no-unused-vars': ['warn', { varsIgnorePattern: '^(motion|[A-Z_])' }],
             indent: ['error', 4, { SwitchCase: 1 }],
             semi: ['error', 'always'],
             'object-curly-spacing': ['error', 'always'],

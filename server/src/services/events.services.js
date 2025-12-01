@@ -103,3 +103,28 @@ export function checkEventToday(days, completedDays) {
         didToday,
     };
 }
+
+export async function getEventsService(prisma, options) {
+    const where = {};
+
+    // filtrar tipos múltiplos
+    if (options.types && options.types.length > 0) {
+        where.type = { in: options.types };
+    }
+
+    // filtrar só os eventos de hoje
+    if (options.today) {
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+
+        const end = new Date(start);
+        end.setDate(end.getDate() + 1);
+
+        where.dtstart = {
+            gte: start,
+            lt: end,
+        };
+    }
+
+    return prisma.event.findMany({ where: { ...where, profile: { userId: options.userId } } });
+}

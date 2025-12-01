@@ -3,6 +3,7 @@ import {
     createRoutine,
     createRoutineWithAi,
     deleteRoutine,
+    getEvents,
     getRoutineById,
     patchRoutine,
 } from '../services/routinesService';
@@ -17,6 +18,21 @@ export function useRoutineById(id) {
         queryKey: ['routine', accessToken],
         queryFn: async () => {
             const res = await getRoutineById(id);
+            return res.data;
+        },
+        staleTime: 1000 * 60,
+        refetchOnWindowFocus: true,
+        enabled: !!accessToken,
+    });
+}
+
+export function useEvents(query = {}) {
+    const { accessToken } = useAuth();
+
+    return useQuery({
+        queryKey: ['all-events', accessToken],
+        queryFn: async () => {
+            const res = await getEvents(query);
             return res.data;
         },
         staleTime: 1000 * 60,
@@ -60,7 +76,6 @@ export function usePatchRoutine() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['dashboard-routines']);
-            queryClient.invalidateQueries(['routine']);
         },
     });
 }
@@ -74,7 +89,6 @@ export function useDeleteRoutine() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['dashboard-routines']);
-            queryClient.invalidateQueries(['routine']);
         },
     });
 }

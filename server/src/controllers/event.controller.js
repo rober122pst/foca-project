@@ -1,4 +1,4 @@
-import { calculateEventWeeklyPercent, checkEventToday } from "../services/events.services.js";
+import { calculateEventWeeklyPercent, checkEventToday, getEventsService } from "../services/events.services.js";
 import { generateId, verifyUuid } from "../services/generateId.service.js";
 
 import { PrismaClient } from "@prisma/client";
@@ -39,16 +39,26 @@ export async function createEvent(req, res) {
 
 export async function getEvents(req, res) {
     const userId = req.userId;
-    
+        
     try {
-        const { events } = await prisma.profile.findUnique({ 
-            where: { userId },
-            select: {
-                events: true,
-            },
+        const typeParam = req.query.type;
+
+        let types;
+
+        if (typeof typeParam === 'string') {
+            types = typeParam.split(','); // vira ['EVENT', 'TASK']
+        }
+
+        // pega filtro de hoje ?today=true
+        const todayParam = req.query.today === 'true';
+
+        const events = await getEventsService(prisma, {
+            userId: userId,
+            types,
+            today: todayParam,
         });
 
-        return res.json(events);
+        res.json(events);
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Erro no servidor" });
@@ -57,47 +67,23 @@ export async function getEvents(req, res) {
 
 export async function getEventById(req, res) {
     const userId = req.userId;
+    const { eventId } = req.params
     
     try {
-        const { eventId } = req.params
 
         if (!verifyUuid(eventId)) {
             return res.status(400).json({ message: "ID inválido." });
         }
 
-        const profile = await prisma.profile.findUnique({ 
-            where: { userId },
-            select: {
-                id: true,
-            },
-        });
-
-        if (!profile) {
-            return res.status(404).json({ message: "Perfil não encontrado" });
-        }
-
-        const profileId = profile.id;
-
-        const event = await prisma.event.findUnique({
-            where: {
-                profileId,
-                id: eventId,
-            },
+        const event = await prisma.event.findFirst({ 
+            where: { profile: { userId } },
         });
 
         if (!event) {
-            return res.status(404).json({ message: "Rotina não encontrada" });
+            return res.status(404).json({ message: "Evento não encontrado" });
         }
 
-        const { rate } = calculateEventWeeklyPercent(event.days, event.completedDays)
-        const { didToday: completed } = checkEventToday(event.days, event.completedDays)
-
-        return res.json({
-            ...event,
-            days: mapWeekdaysToNumbers(event.days),
-            rate: rate || 0,
-            completed,
-        });
+        return res.json(event);
     } catch (error) {
         console.log(error)
         return res.status(500).json({ message: "Erro no servidor" })

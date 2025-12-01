@@ -10,6 +10,12 @@ export const createRoutineWithAi = async (data) => {
     return res.data;
 };
 
+export const getEvents = async (query) => {
+    const queryParams = new URLSearchParams(query);
+    const res = await api.get(`/user/events?${queryParams}`);
+    return res;
+};
+
 export const getRoutineById = async (id) => {
     const res = await api.get(`/user/events/${id}`);
     return res;
