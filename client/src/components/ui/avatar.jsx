@@ -11,7 +11,7 @@ export function Avatar({ className, children }) {
 
 //  Imagem do avatar
 export function AvatarImage({ src, alt, className }) {
-    return <img className={twMerge('aspect-square size-full', className)} src={src} alt={alt} />;
+    return <img className={twMerge('size-full', className)} src={src} alt={alt} />;
 }
 
 // Caso a imagem falhe em carregar

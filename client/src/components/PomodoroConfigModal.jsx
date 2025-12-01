@@ -1,30 +1,35 @@
 import { ChevronDown, ChevronUp, LoaderIcon, Timer, X } from 'lucide-react';
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { initialPomodoroState, pomodoroReducer } from '../reducers/pomodoroConfigReducer';
 import { Modal, ModalContent, ModalHeader, ModalTitle } from './ui/modal';
 
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
+import { useCreatePomodoroSession } from '../hooks/pomodoroHooks';
 import { useEvents } from '../hooks/routineHooks';
 import Button from './ui/Button';
 
 export default function PomodoroConfigModal({ onClose }) {
     const navigate = useNavigate();
 
+    const [send, setSend] = useState(false);
+
+    const { data: pData, isPending: ispData, mutate } = useCreatePomodoroSession();
+
     const [state, dispatch] = useReducer(pomodoroReducer, initialPomodoroState);
     const { data, isPending } = useEvents({ type: 'TASK,HABIT,PROJECT', today: true });
 
     useEffect(() => {
-        console.log(state);
-    }, [state]);
+        console.log(pData);
+
+        if (pData && send) {
+            navigate(`/pomodoro?session=${pData.eventId}`);
+        }
+    }, [pData, send, navigate]);
 
     const handleClick = () => {
-        if (!state.eventId) {
-            alert('Selecione uma atividade');
-            return;
-        }
-
-        navigate(`/pomodoro?event=${state.eventId}`);
+        mutate({ eventId: state.eventId, cicle: state.breakCount, plannedDuration: state.focusTime });
+        setSend(true);
     };
 
     return (
@@ -69,8 +74,8 @@ export default function PomodoroConfigModal({ onClose }) {
                             {state.breakCount === 0
                                 ? 'Você não terá pausas'
                                 : state.breakCount === 1
-                                  ? 'Você terá só 1 pausa'
-                                  : `Você terá ${state.breakCount} pausas`}
+                                    ? 'Você terá só 1 pausa'
+                                    : `Você terá ${state.breakCount} pausas`}
                         </p>
                     </div>
                     <div>

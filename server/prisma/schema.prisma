@@ -175,20 +175,21 @@ enum Status {
 }
 
 model PomodoroSession {
-    id             String    @id @default(dbgenerated()) @db.Uuid
-    profileId      String    @db.Uuid
-    eventId        String?   @db.Uuid
-    startedAt      DateTime
-    endedAt        DateTime?
-    cicle          Int // quantas o pomodoro vai ciclar
-    status         Status    @default(PAUSED)
+    id              String    @id @default(dbgenerated()) @db.Uuid
+    profileId       String    @db.Uuid
+    eventId         String?   @db.Uuid
+    startedAt       DateTime?
+    endedAt         DateTime?
+    plannedDuration Int
+    cicle           Int // quantas o pomodoro vai ciclar
+    status          Status    @default(PAUSED)
     // Segurança
-    lastClientPing DateTime
-    pausedCount    Int       @default(0)
+    lastClientPing  DateTime?
+    pausedCount     Int       @default(0)
 
     createdAt DateTime @default(now())
 
-    event   Event   @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    event   Event?  @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     profile Profile @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
