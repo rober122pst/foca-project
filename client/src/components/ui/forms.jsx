@@ -132,7 +132,11 @@ export function DayPicker({ value, onChange, className = '' }) {
     const date = selectedDate;
 
     const dateString = date
-        .toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: '2-digit' })
+        .toLocaleDateString('pt-BR', {
+            day: 'numeric',
+            month: 'short',
+            year: '2-digit',
+        })
         .split(' ')
         .map((p, i) => (i === 0 ? p.charAt(0).toUpperCase() + p.slice(1) : p))
         .join(' ');

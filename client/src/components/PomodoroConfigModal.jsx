@@ -15,7 +15,10 @@ export default function PomodoroConfigModal({ onClose }) {
     const { mutate } = useCreatePomodoroSession();
 
     const [state, dispatch] = useReducer(pomodoroReducer, initialPomodoroState);
-    const { data, isPending } = useEvents({ type: 'TASK,HABIT,PROJECT', today: true });
+    const { data, isPending } = useEvents({
+        type: 'TASK,HABIT,PROJECT',
+        today: true,
+    });
 
     const handleClick = () => {
         mutate(
@@ -71,8 +74,8 @@ export default function PomodoroConfigModal({ onClose }) {
                             {state.breakCount === 0
                                 ? 'Você não terá pausas'
                                 : state.breakCount === 1
-                                    ? 'Você terá só 1 pausa'
-                                    : `Você terá ${state.breakCount} pausas`}
+                                  ? 'Você terá só 1 pausa'
+                                  : `Você terá ${state.breakCount} pausas`}
                         </p>
                     </div>
                     <div>
@@ -96,7 +99,10 @@ export default function PomodoroConfigModal({ onClose }) {
                                         color: '#fff',
                                     }),
                                 }}
-                                options={data.map((e) => ({ value: e.id, label: `${e.type} | ${e.title}` }))}
+                                options={data.map((e) => ({
+                                    value: e.id,
+                                    label: `${e.type} | ${e.title}`,
+                                }))}
                             />
                         ) : (
                             <LoaderIcon className="text-primary" />
