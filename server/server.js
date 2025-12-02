@@ -14,7 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, { cors: { origin: '*' } });
 
 // inicialização do passport do Google e facebook
 app.use(passport.initialize()); 
