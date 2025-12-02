@@ -6,7 +6,7 @@ export default function RoutineDailyListEmpty() {
             <div className="display-center bg-cream-200 dark:bg-night-800 mb-4 size-20 rounded-full">
                 <CalendarX className="text-items-500 size-10" />
             </div>
-            <p className="text-medium text-md font-medium">Nenhuma rotina programada para este dia</p>
+            <p className="text-medium text-md font-medium">Nenhuma atividade programada para este dia</p>
         </div>
     );
 }

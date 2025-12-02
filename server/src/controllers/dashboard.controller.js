@@ -1,5 +1,3 @@
-import { calculateRoutineWeeklyPercent, calculateWeeklyProgress, checkRoutineToday, mapWeekdaysToNumbers } from "../services/routines.services.js";
-
 import { PrismaClient } from "@prisma/client";
 import { getUserAchievements } from "../services/achievements.service.js";
 import { xpToNext } from "../services/xp.services.js";
@@ -12,13 +10,13 @@ export async function getOverviewData(req, res) {
     try {
         // Dados do usuario
         const userData = await prisma.user.findUnique({
-            where: { id: userId },
+            where: { id: userId, },
             select: {
                 profile: {
                     select: {
                         id: true,
                         gamefication: true,
-                        routines: true,
+                        events: { where: { type: { in: ['TASK', 'PROJECT'] } } },
                         tasks: true,
                         userAchiviements: true,
                     }
@@ -27,18 +25,18 @@ export async function getOverviewData(req, res) {
         })
 
         const userGamefication = userData.profile.gamefication; // tabela de gameficação
-        const userTasks =  userData.profile.tasks; // lista de tarefas
-        const completedTasks = userTasks.filter(task => task.completed).length; // tarefas completas
-        const userRoutines = userData.profile.routines; // rotinas
-        const routinesCount = userRoutines.length; // quantidade de rotinas
+        const userEvents = userData.profile.events; // rotinas
+        const userTasks =  userEvents.filter((e) => e.type === 'TASK'); // lista de tarefas
+        const userProjects =  userEvents.filter((e) => e.type === 'PROJECT');
+        const projectsCount = userProjects.length; // quantidade de projetos
         const achievements = await getUserAchievements(prisma, userData.profile.id); // pega conquistas do jogador ordenadas por desbloqueadas e progresso
 
         return res.json({
             stats: {
                 streak: userGamefication?.streakCurrent || 0,
-                totalTimeFocused: 93, // TODO: fazer isso aqui depois
-                completedTasks: completedTasks,
-                activeRoutines: routinesCount
+                totalTimeFocused: 0, // TODO: fazer isso aqui depois
+                completedTasks: 0,
+                activeEvents: projectsCount
             },
             levelProgress: {
                 level: userGamefication?.level || 1,
@@ -57,39 +55,50 @@ export async function getOverviewData(req, res) {
     }
 }
 
-export async function getRoutinesData(req, res) {
+export async function getEventsData(req, res) {
     const userId = req.userId;
 
     try {
-        const { routines } = await prisma.profile.findUnique({ 
-            where: { userId },
-            select: {
-                routines: {
-                    orderBy: [
-                        { startTime: 'asc' },
-                        { createAt: 'asc' },
-                    ]
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999)
+
+        const events = await prisma.event.findMany({ 
+            where: { profile: { userId } },
+            orderBy: [
+                { dtstart: 'asc' },
+                { createdAt: 'asc' },
+            ],
+            include: {
+                eventCompletions: {
+                    where: {
+                        occurrenceDate: {
+                            gte: todayStart,
+                            lte: todayEnd,
+                        },
+                    },
                 },
-            }
+            },
         });
 
-        const activeRoutines = routines.length;
-        const bestStreak = Math.max(...routines.map(r => r.streak), 0);
-        const { rate: completionRate, totalCompleted: thisCompletedWeek, totalPossible: totalThisWeek } = calculateWeeklyProgress(routines);
+        const activeEvents = events.length;
+        const bestStreak = Math.max(...events.map(e => e.streak), 0);
+
 
         return res.json({
             stats: {
-                activeRoutines,
+                activeEvents,
                 bestStreak,
-                completionRate: completionRate || 0,
-                thisCompletedWeek: thisCompletedWeek || 0,
-                totalThisWeek: totalThisWeek || 0,
+                completionRate: 0,
+                thisCompletedWeek: 0,
+                totalThisWeek: 0,
             },
-            routines: routines.map(routine => ({
-                ...routine,
-                days: mapWeekdaysToNumbers(routine.days),
-                rate: calculateRoutineWeeklyPercent(routine.days, routine.completedDays).rate || 0,
-                completed: checkRoutineToday(routine.days, routine.completedDays).didToday,
+            events: events.map((event) => ({
+                ...event,
+                eventCompletions: undefined,
+                completed: event.eventCompletions.length > 0,
             })),
         });
     } catch (error) {

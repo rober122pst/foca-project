@@ -10,13 +10,13 @@ export default function TaskListEmpty() {
             <div className="display-center bg-cream-200 dark:bg-night-800 mb-4 size-20 rounded-full">
                 <ClipboardList className="text-items-500 size-10" />
             </div>
-            <h3 className="text-items-950 dark:text-cream-100 mb-2 font-semibold">Nenhuma tarefa ainda</h3>
+            <h3 className="text-items-950 dark:text-cream-100 mb-2 font-semibold">Nenhuma atividade ainda</h3>
             <p className="text-medium text-md mb-4 max-w-sm font-medium">
-                Comece sua jornada de produtividade criando sua primeira tarefa.
+                Comece sua jornada de produtividade criando sua primeira atividade.
             </p>
-            <Button onClick={() => openModal('create-task')}>
+            <Button onClick={() => openModal('create-routine')}>
                 <Plus className="h-6 w-6" />
-                <span className="text-base">Criar primeira tarefa</span>
+                <span className="text-base">Criar primeira atividade</span>
             </Button>
         </div>
     );

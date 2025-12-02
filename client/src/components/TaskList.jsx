@@ -47,14 +47,9 @@ export default function TaskList({ tasks, onToggle }) {
                                                 year: '2-digit',
                                             })}
                                         </div>
-                                        {task.tags.map((tag) => (
-                                            <span
-                                                key={tag}
-                                                className="bg-cream-300 dark:bg-night-700 w-fit rounded-md px-2 py-1 text-xs"
-                                            >
-                                                {tag}
-                                            </span>
-                                        ))}
+                                        <span className="bg-cream-300 dark:bg-night-700 w-fit rounded-md px-2 py-1 text-xs">
+                                            {task.tag}
+                                        </span>
                                     </div>
                                 </div>
                                 <Button variant="ghost" className="h-8 w-8">

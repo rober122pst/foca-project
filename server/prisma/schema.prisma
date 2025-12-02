@@ -21,7 +21,6 @@ model User {
     profile       Profile?
     config        Config?
     refreshTokens refreshToken[]
-    pomodoros     Pomodoro[]
 }
 
 enum Theme {
@@ -39,18 +38,19 @@ model Config {
 }
 
 model Profile {
-    id               String            @id @default(dbgenerated()) @db.Uuid
-    userId           String            @unique @db.Uuid
-    user             User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    picUrl           String            @default("")
-    bannerUrl        String            @default("")
-    bio              String            @default("")
-    followers        Int               @default(0)
-    following        Int               @default(0)
-    userAchiviements UserAchiviement[]
-    routines         Routine[]
-    tasks            Task[]
-    gamefication     Gamefication?
+    id                String            @id @default(dbgenerated()) @db.Uuid
+    userId            String            @unique @db.Uuid
+    user              User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    picUrl            String            @default("")
+    bannerUrl         String            @default("")
+    bio               String            @default("")
+    followers         Int               @default(0)
+    following         Int               @default(0)
+    userAchiviements  UserAchiviement[]
+    events            Event[]
+    tasks             Task[]
+    gamefication      Gamefication?
+    pomodorosSessions PomodoroSession[]
 }
 
 model Gamefication {
@@ -72,20 +72,19 @@ enum Priority {
 }
 
 model Task {
-    id          String     @id @default(dbgenerated()) @db.Uuid
-    profileId   String     @db.Uuid
-    profile     Profile    @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    id          String    @id @default(dbgenerated()) @db.Uuid
+    profileId   String    @db.Uuid
+    profile     Profile   @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     title       String
     description String?
-    completed   Boolean    @default(false)
+    completed   Boolean   @default(false)
     completedAt DateTime?
     deadline    DateTime?
-    priority    Priority   @default(LOW)
+    priority    Priority  @default(LOW)
     tags        String[]
-    isRecurring Boolean    @default(false)
-    createAt    DateTime   @default(now())
-    updateAt    DateTime   @updatedAt
-    pomodoros   Pomodoro[]
+    isRecurring Boolean   @default(false)
+    createAt    DateTime  @default(now())
+    updateAt    DateTime  @updatedAt
 }
 
 enum Weekday {
@@ -98,22 +97,42 @@ enum Weekday {
     SAT
 }
 
-model Routine {
-    id              String     @id @default(dbgenerated()) @db.Uuid
-    profileId       String     @db.Uuid
-    profile         Profile    @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    title           String
-    description     String?
-    days            Weekday[]
-    tag             String     @default("Estudo")
-    color           String     @default("#fb2c36")
-    startTime       DateTime
-    endTime         DateTime
-    streak          Int        @default(0)
-    completedDays   DateTime[] @default([])
-    lastCompletedAt DateTime?
-    createAt        DateTime   @default(now())
-    updateAt        DateTime   @updatedAt
+enum Type {
+    TASK
+    HABIT
+    EVENT
+    PROJECT
+}
+
+model Event {
+    id               String            @id @default(dbgenerated()) @db.Uuid
+    profileId        String            @db.Uuid
+    profile          Profile           @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    title            String
+    description      String?
+    type             Type              @default(TASK)
+    dtstart          DateTime
+    dtend            DateTime
+    rrule            String?
+    tz               String            @default("America/Sao_Paulo")
+    deadline         DateTime?
+    tag              String            @default("Estudo")
+    color            String            @default("#fb2c36")
+    streak           Int               @default(0)
+    createdAt        DateTime          @default(now())
+    updatedAt        DateTime          @updatedAt
+    eventCompletions EventCompletion[]
+    pomodoroSessions PomodoroSession[]
+}
+
+model EventCompletion {
+    id             String   @id @default(dbgenerated()) @db.Uuid
+    eventId        String   @db.Uuid
+    occurrenceDate DateTime
+    createdAt      DateTime @default(now())
+    event          Event    @relation(fields: [eventId], references: [id])
+
+    @@unique([eventId, occurrenceDate])
 }
 
 enum Rarity {
@@ -149,23 +168,50 @@ model UserAchiviement {
 }
 
 enum Status {
-    CONCLUIDO
-    FAZENDO
-    CANCELADO
+    WAITING
+    RUNNING
+    PAUSED
+    BREAK
+    COMPLETED
+    CANCELLED
+    ABANDONED
 }
 
-model Pomodoro {
-    id          String   @id @default(dbgenerated()) @db.Uuid
-    userId      String   @db.Uuid
-    user        User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    time        String   @default("25:00")
-    timeRest    String   @default("5:00")
-    cicle       Int // quantas o pomodoro vai ciclar entre atividade (25:00) e descanço (5:00)
-    status      Status   @default(FAZENDO)
-    createdAt   DateTime @default(now())
-    completedAt DateTime @default(now())
-    tasks       Task?    @relation(fields: [taskId], references: [id])
-    taskId      String?  @db.Uuid
+model PomodoroSession {
+    id               String          @id @default(dbgenerated()) @db.Uuid
+    profileId        String          @db.Uuid
+    eventId          String?         @db.Uuid
+    totalPlannedTime Int
+    totalCycles      Int // quantas o pomodoro vai ciclar
+    pomodoroBlocks   PomodoroBlock[]
+    status           Status          @default(RUNNING)
+
+    createdAt DateTime @default(now())
+
+    event   Event?  @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    profile Profile @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+enum BlockType {
+    FOCUS
+    BREAK
+}
+
+model PomodoroBlock {
+    id              String    @id @default(dbgenerated()) @db.Uuid
+    sessionId       String    @db.Uuid
+    type            BlockType @default(FOCUS)
+    sequenceOrder   Int
+    plannedDuration Int
+
+    startTime DateTime?
+    endTime   DateTime?
+
+    totalPauseTime Int       @default(0)
+    lastPauseTime  DateTime?
+    lastPingTime   DateTime?
+
+    session PomodoroSession @relation(fields: [sessionId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model refreshToken {

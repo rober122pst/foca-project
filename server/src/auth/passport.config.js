@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
-import passport from 'passport';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth2';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 import { generateId } from '../services/generateId.service.js';
+import passport from 'passport';
 
 const prisma = new PrismaClient();
 
@@ -66,9 +66,9 @@ async (_, __, profile, cb) => {
 
 // login com Facebook
 passport.use(new FacebookStrategy({
-    clientID: process.env.FACEBOOK_APP_ID, 
-    clientSecret: process.env.FACEBOOK_APP_SECRET,
-    callbackURL: process.env.FACEBOOK_CALLBACK,
+    clientID: process.env.FACEBOOK_APP_ID || 'o', 
+    clientSecret: process.env.FACEBOOK_APP_SECRET || 'b',
+    callbackURL: process.env.FACEBOOK_CALLBACK || 'o',
     profileFields: ['id', 'displayName', 'name', 'email', 'photos']
 }, async (accessToken, refreshToken, profile, cb) => {
     try {

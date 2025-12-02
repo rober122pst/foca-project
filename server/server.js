@@ -3,39 +3,48 @@ import './src/auth/passport.config.js';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import http from 'http';
 import passport from 'passport';
-import authRoutes from './src/auth/auth.routes.js';
-import dashboardRoutes from './src/routes/dashboard.routes.js';
-import geminiRoutes from './src/routes/gemini.routes.js';
-import routineRoutes from './src/routes/routine.routes.js';
-import taskRoutes from './src/routes/task.routes.js';
-import userRoutes from './src/routes/user.routes.js';
+import { Server } from 'socket.io';
+import routes from './src/routes/routes.js';
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-const PORT = process.env.PORT || 3000;
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: '*' } });
 
 // inicialização do passport do Google e facebook
 app.use(passport.initialize()); 
 
+app.use((req, res, next) => {
+    req.io = io; 
+    next(); // Continua para a próxima etapa (as rotas)
+});
 
+app.use(routes);
 
 app.get('/', (req, res) => {
     res.send('Server is running');
 });
 
-// Usar rotas
-app.use('/auth', authRoutes);
-app.use('/user/routines', routineRoutes);
-app.use('/user/tasks', taskRoutes);
-app.use('/user', userRoutes);
-app.use('/dashboard', dashboardRoutes);
-app.use('/ai', geminiRoutes);
+io.on('connection', (socket) => {
+    console.log('Um utilizador conectou-se! ID:', socket.id);
 
-app.listen(PORT, () => {
+    socket.on('join_session', (sessionId) => {
+        socket.join(sessionId);
+        console.log(`Socket ${socket.id} entrou na sessão ${sessionId}`);
+    });
+    // Evento quando o utilizador se desconecta
+    socket.on('disconnect', () => {
+        console.log('Utilizador desconectou-se.');
+    });
+});
+
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
