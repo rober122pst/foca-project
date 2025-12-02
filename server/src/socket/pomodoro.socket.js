@@ -69,11 +69,34 @@ export default function pomodoroSocketHandler(io, socket) {
             let nextBlock = session.pomodoroBlocks.find(b => !b.startTime && !b.endTime);
 
             if (activeBlock) {
-                 // Already active, just ensure status is running
+                 // Already active. Check if it was paused.
+                 if (activeBlock.lastPauseTime) {
+                     // If it was paused, we should resume it instead of just starting.
+                     // Calculate pause duration since lastPauseTime
+                     const now = new Date();
+                     const pauseDuration = Math.floor((now.getTime() - activeBlock.lastPauseTime.getTime()) / 1000);
+
+                     await prisma.pomodoroBlock.update({
+                        where: { id: activeBlock.id },
+                        data: {
+                            totalPauseTime: { increment: pauseDuration },
+                            lastPauseTime: null
+                        }
+                    });
+                 }
+
+                 // ensure status is running
                  if (session.status !== 'RUNNING') {
                      await prisma.pomodoroSession.update({ where: { id: sessionId }, data: { status: 'RUNNING' } });
                  }
-                 io.to(sessionId).emit('timer_started', activeBlock);
+
+                 // Refetch to get updated block
+                 const updatedSession = await prisma.pomodoroSession.findUnique({
+                    where: { id: sessionId },
+                    include: { pomodoroBlocks: { orderBy: { sequenceOrder: 'asc' } } }
+                });
+
+                 io.to(sessionId).emit('session_update', updatedSession);
                  return;
             }
 
@@ -138,9 +161,7 @@ export default function pomodoroSocketHandler(io, socket) {
 
             if (activeBlock && activeBlock.lastPauseTime) {
                 const pauseDuration = Math.floor((now.getTime() - activeBlock.lastPauseTime.getTime()) / 1000); // in seconds
-
-                // Add to totalPauseTime (stored in seconds based on schema? Schema says Int. Let's assume seconds.)
-                // Schema: totalPauseTime Int @default(0)
+                console.log(`Resuming session ${sessionId}. Added pause duration: ${pauseDuration}s`);
 
                 await prisma.pomodoroBlock.update({
                     where: { id: activeBlock.id },
@@ -149,6 +170,12 @@ export default function pomodoroSocketHandler(io, socket) {
                         lastPauseTime: null // Clear it
                     }
                 });
+            } else if (activeBlock && !activeBlock.lastPauseTime && session.status === 'PAUSED') {
+                // Edge case: Status is PAUSED but lastPauseTime is missing.
+                // This shouldn't happen unless manual DB edit or bug.
+                // We should probably just resume without adding pause time (loss of pause tracking)
+                // or assume we paused "now"? No.
+                console.warn(`Resuming session ${sessionId} but lastPauseTime is missing on active block.`);
             }
 
             await prisma.pomodoroSession.update({
