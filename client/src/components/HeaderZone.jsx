@@ -16,7 +16,7 @@ const HeaderZone = ({ isActive, mode, level, xp, avatar }) => (
                         scale: { repeat: Infinity, duration: 2, ease: 'easeInOut' },
                         duration: 0.3,
                     }}
-                    className="bg-night-800 flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-4 text-2xl"
+                    className="bg-items-900/50 border-items-900/50 flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-4 text-2xl"
                 >
                     <img src={avatar || avatarImg} alt="Avatar" className="object-cover object-center" />
                 </motion.div>

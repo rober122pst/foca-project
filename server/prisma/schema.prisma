@@ -168,29 +168,50 @@ model UserAchiviement {
 }
 
 enum Status {
-    COMPLETED
+    WAITING
     RUNNING
     PAUSED
-    ABORTED
+    BREAK
+    COMPLETED
+    CANCELLED
+    ABANDONED
 }
 
 model PomodoroSession {
-    id              String    @id @default(dbgenerated()) @db.Uuid
-    profileId       String    @db.Uuid
-    eventId         String?   @db.Uuid
-    startedAt       DateTime?
-    endedAt         DateTime?
-    plannedDuration Int
-    cicle           Int // quantas o pomodoro vai ciclar
-    status          Status    @default(PAUSED)
-    // Segurança
-    lastClientPing  DateTime?
-    pausedCount     Int       @default(0)
+    id               String          @id @default(dbgenerated()) @db.Uuid
+    profileId        String          @db.Uuid
+    eventId          String?         @db.Uuid
+    totalPlannedTime Int
+    totalCycles      Int // quantas o pomodoro vai ciclar
+    pomodoroBlocks   PomodoroBlock[]
+    status           Status          @default(RUNNING)
 
     createdAt DateTime @default(now())
 
     event   Event?  @relation(fields: [eventId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     profile Profile @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+enum BlockType {
+    FOCUS
+    BREAK
+}
+
+model PomodoroBlock {
+    id              String    @id @default(dbgenerated()) @db.Uuid
+    sessionId       String    @db.Uuid
+    type            BlockType @default(FOCUS)
+    sequenceOrder   Int
+    plannedDuration Int
+
+    startTime DateTime?
+    endTime   DateTime?
+
+    totalPauseTime Int       @default(0)
+    lastPauseTime  DateTime?
+    lastPingTime   DateTime?
+
+    session PomodoroSession @relation(fields: [sessionId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model refreshToken {

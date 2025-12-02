@@ -1,8 +1,8 @@
 import { ChevronDown, ChevronUp, LoaderIcon, Timer, X } from 'lucide-react';
-import { useEffect, useReducer, useState } from 'react';
 import { initialPomodoroState, pomodoroReducer } from '../reducers/pomodoroConfigReducer';
 import { Modal, ModalContent, ModalHeader, ModalTitle } from './ui/modal';
 
+import { useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { useCreatePomodoroSession } from '../hooks/pomodoroHooks';
@@ -12,24 +12,21 @@ import Button from './ui/Button';
 export default function PomodoroConfigModal({ onClose }) {
     const navigate = useNavigate();
 
-    const [send, setSend] = useState(false);
-
-    const { data: pData, isPending: ispData, mutate } = useCreatePomodoroSession();
+    const { mutate } = useCreatePomodoroSession();
 
     const [state, dispatch] = useReducer(pomodoroReducer, initialPomodoroState);
     const { data, isPending } = useEvents({ type: 'TASK,HABIT,PROJECT', today: true });
 
-    useEffect(() => {
-        console.log(pData);
-
-        if (pData && send) {
-            navigate(`/pomodoro?session=${pData.eventId}`);
-        }
-    }, [pData, send, navigate]);
-
     const handleClick = () => {
-        mutate({ eventId: state.eventId, cicle: state.breakCount, plannedDuration: state.focusTime });
-        setSend(true);
+        mutate(
+            { eventId: state.eventId, plannedDuration: state.focusTime },
+            {
+                onSuccess: (data) => {
+                    console.log(data);
+                    navigate(`/pomodoro?session=${data.sessionId}`);
+                },
+            }
+        );
     };
 
     return (

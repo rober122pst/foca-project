@@ -68,11 +68,11 @@ export default function SpotifyPlayer() {
                 {/* O Furo do CD (Centro) */}
                 <motion.div
                     variants={holeVariants}
-                    className="absolute top-1/2 left-1/2 flex h-10 w-10 items-center justify-center rounded-full border-3 border-neutral-700/50 bg-neutral-800"
+                    className="absolute top-1/2 left-1/2 flex h-8 w-8 items-center justify-center rounded-full border-2 border-neutral-700/50 bg-neutral-800"
                     style={{ x: '-50%', y: '-50%' }} // Centralização absoluta
                 >
                     {/* Furo interno vazado (simulado com a cor do fundo do player) */}
-                    <div className="bg-items-950/80 h-4 w-4 rounded-full shadow-inner" />
+                    <div className="bg-items-950/80 h-3 w-3 rounded-full shadow-inner" />
                 </motion.div>
             </motion.div>
             <div className="flex-1">

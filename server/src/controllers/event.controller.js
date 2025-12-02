@@ -76,7 +76,7 @@ export async function getEventById(req, res) {
         }
 
         const event = await prisma.event.findFirst({ 
-            where: { profile: { userId } },
+            where: { profile: { userId }, id: eventId },
         });
 
         if (!event) {

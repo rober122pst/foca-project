@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
+import { usePomodoroSession, useStartPomodoro } from '../hooks/pomodoroHooks';
 
 import { ShieldAlert } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
@@ -7,38 +8,37 @@ import CelebrationOverlay from '../components/CelebrationOverlay';
 import ContextZone from '../components/ContextZone';
 import ControlsZone from '../components/ControlsZone';
 import HeaderZone from '../components/HeaderZone';
-import LoadingScreen from '../components/LoadingScreen';
+import LoadingScreenPomodoro from '../components/LoadingScreenPomodoro';
 import TimerZone from '../components/TimerZone';
 import { useAuth } from '../contexts/AuthContext';
-import { useRoutineById } from '../hooks/routineHooks';
-
-const FOCUS_TIME = 10; // 25 minutes
-const BREAK_TIME = 5; // 5 minutos
-
-// --- COMPONENTE PRINCIPAL ---
+import { useFakeProgress } from '../hooks/useFakeProgress';
 
 export default function PomodoroPage() {
     const [searchParams] = useSearchParams();
 
     const { user, isLoading } = useAuth();
     // Estado Mental e do Timer
-    const [timeLeft, setTimeLeft] = useState(FOCUS_TIME);
+    const [focusTime, setFocusTime] = useState(null);
+    const breakTime = 5 * 60;
+    const [timeLeft, setTimeLeft] = useState(null);
     const [isActive, setIsActive] = useState(false);
     const [mode, setMode] = useState('focus'); // 'focus' | 'break'
     const [sessionCount, setSessionCount] = useState(2); // Simulado como o "2º do dia"
     const [blockerActive, setBlockerActive] = useState(true);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
     // Estado da Conclusão
     const [isCycleComplete, setIsCycleComplete] = useState(false);
 
-    const [xp, setXp] = useState(1250);
-
     // Referência para o intervalo
     const timerRef = useRef(null);
 
-    const eventId = searchParams.get('event');
+    const sessionId = searchParams.get('session');
 
-    const { data, isPending } = useRoutineById(eventId);
+    const { data: pomodoro, isLoading: pomodoroLoading } = usePomodoroSession(sessionId);
+    const { refetch } = useStartPomodoro(sessionId);
+
+    const fakeProgress = useFakeProgress(isLoading && pomodoroLoading);
 
     // Formatação do tempo MM:SS
     const formatTime = (seconds) => {
@@ -47,8 +47,15 @@ export default function PomodoroPage() {
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
+    useEffect(() => {
+        if (pomodoro) {
+            setFocusTime(pomodoro.pomodoroBlocks[0].plannedDuration);
+            setTimeLeft(pomodoro.pomodoroBlocks[0].plannedDuration);
+        }
+    }, [pomodoro]);
+
     // Cálculo do progresso circular
-    const totalTime = mode === 'focus' ? FOCUS_TIME : BREAK_TIME;
+    const totalTime = mode === 'focus' ? focusTime : breakTime;
     const progress = ((totalTime - timeLeft) / totalTime) * 100;
     const radius = 120;
     const circumference = 2 * Math.PI * radius;
@@ -59,10 +66,6 @@ export default function PomodoroPage() {
         if (isActive && timeLeft > 0) {
             timerRef.current = setInterval(() => {
                 setTimeLeft((prev) => prev - 1);
-                // Micro-recompensa aleatória
-                if (Math.random() > 0.95 && mode === 'focus') {
-                    triggerMicroReward();
-                }
             }, 1000);
         } else if (timeLeft === 0) {
             handleComplete();
@@ -70,37 +73,41 @@ export default function PomodoroPage() {
         return () => clearInterval(timerRef.current);
     }, [isActive, timeLeft, mode]);
 
-    const triggerMicroReward = () => {
-        setXp((prev) => prev + 2);
-    };
+    useEffect(() => {
+        if (fakeProgress >= 100) {
+            setIsInitialLoad(false);
+        }
+    }, [fakeProgress]);
 
     const handleComplete = () => {
         setIsActive(false);
         clearInterval(timerRef.current);
         setIsCycleComplete(true);
-        setXp((prev) => prev + 100);
         setSessionCount((prev) => prev + 1);
     };
 
-    const toggleTimer = () => setIsActive(!isActive);
+    const toggleTimer = () => {
+        refetch();
+        setIsActive(!isActive);
+    };
 
     const resetTimer = () => {
         setIsActive(false);
-        setTimeLeft(mode === 'focus' ? FOCUS_TIME : BREAK_TIME);
+        setTimeLeft(mode === 'focus' ? focusTime : breakTime);
         setIsCycleComplete(false);
     };
 
     const switchMode = () => {
         const newMode = mode === 'focus' ? 'break' : 'focus';
         setMode(newMode);
-        setTimeLeft(newMode === 'focus' ? FOCUS_TIME : BREAK_TIME);
+        setTimeLeft(newMode === 'focus' ? focusTime : breakTime);
         setIsCycleComplete(false);
     };
 
     return (
         <>
-            <LoadingScreen isLoading={isLoading} />
-            {!isLoading && (
+            <AnimatePresence>{isInitialLoad && <LoadingScreenPomodoro progress={fakeProgress} />}</AnimatePresence>
+            {!isInitialLoad && (
                 <div className="bg-items-950 text-cream-200 selection:bg-items-500/30 min-h-screen">
                     {/* Overlay de Conclusão */}
                     <CelebrationOverlay
