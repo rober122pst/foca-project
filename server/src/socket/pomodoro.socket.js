@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../prisma.js";
 
 // Helper to check abandonment
 async function checkAbandonment(session) {
@@ -168,6 +166,54 @@ export default function pomodoroSocketHandler(io, socket) {
 
         } catch (error) {
             console.error(error);
+        }
+    });
+
+    socket.on('reset_block', async ({ sessionId }) => {
+        try {
+            const session = await prisma.pomodoroSession.findUnique({
+                where: { id: sessionId },
+                include: { pomodoroBlocks: true }
+            });
+
+            // Find current active block
+            const activeBlock = session.pomodoroBlocks.find(b => b.startTime && !b.endTime);
+            if (!activeBlock) return;
+
+            // Reset block data
+            await prisma.pomodoroBlock.update({
+                where: { id: activeBlock.id },
+                data: {
+                    startTime: null,
+                    endTime: null,
+                    lastPauseTime: null,
+                    totalPauseTime: 0
+                }
+            });
+
+            // Set session to WAITING if it's the first block, or just PAUSED?
+            // User requested "reset timer of that block".
+            // If we nullify startTime, it's like it never started.
+            // If it's the first block, session should be WAITING.
+
+            let newStatus = 'PAUSED';
+            if (activeBlock.sequenceOrder === 1) {
+                newStatus = 'WAITING';
+            }
+
+            await prisma.pomodoroSession.update({
+                where: { id: sessionId },
+                data: { status: newStatus }
+            });
+
+             const updatedSession = await prisma.pomodoroSession.findUnique({
+                 where: { id: sessionId },
+                 include: { pomodoroBlocks: { orderBy: { sequenceOrder: 'asc' } } }
+            });
+
+            io.to(sessionId).emit('session_update', updatedSession);
+        } catch (error) {
+            console.error("Error resetting block:", error);
         }
     });
 

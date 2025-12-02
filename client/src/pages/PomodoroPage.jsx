@@ -19,7 +19,7 @@ export default function PomodoroPage() {
     const { user, isLoading } = useAuth();
 
     // Socket Hook
-    const { sessionData, startTimer, pauseTimer, resumeTimer, finishBlock, error, status } =
+    const { sessionData, startTimer, pauseTimer, resumeTimer, finishBlock, resetBlock, error, status } =
         usePomodoroSocket(sessionId);
 
     // Local State for Interpolation
@@ -99,6 +99,16 @@ export default function PomodoroPage() {
         }
     }, [sessionData]);
 
+    // Handle initial 0 case (reconnect when block finished but not closed)
+    useEffect(() => {
+        if (sessionData && timeLeft === 0 && isActive) {
+             const currentBlock = sessionData.pomodoroBlocks.find(b => !b.endTime);
+             if (currentBlock && currentBlock.startTime) {
+                 finishBlock(currentBlock.id);
+             }
+        }
+    }, [timeLeft, isActive, sessionData]);
+
     // Local Timer Interpolation
     useEffect(() => {
         if (isActive && timeLeft > 0) {
@@ -153,9 +163,8 @@ export default function PomodoroPage() {
     };
 
     const resetTimer = () => {
-        // Not really implemented on server yet, maybe "Abandon"?
-        // Or just pause? For now, pause.
-        pauseTimer();
+        resetBlock();
+        setIsActive(false);
     };
 
     // Derived session count

@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 import { useEffect, useRef, useState } from 'react';
 
-const SOCKET_URL = 'http://localhost:3000'; // Adjust as needed or use env
+const SOCKET_URL = import.meta.env.VITE_API_URL;
 
 export function usePomodoroSocket(sessionId) {
     const [socket, setSocket] = useState(null);
@@ -78,6 +78,10 @@ export function usePomodoroSocket(sessionId) {
         if (socket) socket.emit('finish_block', { sessionId, blockId });
     };
 
+    const resetBlock = () => {
+        if (socket) socket.emit('reset_block', { sessionId });
+    };
+
     return {
         socket,
         sessionData,
@@ -87,5 +91,6 @@ export function usePomodoroSocket(sessionId) {
         pauseTimer,
         resumeTimer,
         finishBlock,
+        resetBlock,
     };
 }
