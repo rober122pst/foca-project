@@ -19,6 +19,7 @@ export async function getOverviewData(req, res) {
                         events: { where: { type: { in: ['TASK', 'PROJECT'] } } },
                         tasks: true,
                         userAchiviements: true,
+                        pomodorosSessions: true,
                     }
                 }
             }
@@ -34,13 +35,14 @@ export async function getOverviewData(req, res) {
         return res.json({
             stats: {
                 streak: userGamefication?.streakCurrent || 0,
-                totalTimeFocused: 0, // TODO: fazer isso aqui depois
-                completedTasks: 0,
+                totalTimeFocused: userGamefication?.totalTimeFocus || 0,
+                totalSessions: userData.profile.pomodorosSessions.length,
                 activeEvents: projectsCount
             },
             levelProgress: {
                 level: userGamefication?.level || 1,
-                currentXp: userGamefication?.currentXp || 0,
+                currentXp: userGamefication?.xp || 0,
+                totalXp: userGamefication?.totalXp || 0,
                 nextLevelXp: userGamefication ? XpService.xpToNext(userGamefication.level) : XpService.xpToNext(1),
             },
             totalTasks: userTasks.length,

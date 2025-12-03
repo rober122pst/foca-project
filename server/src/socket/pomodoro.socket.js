@@ -1,21 +1,65 @@
+import pkg from 'rrule';
 import prisma from "../prisma.js";
 import { XpService } from "../services/xp.services.js";
 
-// Helper to check abandonment
+const { RRule } = pkg;
+
 async function checkAbandonment(session) {
     if (!session || !session.event) return false;
 
     const now = new Date();
-    // 2 hours in ms
-    const TOLERANCE = 2 * 60 * 60 * 1000;
+    const TOLERANCE = 2 * 60 * 60 * 1000; // 2 horas
 
-    if (now.getTime() > session.event.dtend.getTime() + TOLERANCE) {
+    let effectiveEndTime;
+
+    // Se NÃO tem recorrência, usa o dtend original do banco
+    if (!session.event.rrule) {
+        effectiveEndTime = new Date(session.event.dtend);
+    } 
+    // Se TEM recorrência, precisamos calcular o fim desta ocorrência específica
+    else {
+        try {
+            const originalStart = new Date(session.event.dtstart);
+            const originalEnd = new Date(session.event.dtend);
+            
+            // 1. Descobre a duração do evento (ex: 1 hora)
+            const duration = originalEnd.getTime() - originalStart.getTime();
+
+            // 2. Configura a regra
+            const ruleOptions = RRule.parseString(session.event.rrule);
+            ruleOptions.dtstart = originalStart;
+            const rule = new RRule(ruleOptions);
+
+            // 3. Pega a ocorrência mais recente que começou antes (ou exatamente) agora.
+            // O 'true' no segundo argumento indica 'inclusivo'.
+            const currentOccurrenceStart = rule.before(now, true);
+
+            if (!currentOccurrenceStart) {
+                // Se por algum motivo não achou ocorrência anterior (ex: evento futuro), 
+                // fallback para o original ou retorna false para não bugar.
+                // Mas assumindo que a sessão existe, deve haver uma ocorrência.
+                return false; 
+            }
+
+            // 4. Calcula o fim real dessa ocorrência específica
+            effectiveEndTime = new Date(currentOccurrenceStart.getTime() + duration);
+
+        } catch (error) {
+            console.error("Erro ao calcular data de abandono recorrente:", error);
+            // Em caso de erro, evita marcar como abandonado prematuramente
+            return false;
+        }
+    }
+
+    // Agora a comparação é feita com o horário correto do dia atual
+    if (now.getTime() > effectiveEndTime.getTime() + TOLERANCE) {
         await prisma.pomodoroSession.update({
             where: { id: session.id },
             data: { status: 'ABANDONED' }
         });
         return true;
     }
+
     return false;
 }
 
@@ -300,17 +344,24 @@ export default function pomodoroSocketHandler(io, socket) {
                 select: { id: true }
             });
 
-            await XpService.giveXp(gameficationId, 100, 'Pomodoro Finalizado')
+            const xpReward = Math.floor(100 + (1.5 * (block.plannedDuration / 60)));
 
+            if (block.type === 'FOCUS') {
+                await XpService.giveXp(gameficationId, xpReward, 'Bloco Finalizado')
+            }
+            
             const allComplete = session.pomodoroBlocks.every(b => b.endTime);
             if (allComplete) {
+                await XpService.giveXp(gameficationId, xpReward, 'Pomodoro Finalizado')
                 await prisma.pomodoroSession.update({
                     where: { id: sessionId },
                     data: { status: 'COMPLETED' }
                 });
             }
 
-             const finalSession = await prisma.pomodoroSession.findUnique({
+            console.log(xpReward)
+
+            const finalSession = await prisma.pomodoroSession.findUnique({
                  where: { id: sessionId },
                  include: { pomodoroBlocks: { orderBy: { sequenceOrder: 'asc' } } }
             });

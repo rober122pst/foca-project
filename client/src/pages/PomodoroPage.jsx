@@ -151,8 +151,6 @@ export default function PomodoroPage() {
 
     // Local Timer Interpolation
     useEffect(() => {
-        // We only start the interval if we are active, and we have session data.
-        // We do NOT depend on timeLeft > 0 to start it, because it might be 0 but pending server completion.
         if (isActive && sessionData) {
             timerRef.current = setInterval(() => {
                 const currentBlock = sessionData.pomodoroBlocks.find((b) => !b.endTime);
@@ -164,20 +162,20 @@ export default function PomodoroPage() {
                     const remaining = Math.max(0, currentBlock.plannedDuration - Math.floor(elapsed / 1000));
 
                     // Only update state if it changed significantly or hit 0
-                    setTimeLeft((prev) => {
-                        if (remaining === 0 && prev !== 0) {
-                            clearInterval(timerRef.current);
-                            notify(
-                                mode === 'FOCUS' ? 'Pausa liberada! 🎉' : 'Hora de focar 💪',
-                                mode === 'FOCUS'
-                                    ? 'Seu bloco de foco terminou. Bora respirar um pouco!'
-                                    : 'O descanso acabou. Partiu destruir mais uma tarefa!'
-                            );
-                            finishBlock(currentBlock.id);
-                            return 0;
-                        }
-                        return remaining;
-                    });
+                    if (remaining === 0) {
+                        clearInterval(timerRef.current);
+                        setTimeLeft(0);
+                        console.log('Acabou a sessão');
+                        notify(
+                            mode === 'FOCUS' ? 'Pausa liberada! 🎉' : 'Hora de focar 💪',
+                            mode === 'FOCUS'
+                                ? 'Seu bloco de foco terminou. Bora respirar um pouco!'
+                                : 'O descanso acabou. Partiu destruir mais uma tarefa!'
+                        );
+                        finishBlock(currentBlock.id);
+                        return 0;
+                    }
+                    setTimeLeft(remaining);
                 }
             }, 1000);
         } else {

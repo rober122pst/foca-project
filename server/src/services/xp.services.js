@@ -11,6 +11,10 @@ export class XpService {
         return Math.floor(200 * (1.03 ** (level - 1)) + 100 * level);
     }
     
+    static xpToLevel(level) {
+        
+    }
+    
     /**
      * Função pra dar Xp
      * @param {string} gameficationId - Id do perfil 
@@ -27,7 +31,7 @@ export class XpService {
             select: { xp: true, level: true },
         })
 
-        if (!gamefication) return;
+        if (!gamefication) { console.log("Gamificação não encontrada."); return; } 
 
         const newTotalXp = gamefication.xp + amount;
 
@@ -58,6 +62,7 @@ export class XpService {
 
         // Vai subiindo o level até o xp ficar menor aí
         while (currentXp >= xpToNext) {
+            console.log(level, currentXp, xpToNext);
             level++;
             currentXp -= xpToNext;
             xpToNext = this.xpToNext(level);

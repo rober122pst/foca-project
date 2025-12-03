@@ -1,4 +1,4 @@
-import { Calendar, Check, Flame, Timer } from 'lucide-react';
+import { AlarmClock, Calendar, Flame, Timer } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 
 import { formatMinutesToHourString } from '../utils/formatTime';
@@ -16,9 +16,9 @@ export default function StatsOverview({ userStats }) {
             value: `${formatMinutesToHourString(userStats.totalTimeFocused)}`,
         },
         {
-            icon: Check,
-            label: 'Tarefas Concluídas',
-            value: `${userStats.completedTasks}`,
+            icon: AlarmClock,
+            label: 'Total de Pomodoros',
+            value: `${userStats.totalSessions}`,
         },
         {
             icon: Calendar,
