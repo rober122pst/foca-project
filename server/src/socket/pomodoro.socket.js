@@ -1,4 +1,5 @@
 import prisma from "../prisma.js";
+import { XpService } from "../services/xp.services.js";
 
 // Helper to check abandonment
 async function checkAbandonment(session) {
@@ -109,6 +110,7 @@ export default function pomodoroSocketHandler(io, socket) {
                 await prisma.pomodoroSession.update({ where: { id: sessionId }, data: { status: 'RUNNING' } });
 
                 io.to(sessionId).emit('session_update', { ...session, status: 'RUNNING', pomodoroBlocks: session.pomodoroBlocks.map(b => b.id === updatedBlock.id ? updatedBlock : b) });
+                io.to(sessionId).emit('timer_started', updatedBlock);
             }
 
         } catch (error) {
@@ -190,6 +192,7 @@ export default function pomodoroSocketHandler(io, socket) {
             });
 
             io.to(sessionId).emit('session_update', updatedSession);
+            io.to(sessionId).emit('timer_resumed');
 
         } catch (error) {
             console.error(error);
@@ -285,11 +288,19 @@ export default function pomodoroSocketHandler(io, socket) {
                 }
             });
 
+            
             // Check if session is complete
-             const session = await prisma.pomodoroSession.findUnique({
+            const session = await prisma.pomodoroSession.findUnique({
                 where: { id: sessionId },
                 include: { pomodoroBlocks: true }
             });
+
+            const { id: gameficationId } = await prisma.gamefication.findUnique({
+                where: { profileId: session.profileId },
+                select: { id: true }
+            });
+
+            await XpService.giveXp(gameficationId, 100, 'Pomodoro Finalizado')
 
             const allComplete = session.pomodoroBlocks.every(b => b.endTime);
             if (allComplete) {
@@ -297,12 +308,6 @@ export default function pomodoroSocketHandler(io, socket) {
                     where: { id: sessionId },
                     data: { status: 'COMPLETED' }
                 });
-            } else {
-                 // Maybe auto-start next? Or wait for user?
-                 // Usually wait for user to start next block (Break or Focus).
-                 // But wait, the breaks are also blocks? Yes.
-                 // "blocksData.push ... type: 'BREAK'"
-                 // So "finish_block" applies to breaks too.
             }
 
              const finalSession = await prisma.pomodoroSession.findUnique({

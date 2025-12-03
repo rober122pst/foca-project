@@ -10,7 +10,9 @@ import HeaderZone from '../components/HeaderZone';
 import LoadingScreenPomodoro from '../components/LoadingScreenPomodoro';
 import TimerZone from '../components/TimerZone';
 import { useAuth } from '../contexts/AuthContext';
+import { useFakeProgress } from '../hooks/useFakeProgress';
 import { usePomodoroSocket } from '../hooks/usePomodoroSocket';
+import { notify } from '../utils/notify';
 
 export default function PomodoroPage() {
     const [searchParams] = useSearchParams();
@@ -21,6 +23,8 @@ export default function PomodoroPage() {
     // Socket Hook
     const { sessionData, startTimer, pauseTimer, resumeTimer, finishBlock, resetBlock, error, status } =
         usePomodoroSocket(sessionId);
+
+    const fakeProgress = useFakeProgress(isLoading && sessionData);
 
     // Local State for Interpolation
     const [timeLeft, setTimeLeft] = useState(0);
@@ -33,13 +37,29 @@ export default function PomodoroPage() {
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [isCycleComplete, setIsCycleComplete] = useState(false);
 
+    const [eventData, seteventData] = useState(null);
+
     const timerRef = useRef(null);
+
+    useEffect(() => {
+        if ('Notification' in window) {
+            Notification.requestPermission();
+        }
+    }, []);
+
+    useEffect(() => {
+        if (fakeProgress >= 100) {
+            setIsInitialLoad(false);
+        }
+    }, [fakeProgress]);
 
     // Sync with Server State
     useEffect(() => {
         if (!sessionData) return;
 
-        setIsInitialLoad(false);
+        if (!eventData) {
+            seteventData(sessionData.event);
+        }
 
         // Determine current block
         // The first block that is not finished (no endTime)
@@ -102,10 +122,10 @@ export default function PomodoroPage() {
     // Handle initial 0 case (reconnect when block finished but not closed)
     useEffect(() => {
         if (sessionData && timeLeft === 0 && isActive) {
-             const currentBlock = sessionData.pomodoroBlocks.find(b => !b.endTime);
-             if (currentBlock && currentBlock.startTime) {
-                 finishBlock(currentBlock.id);
-             }
+            const currentBlock = sessionData.pomodoroBlocks.find((b) => !b.endTime);
+            if (currentBlock && currentBlock.startTime) {
+                finishBlock(currentBlock.id);
+            }
         }
     }, [timeLeft, isActive, sessionData]);
 
@@ -114,7 +134,7 @@ export default function PomodoroPage() {
 
     useEffect(() => {
         if (!sessionData) return;
-        const completed = sessionData.pomodoroBlocks.filter(b => b.endTime && b.type === 'FOCUS').length;
+        const completed = sessionData.pomodoroBlocks.filter((b) => b.endTime && b.type === 'FOCUS').length;
 
         // If completed blocks increased, show celebration
         if (completed > prevCompletedBlocks) {
@@ -135,24 +155,30 @@ export default function PomodoroPage() {
         // We do NOT depend on timeLeft > 0 to start it, because it might be 0 but pending server completion.
         if (isActive && sessionData) {
             timerRef.current = setInterval(() => {
-                 const currentBlock = sessionData.pomodoroBlocks.find(b => !b.endTime);
-                 if (currentBlock && currentBlock.startTime) {
-                     const now = Date.now();
-                     const start = new Date(currentBlock.startTime).getTime();
-                     const totalPause = currentBlock.totalPauseTime * 1000;
-                     const elapsed = now - start - totalPause;
-                     const remaining = Math.max(0, currentBlock.plannedDuration - Math.floor(elapsed / 1000));
+                const currentBlock = sessionData.pomodoroBlocks.find((b) => !b.endTime);
+                if (currentBlock && currentBlock.startTime) {
+                    const now = Date.now();
+                    const start = new Date(currentBlock.startTime).getTime();
+                    const totalPause = currentBlock.totalPauseTime * 1000;
+                    const elapsed = now - start - totalPause;
+                    const remaining = Math.max(0, currentBlock.plannedDuration - Math.floor(elapsed / 1000));
 
-                     // Only update state if it changed significantly or hit 0
-                     setTimeLeft((prev) => {
-                         if (remaining === 0 && prev !== 0) {
-                             clearInterval(timerRef.current);
-                             finishBlock(currentBlock.id);
-                             return 0;
-                         }
-                         return remaining;
-                     });
-                 }
+                    // Only update state if it changed significantly or hit 0
+                    setTimeLeft((prev) => {
+                        if (remaining === 0 && prev !== 0) {
+                            clearInterval(timerRef.current);
+                            notify(
+                                mode === 'FOCUS' ? 'Pausa liberada! 🎉' : 'Hora de focar 💪',
+                                mode === 'FOCUS'
+                                    ? 'Seu bloco de foco terminou. Bora respirar um pouco!'
+                                    : 'O descanso acabou. Partiu destruir mais uma tarefa!'
+                            );
+                            finishBlock(currentBlock.id);
+                            return 0;
+                        }
+                        return remaining;
+                    });
+                }
             }, 1000);
         } else {
             clearInterval(timerRef.current);
@@ -186,11 +212,13 @@ export default function PomodoroPage() {
                 resumeTimer();
             }
         }
+        setIsCycleComplete(false);
     };
 
     const resetTimer = () => {
         resetBlock();
         setIsActive(false);
+        setIsCycleComplete(false);
     };
 
     // Derived session count
@@ -203,13 +231,13 @@ export default function PomodoroPage() {
 
     return (
         <>
-            <AnimatePresence>{isInitialLoad && <LoadingScreenPomodoro progress={100} />}</AnimatePresence>
+            <AnimatePresence>{isInitialLoad && <LoadingScreenPomodoro progress={fakeProgress} />}</AnimatePresence>
             {!isInitialLoad && (
                 <div className="bg-items-950 text-cream-200 selection:bg-items-500/30 min-h-screen">
                     {/* Overlay de Conclusão */}
                     <CelebrationOverlay
                         isCycleComplete={isCycleComplete}
-                        switchMode={() => {}} // Handle automatic via finish_block
+                        switchMode={() => {}}
                         toggleTimer={toggleTimer}
                         resetTimer={resetTimer}
                     />
@@ -233,8 +261,10 @@ export default function PomodoroPage() {
                                     circumference={circumference}
                                     timeLeft={timeLeft}
                                     sessionCount={completedBlocks + 1}
+                                    totalCycles={totalFocusBlocks}
                                     formatTime={formatTime}
                                     strokeDashoffset={strokeDashoffset}
+                                    eventData={eventData}
                                 />
                                 <ControlsZone
                                     resetTimer={resetTimer}
