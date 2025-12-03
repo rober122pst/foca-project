@@ -109,30 +109,56 @@ export default function PomodoroPage() {
         }
     }, [timeLeft, isActive, sessionData]);
 
+    // Celebration Overlay Trigger
+    const [prevCompletedBlocks, setPrevCompletedBlocks] = useState(0);
+
+    useEffect(() => {
+        if (!sessionData) return;
+        const completed = sessionData.pomodoroBlocks.filter(b => b.endTime && b.type === 'FOCUS').length;
+
+        // If completed blocks increased, show celebration
+        if (completed > prevCompletedBlocks) {
+            setIsCycleComplete(true);
+        }
+
+        // Also if status is COMPLETED (final block)
+        if (sessionData.status === 'COMPLETED') {
+            setIsCycleComplete(true);
+        }
+
+        setPrevCompletedBlocks(completed);
+    }, [sessionData]);
+
     // Local Timer Interpolation
     useEffect(() => {
-        if (isActive && timeLeft > 0) {
+        // We only start the interval if we are active, and we have session data.
+        // We do NOT depend on timeLeft > 0 to start it, because it might be 0 but pending server completion.
+        if (isActive && sessionData) {
             timerRef.current = setInterval(() => {
-                setTimeLeft((prev) => {
-                    if (prev <= 1) {
-                        // Time is up!
-                        clearInterval(timerRef.current);
-                        // Trigger finish block
-                        // Find current block ID
-                        const currentBlock = sessionData?.pomodoroBlocks.find((b) => !b.endTime);
-                        if (currentBlock) {
-                            finishBlock(currentBlock.id);
-                        }
-                        return 0;
-                    }
-                    return prev - 1;
-                });
+                 const currentBlock = sessionData.pomodoroBlocks.find(b => !b.endTime);
+                 if (currentBlock && currentBlock.startTime) {
+                     const now = Date.now();
+                     const start = new Date(currentBlock.startTime).getTime();
+                     const totalPause = currentBlock.totalPauseTime * 1000;
+                     const elapsed = now - start - totalPause;
+                     const remaining = Math.max(0, currentBlock.plannedDuration - Math.floor(elapsed / 1000));
+
+                     // Only update state if it changed significantly or hit 0
+                     setTimeLeft((prev) => {
+                         if (remaining === 0 && prev !== 0) {
+                             clearInterval(timerRef.current);
+                             finishBlock(currentBlock.id);
+                             return 0;
+                         }
+                         return remaining;
+                     });
+                 }
             }, 1000);
         } else {
             clearInterval(timerRef.current);
         }
         return () => clearInterval(timerRef.current);
-    }, [isActive, sessionData]); // Re-create if sessionData changes to ensure we have latest blockId
+    }, [isActive, sessionData]);
 
     // Formatação do tempo MM:SS
     const formatTime = (seconds) => {

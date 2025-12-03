@@ -32,20 +32,10 @@ export function usePomodoroSocket(sessionId) {
             setSessionData(data);
         });
 
-        newSocket.on('timer_started', (block) => {
-            console.log('Timer started', block);
-            // We might want to refresh full session or just update local state
-            newSocket.emit('join_session', sessionId); // Force refresh for now
-        });
-
+        // We rely on session_update for these now, except paused which is useful for immediate feedback
         newSocket.on('timer_paused', () => {
             console.log('Timer paused');
             setSessionData((prev) => (prev ? { ...prev, status: 'PAUSED' } : null));
-        });
-
-        newSocket.on('timer_resumed', () => {
-            // Usually followed by session_update, but ensure status
-            setSessionData((prev) => (prev ? { ...prev, status: 'RUNNING' } : null));
         });
 
         newSocket.on('error', (err) => {
