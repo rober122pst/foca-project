@@ -15,12 +15,13 @@ export async function createPomodoroSession(req, res) {
         const activeSession = await prisma.pomodoroSession.findFirst({
             where: {
                 profileId,
-                status: 'RUNNING'
+                status: {
+                    in: ['RUNNING', 'PAUSED', 'WAITING']
+                }
             }
         })
 
         if (activeSession) {
-            console.log(`Sessão zumbi ${activeSession.status} limpa.`);
             return res.status(409).json({ message: 'Já existe uma sessão ativa em andamento' });
         }
 
@@ -46,6 +47,16 @@ export async function createPomodoroSession(req, res) {
             }
         });
 
+        // Initial status is WAITING until they actually click start, but previous code used RUNNING.
+        // Given the requirement "autostart" or "manual start", usually manual.
+        // I'll set it to WAITING so it doesn't count as "Running" immediately if we want them to click Start.
+        // But the previous code set it to RUNNING immediately.
+        // However, we want to prevent concurrent sessions.
+        // If I set it to WAITING, does it block new ones? The check above checks RUNNING/PAUSED.
+        // Let's stick to WAITING for clean start, or RUNNING if that's the desired UX (auto-start).
+        // The `pomodoroStart` controller suggests manual start was possible.
+        // Let's set to WAITING so the user has to click "Start" via socket.
+
         const pomodoroSession = await prisma.$transaction(async (tx) => {
             const session = await tx.pomodoroSession.create({
                 data: {
@@ -54,7 +65,7 @@ export async function createPomodoroSession(req, res) {
                     eventId: eventId,
                     totalPlannedTime: blocksData.reduce((acc, b) => acc + b.plannedDuration, 0),
                     totalCycles: blocks.length,
-                    status: 'RUNNING',
+                    status: 'WAITING',
                     pomodoroBlocks: {
                         create: blocksData,
                     },
@@ -95,23 +106,3 @@ export async function getPomodoroSession(req, res) {
         return res.status(500).json({ message: "Erro no servidor" })
     }
 }
-
-export async function pomodoroStart(req, res) {
-    const userId = req.userId;
-    const { sessionId } = req.params;
-
-    try {
-        const firstBlock = await prisma.pomodoroBlock.findFirst({
-            where: { session: { id: sessionId, profile: { userId } }, sequenceOrder: 1 }
-        })
-
-        await prisma.pomodoroBlock.update({
-            where: { id: firstBlock.id },
-            data: { startTime: new Date() }
-        })
-        res.json({ message: 'Pomodoro iniciado' })
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json({ message: "Erro no servidor" })
-    }
-} 

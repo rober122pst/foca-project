@@ -1,16 +1,24 @@
-import { Calendar, Check, Flame, Timer } from 'lucide-react';
+import { AlarmClock, Calendar, Flame, Timer } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 
 import { formatMinutesToHourString } from '../utils/formatTime';
 
 export default function StatsOverview({ userStats }) {
     const stats = [
-        { icon: Flame, label: 'Sequência', value: `${userStats.streak} ${userStats.streak === 1 ? 'dia' : 'dias'}` },
-        { icon: Timer, label: 'Tempo em Foco', value: `${formatMinutesToHourString(userStats.totalTimeFocused)}` },
         {
-            icon: Check,
-            label: 'Tarefas Concluídas',
-            value: `${userStats.completedTasks}`,
+            icon: Flame,
+            label: 'Sequência',
+            value: `${userStats.streak} ${userStats.streak === 1 ? 'dia' : 'dias'}`,
+        },
+        {
+            icon: Timer,
+            label: 'Tempo em Foco',
+            value: `${formatMinutesToHourString(userStats.totalTimeFocused)}`,
+        },
+        {
+            icon: AlarmClock,
+            label: 'Total de Pomodoros',
+            value: `${userStats.totalSessions}`,
         },
         {
             icon: Calendar,

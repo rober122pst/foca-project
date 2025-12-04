@@ -6,6 +6,7 @@ import express from 'express';
 import http from 'http';
 import passport from 'passport';
 import { Server } from 'socket.io';
+import pomodoroSocketHandler from './src/socket/pomodoro.socket.js';
 import routes from './src/routes/routes.js';
 
 dotenv.config();
@@ -32,15 +33,7 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
     console.log('Um utilizador conectou-se! ID:', socket.id);
-
-    socket.on('join_session', (sessionId) => {
-        socket.join(sessionId);
-        console.log(`Socket ${socket.id} entrou na sessão ${sessionId}`);
-    });
-    // Evento quando o utilizador se desconecta
-    socket.on('disconnect', () => {
-        console.log('Utilizador desconectou-se.');
-    });
+    pomodoroSocketHandler(io, socket);
 });
 
 const PORT = process.env.PORT || 3000;

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Gamefication" ADD COLUMN     "totalTimeFocus" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "totalXp" INTEGER NOT NULL DEFAULT 0;

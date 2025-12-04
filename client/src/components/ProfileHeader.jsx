@@ -9,7 +9,9 @@ export default function ProfileHeader({ title }) {
     const userProf = user.profile;
     const userGame = userProf.gamefication;
 
-    const formattedCoins = userGame.coins.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    const formattedCoins = userGame.coins.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+    });
 
     return (
         <div className="mb-12 flex justify-between">

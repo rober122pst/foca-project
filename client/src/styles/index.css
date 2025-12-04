@@ -1,178 +1,178 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
-@import 'tailwindcss';
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+@import "tailwindcss";
 @tailwind utilities;
 
 @theme {
-    --color-items-500: #ff0546;
-    --color-items-700: #9c173b;
-    --color-items-900: #450327;
-    --color-items-950: #17001d;
-    --color-accent-500: #0098db;
-    --color-accent-600: #1e579c;
-    --color-cream-100: #fdfdfd;
-    --color-cream-200: #E4E4E4;
-    --color-cream-300: #CDCDCD;
-    --color-night-950: #121212;
-    --color-night-900: #1D1D1D;
-    --color-night-800: #282828;
-    --color-night-700: #3D3D3D;
-    --color-medium: #a59f9f;
+  --color-items-500: #ff0546;
+  --color-items-700: #9c173b;
+  --color-items-900: #450327;
+  --color-items-950: #17001d;
+  --color-accent-500: #0098db;
+  --color-accent-600: #1e579c;
+  --color-cream-100: #fdfdfd;
+  --color-cream-200: #e4e4e4;
+  --color-cream-300: #cdcdcd;
+  --color-night-950: #121212;
+  --color-night-900: #1d1d1d;
+  --color-night-800: #282828;
+  --color-night-700: #3d3d3d;
+  --color-medium: #a59f9f;
 }
 
 :root {
-    --bg-primary: #fdfdfd;
-    --bg-second: #e0e0e0;
-    --bg-third:#f5f3f0;
-    --bg-cont: #17001d;
-    --color-items-primary: #ff0546;
-    --color-items-primary50: #ff05487c;
-    --color-items-second: #9c173b;
-    --color-dark: #450327;
-    --accent: #0098db;
-    --accent-gradient: #1e579c;
-    --text-light: #fdfdfd;
-    --text-dark: #17001d;
-    --text-theme: #17001d;
+  --bg-primary: #fdfdfd;
+  --bg-second: #e0e0e0;
+  --bg-third: #f5f3f0;
+  --bg-cont: #17001d;
+  --color-items-primary: #ff0546;
+  --color-items-primary50: #ff05487c;
+  --color-items-second: #9c173b;
+  --color-dark: #450327;
+  --accent: #0098db;
+  --accent-gradient: #1e579c;
+  --text-light: #fdfdfd;
+  --text-dark: #17001d;
+  --text-theme: #17001d;
 }
 
-button:focus ,a:focus {
-    outline: none;
-    box-shadow: none;
+button:focus,
+a:focus {
+  outline: none;
+  box-shadow: none;
 }
 
-button:focus-visible, a:focus-visible {
-    outline: 2px solid var(--accent-gradient);
-    box-shadow: none;
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent-gradient);
+  box-shadow: none;
 }
 
 @custom-variant dark {
-	&:where([data-theme="dark"] *) {
-		@slot;
-	}
+  &:where([data-theme="dark"] *) {
+    @slot;
+  }
 }
 
 body {
-    font-family: "Nunito", sans-serif;
-    font-weight: 400;
-    background: var(--bg-primary);
-    
-    color: var(--text-theme);
+  font-family: "Nunito", sans-serif;
+  font-weight: 400;
+  background: var(--bg-primary);
+
+  color: var(--text-theme);
 }
 
 html {
-    scroll-behavior: smooth;
-    font-size: 16px;
+  scroll-behavior: smooth;
+  font-size: 16px;
 }
 
 ::-webkit-scrollbar {
-    width: 7px;
+  width: 7px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--bg-cont);
+  background: var(--bg-cont);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--accent);
-    border-radius: 5px;
+  background: var(--accent);
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-gradient);
+  background: var(--accent-gradient);
 }
 
-
 @utility display-center {
-	@apply flex justify-center items-center;
+  @apply flex items-center justify-center;
 }
 
 @utility transition-theme {
-	@apply transition-all duration-300 ease-out;
+  @apply transition-all duration-300 ease-out;
 }
 
 @utility bg-card {
-    @apply bg-cream-100 dark:bg-night-900
+  @apply bg-cream-100 dark:bg-night-900;
 }
 
 @utility text-primary {
-    @apply text-items-950 dark:text-cream-100
+  @apply text-items-950 dark:text-cream-100;
 }
 
 @utility border-border {
-    @apply border-cream-200 dark:border-night-800
+  @apply border-cream-200 dark:border-night-800;
 }
 
 @utility border-muted {
-    @apply border-cream-300 dark:border-night-700
+  @apply border-cream-300 dark:border-night-700;
 }
 
 @utility bg-muted {
-    @apply bg-cream-200 dark:bg-night-800
+  @apply bg-cream-200 dark:bg-night-800;
 }
 
 .border-groove {
-    border-style: groove;
+  border-style: groove;
 }
 
 @layer components {
-    .shimmer {
-        @apply
-            bg-linear-300 from-cream-300 via-cream-200 to-cream-300 dark:from-night-800 dark:via-night-700 dark:to-night-800
-            bg-[length:200%_100%]
-            animate-[shimmer_1.5s_infinite];
-    }
-    .bg-animated {
-        @apply
-            bg-linear-to-tr from-items-700 to-items-900 via-items-500
-            bg-[size:180%_180%]
-            animate-[animateBackground_10s_ease_infinite];
-    }
+  .shimmer {
+    @apply from-cream-300 via-cream-200 to-cream-300 dark:from-night-800 dark:via-night-700 dark:to-night-800 animate-[shimmer_1.5s_infinite] bg-linear-300 bg-[length:200%_100%];
+  }
+  .bg-animated {
+    @apply from-items-700 to-items-900 via-items-500 animate-[animateBackground_10s_ease_infinite] bg-linear-to-tr bg-[size:180%_180%];
+  }
 }
 
 .scrollbar-custom::-webkit-scrollbar {
-    width: 4px;
+  width: 4px;
 }
 
 .scrollbar-custom::-webkit-scrollbar-track {
-    background: transparent;
+  background: transparent;
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb {
-    @apply bg-medium/50
+  @apply bg-medium/50;
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-    @apply bg-medium
+  @apply bg-medium;
 }
 
-
-
 @keyframes shimmer {
-    0% {
-        background-position: 200% 0;
-    }
-    50% {
-        background-position: -200% 0;
-    }
+  0% {
+    background-position: 200% 0;
+  }
+  50% {
+    background-position: -200% 0;
+  }
 }
 
 @keyframes animateBackground {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 @keyframes rareAchiviementPulse {
-    0%, 100% {
-        box-shadow: 0 0 0px var(--color-items-500), 0 0 5px var(--color-items-500), 0 0 12px var(--color-items-500);
-    }
-    50% {
-        box-shadow: 0 0 8px var(--color-items-500), 0 0 12px var(--color-items-500), 0 0 16px var(--color-items-500);
-    }
+  0%,
+  100% {
+    box-shadow:
+      0 0 0px var(--color-items-500),
+      0 0 5px var(--color-items-500),
+      0 0 12px var(--color-items-500);
+  }
+  50% {
+    box-shadow:
+      0 0 8px var(--color-items-500),
+      0 0 12px var(--color-items-500),
+      0 0 16px var(--color-items-500);
+  }
 }

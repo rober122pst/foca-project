@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { usePomodoroSession, useStartPomodoro } from '../hooks/pomodoroHooks';
 
 import { ShieldAlert } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
@@ -12,33 +11,178 @@ import LoadingScreenPomodoro from '../components/LoadingScreenPomodoro';
 import TimerZone from '../components/TimerZone';
 import { useAuth } from '../contexts/AuthContext';
 import { useFakeProgress } from '../hooks/useFakeProgress';
+import { usePomodoroSocket } from '../hooks/usePomodoroSocket';
+import { notify } from '../utils/notify';
 
 export default function PomodoroPage() {
     const [searchParams] = useSearchParams();
-
-    const { user, isLoading } = useAuth();
-    // Estado Mental e do Timer
-    const [focusTime, setFocusTime] = useState(null);
-    const breakTime = 5 * 60;
-    const [timeLeft, setTimeLeft] = useState(null);
-    const [isActive, setIsActive] = useState(false);
-    const [mode, setMode] = useState('focus'); // 'focus' | 'break'
-    const [sessionCount, setSessionCount] = useState(2); // Simulado como o "2º do dia"
-    const [blockerActive, setBlockerActive] = useState(true);
-    const [isInitialLoad, setIsInitialLoad] = useState(true);
-
-    // Estado da Conclusão
-    const [isCycleComplete, setIsCycleComplete] = useState(false);
-
-    // Referência para o intervalo
-    const timerRef = useRef(null);
-
     const sessionId = searchParams.get('session');
 
-    const { data: pomodoro, isLoading: pomodoroLoading } = usePomodoroSession(sessionId);
-    const { refetch } = useStartPomodoro(sessionId);
+    const { user, isLoading } = useAuth();
 
-    const fakeProgress = useFakeProgress(isLoading && pomodoroLoading);
+    // Socket Hook
+    const { sessionData, startTimer, pauseTimer, resumeTimer, finishBlock, resetBlock, error, status } =
+        usePomodoroSocket(sessionId);
+
+    const fakeProgress = useFakeProgress(isLoading && sessionData);
+
+    // Local State for Interpolation
+    const [timeLeft, setTimeLeft] = useState(0);
+    const [totalTime, setTotalTime] = useState(25 * 60);
+    const [mode, setMode] = useState('FOCUS'); // 'FOCUS' | 'BREAK'
+    const [isActive, setIsActive] = useState(false);
+
+    // UI State
+    const [blockerActive, setBlockerActive] = useState(true);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [isCycleComplete, setIsCycleComplete] = useState(false);
+
+    const [eventData, seteventData] = useState(null);
+
+    const timerRef = useRef(null);
+
+    useEffect(() => {
+        if ('Notification' in window) {
+            Notification.requestPermission();
+        }
+    }, []);
+
+    useEffect(() => {
+        if (fakeProgress >= 100) {
+            setIsInitialLoad(false);
+        }
+    }, [fakeProgress]);
+
+    // Sync with Server State
+    useEffect(() => {
+        if (!sessionData) return;
+
+        if (!eventData) {
+            seteventData(sessionData.event);
+        }
+
+        // Determine current block
+        // The first block that is not finished (no endTime)
+        const currentBlock =
+            sessionData.pomodoroBlocks.find((b) => !b.endTime) ||
+            sessionData.pomodoroBlocks[sessionData.pomodoroBlocks.length - 1];
+
+        if (currentBlock) {
+            setMode(currentBlock.type); // FOCUS or BREAK
+            setTotalTime(currentBlock.plannedDuration);
+
+            if (sessionData.status === 'RUNNING' && currentBlock.startTime) {
+                setIsActive(true);
+
+                // Calculate real remaining time
+                const now = Date.now();
+                const start = new Date(currentBlock.startTime).getTime();
+                const totalPause = currentBlock.totalPauseTime * 1000;
+                // Note: lastPauseTime is not needed if we are RUNNING (server clears it on resume)
+                // But if we just disconnected and reconnected, it might be running.
+
+                const elapsed = now - start - totalPause;
+                const remaining = Math.max(0, currentBlock.plannedDuration - Math.floor(elapsed / 1000));
+
+                setTimeLeft(remaining);
+            } else if (sessionData.status === 'PAUSED') {
+                setIsActive(false);
+                // Calculate remaining time frozen at pause
+                // To do this accurately, we need `lastPauseTime`.
+                // However, the simplest way is: TimeLeft = Duration - (Active Work Time).
+                // Active Work Time = (LastPause - Start - PreviousPauses)
+                // But the server might not send `lastPauseTime` if it's null on resume.
+                // Wait, if PAUSED, `lastPauseTime` is set.
+
+                if (currentBlock.startTime && currentBlock.lastPauseTime) {
+                    const start = new Date(currentBlock.startTime).getTime();
+                    const lastPause = new Date(currentBlock.lastPauseTime).getTime();
+                    const totalPause = currentBlock.totalPauseTime * 1000;
+
+                    const activeWork = lastPause - start - totalPause;
+                    const remaining = Math.max(0, currentBlock.plannedDuration - Math.floor(activeWork / 1000));
+                    setTimeLeft(remaining);
+                } else {
+                    // Not started yet or some other state
+                    if (!currentBlock.startTime) {
+                        setTimeLeft(currentBlock.plannedDuration);
+                    }
+                }
+            } else if (sessionData.status === 'WAITING' || !currentBlock.startTime) {
+                setIsActive(false);
+                setTimeLeft(currentBlock.plannedDuration);
+            } else if (sessionData.status === 'COMPLETED') {
+                setIsActive(false);
+                setTimeLeft(0);
+                setIsCycleComplete(true);
+            }
+        }
+    }, [sessionData]);
+
+    // Handle initial 0 case (reconnect when block finished but not closed)
+    useEffect(() => {
+        if (sessionData && timeLeft === 0 && isActive) {
+            const currentBlock = sessionData.pomodoroBlocks.find((b) => !b.endTime);
+            if (currentBlock && currentBlock.startTime) {
+                finishBlock(currentBlock.id);
+            }
+        }
+    }, [timeLeft, isActive, sessionData]);
+
+    // Celebration Overlay Trigger
+    const [prevCompletedBlocks, setPrevCompletedBlocks] = useState(0);
+
+    useEffect(() => {
+        if (!sessionData) return;
+        const completed = sessionData.pomodoroBlocks.filter((b) => b.endTime && b.type === 'FOCUS').length;
+
+        // If completed blocks increased, show celebration
+        if (completed > prevCompletedBlocks) {
+            setIsCycleComplete(true);
+        }
+
+        // Also if status is COMPLETED (final block)
+        if (sessionData.status === 'COMPLETED') {
+            setIsCycleComplete(true);
+        }
+
+        setPrevCompletedBlocks(completed);
+    }, [sessionData]);
+
+    // Local Timer Interpolation
+    useEffect(() => {
+        if (isActive && sessionData) {
+            timerRef.current = setInterval(() => {
+                const currentBlock = sessionData.pomodoroBlocks.find((b) => !b.endTime);
+                if (currentBlock && currentBlock.startTime) {
+                    const now = Date.now();
+                    const start = new Date(currentBlock.startTime).getTime();
+                    const totalPause = currentBlock.totalPauseTime * 1000;
+                    const elapsed = now - start - totalPause;
+                    const remaining = Math.max(0, currentBlock.plannedDuration - Math.floor(elapsed / 1000));
+
+                    // Only update state if it changed significantly or hit 0
+                    if (remaining === 0) {
+                        clearInterval(timerRef.current);
+                        setTimeLeft(0);
+                        console.log('Acabou a sessão');
+                        notify(
+                            mode === 'FOCUS' ? 'Pausa liberada! 🎉' : 'Hora de focar 💪',
+                            mode === 'FOCUS'
+                                ? 'Seu bloco de foco terminou. Bora respirar um pouco!'
+                                : 'O descanso acabou. Partiu destruir mais uma tarefa!'
+                        );
+                        finishBlock(currentBlock.id);
+                        return 0;
+                    }
+                    setTimeLeft(remaining);
+                }
+            }, 1000);
+        } else {
+            clearInterval(timerRef.current);
+        }
+        return () => clearInterval(timerRef.current);
+    }, [isActive, sessionData]);
 
     // Formatação do tempo MM:SS
     const formatTime = (seconds) => {
@@ -47,62 +191,41 @@ export default function PomodoroPage() {
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
-    useEffect(() => {
-        if (pomodoro) {
-            setFocusTime(pomodoro.pomodoroBlocks[0].plannedDuration);
-            setTimeLeft(pomodoro.pomodoroBlocks[0].plannedDuration);
-        }
-    }, [pomodoro]);
-
     // Cálculo do progresso circular
-    const totalTime = mode === 'focus' ? focusTime : breakTime;
     const progress = ((totalTime - timeLeft) / totalTime) * 100;
     const radius = 120;
     const circumference = 2 * Math.PI * radius;
     const strokeDashoffset = circumference - (progress / 100) * circumference;
 
-    // Efeito do Timer
-    useEffect(() => {
-        if (isActive && timeLeft > 0) {
-            timerRef.current = setInterval(() => {
-                setTimeLeft((prev) => prev - 1);
-            }, 1000);
-        } else if (timeLeft === 0) {
-            handleComplete();
-        }
-        return () => clearInterval(timerRef.current);
-    }, [isActive, timeLeft, mode]);
-
-    useEffect(() => {
-        if (fakeProgress >= 100) {
-            setIsInitialLoad(false);
-        }
-    }, [fakeProgress]);
-
-    const handleComplete = () => {
-        setIsActive(false);
-        clearInterval(timerRef.current);
-        setIsCycleComplete(true);
-        setSessionCount((prev) => prev + 1);
-    };
-
     const toggleTimer = () => {
-        refetch();
-        setIsActive(!isActive);
+        if (isActive) {
+            pauseTimer();
+        } else {
+            if (
+                sessionData?.status === 'WAITING' ||
+                !sessionData?.pomodoroBlocks.find((b) => b.startTime && !b.endTime)
+            ) {
+                startTimer();
+            } else {
+                resumeTimer();
+            }
+        }
+        setIsCycleComplete(false);
     };
 
     const resetTimer = () => {
+        resetBlock();
         setIsActive(false);
-        setTimeLeft(mode === 'focus' ? focusTime : breakTime);
         setIsCycleComplete(false);
     };
 
-    const switchMode = () => {
-        const newMode = mode === 'focus' ? 'break' : 'focus';
-        setMode(newMode);
-        setTimeLeft(newMode === 'focus' ? focusTime : breakTime);
-        setIsCycleComplete(false);
-    };
+    // Derived session count
+    const completedBlocks = sessionData?.pomodoroBlocks.filter((b) => b.endTime && b.type === 'FOCUS').length || 0;
+    const totalFocusBlocks = sessionData?.pomodoroBlocks.filter((b) => b.type === 'FOCUS').length || 0;
+
+    if (error) {
+        return <div className="bg-items-950 flex h-screen items-center justify-center text-red-500">{error}</div>;
+    }
 
     return (
         <>
@@ -112,7 +235,7 @@ export default function PomodoroPage() {
                     {/* Overlay de Conclusão */}
                     <CelebrationOverlay
                         isCycleComplete={isCycleComplete}
-                        switchMode={switchMode}
+                        switchMode={() => {}}
                         toggleTimer={toggleTimer}
                         resetTimer={resetTimer}
                     />
@@ -122,7 +245,7 @@ export default function PomodoroPage() {
                             {/* Zona C (Topo) */}
                             <HeaderZone
                                 isActive={isActive}
-                                mode={mode}
+                                mode={mode.toLowerCase()}
                                 avatar={user.profile.picUrl}
                                 level={user.profile.gamefication.level}
                                 xp={user.profile.gamefication.xp}
@@ -131,13 +254,15 @@ export default function PomodoroPage() {
                             {/* Centro (Zona A + B) */}
                             <main className="flex flex-1 flex-col items-center justify-center pb-12">
                                 <TimerZone
-                                    mode={mode}
+                                    mode={mode.toLowerCase()}
                                     radius={radius}
                                     circumference={circumference}
                                     timeLeft={timeLeft}
-                                    sessionCount={sessionCount}
+                                    sessionCount={completedBlocks + 1}
+                                    totalCycles={totalFocusBlocks}
                                     formatTime={formatTime}
                                     strokeDashoffset={strokeDashoffset}
+                                    eventData={eventData}
                                 />
                                 <ControlsZone
                                     resetTimer={resetTimer}

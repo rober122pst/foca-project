@@ -79,7 +79,13 @@ export default function EditRoutineModal({ onClose, payload }) {
                         Título
                         <InputText
                             value={state.title}
-                            onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'title', value: e.target.value })}
+                            onChange={(e) =>
+                                dispatch({
+                                    type: 'SET_FIELD',
+                                    field: 'title',
+                                    value: e.target.value,
+                                })
+                            }
                             placeholder="Ex.: Treinar futebol, Estudar programação..."
                             name="title"
                             autoComplete="off"
@@ -90,7 +96,11 @@ export default function EditRoutineModal({ onClose, payload }) {
                         <InputText
                             value={state.description}
                             onChange={(e) =>
-                                dispatch({ type: 'SET_FIELD', field: 'description', value: e.target.value })
+                                dispatch({
+                                    type: 'SET_FIELD',
+                                    field: 'description',
+                                    value: e.target.value,
+                                })
                             }
                             placeholder="Detalhes sobre essa atividade..."
                             name="description"
@@ -150,7 +160,11 @@ export default function EditRoutineModal({ onClose, payload }) {
                             <TimePicker
                                 value={state.startTime}
                                 onChange={(newTime) => {
-                                    dispatch({ type: 'SET_FIELD', field: 'startTime', value: newTime });
+                                    dispatch({
+                                        type: 'SET_FIELD',
+                                        field: 'startTime',
+                                        value: newTime,
+                                    });
                                 }}
                             />
                         </Label>
@@ -159,7 +173,11 @@ export default function EditRoutineModal({ onClose, payload }) {
                             <TimePicker
                                 value={state.endTime}
                                 onChange={(newTime) => {
-                                    dispatch({ type: 'SET_FIELD', field: 'endTime', value: newTime });
+                                    dispatch({
+                                        type: 'SET_FIELD',
+                                        field: 'endTime',
+                                        value: newTime,
+                                    });
                                 }}
                             />
                         </Label>

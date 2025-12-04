@@ -54,15 +54,15 @@ model Profile {
 }
 
 model Gamefication {
-    id            String  @id @default(dbgenerated()) @db.Uuid
-    profileId     String  @unique @db.Uuid
-    profile       Profile @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    level         Int     @default(1)
-    xp            Int     @default(0)
-    coins         Float   @default(0)
-    streakCurrent Int     @default(0)
-    streakBest    Int     @default(0)
-    meta          Json?
+    id             String  @id @default(dbgenerated()) @db.Uuid
+    profileId      String  @unique @db.Uuid
+    profile        Profile @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    totalXp        Int     @default(0)
+    totalTimeFocus Int     @default(0)
+    coins          Float   @default(0)
+    streakCurrent  Int     @default(0)
+    streakBest     Int     @default(0)
+    meta           Json?
 }
 
 enum Priority {

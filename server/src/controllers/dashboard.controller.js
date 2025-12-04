@@ -1,6 +1,7 @@
+import { AchievementService } from "../services/achievements.service.js";
+
 import { PrismaClient } from "@prisma/client";
-import { getUserAchievements } from "../services/achievements.service.js";
-import { xpToNext } from "../services/xp.services.js";
+import { XpService } from "../services/xp.services.js";
 
 const prisma = new PrismaClient();
 
@@ -19,6 +20,7 @@ export async function getOverviewData(req, res) {
                         events: { where: { type: { in: ['TASK', 'PROJECT'] } } },
                         tasks: true,
                         userAchiviements: true,
+                        pomodorosSessions: true,
                     }
                 }
             }
@@ -29,19 +31,24 @@ export async function getOverviewData(req, res) {
         const userTasks =  userEvents.filter((e) => e.type === 'TASK'); // lista de tarefas
         const userProjects =  userEvents.filter((e) => e.type === 'PROJECT');
         const projectsCount = userProjects.length; // quantidade de projetos
-        const achievements = await getUserAchievements(prisma, userData.profile.id); // pega conquistas do jogador ordenadas por desbloqueadas e progresso
+        const achievements = await AchievementService.getUserAchievements(prisma, userData.profile.id); // pega conquistas do jogador ordenadas por desbloqueadas e progresso
+        const xp = userGamefication.totalXp;
+        const level = XpService.getLevelFromTotalXp(xp);
+        const nextLevelXp = XpService.xpToLevel(level+1);
+        const xpProgress = XpService.calculateXpProgress(xp, level);
 
         return res.json({
             stats: {
                 streak: userGamefication?.streakCurrent || 0,
-                totalTimeFocused: 0, // TODO: fazer isso aqui depois
-                completedTasks: 0,
+                totalTimeFocused: userGamefication?.totalTimeFocus || 0,
+                totalSessions: userData.profile.pomodorosSessions.length,
                 activeEvents: projectsCount
             },
             levelProgress: {
-                level: userGamefication?.level || 1,
-                currentXp: userGamefication?.currentXp || 0,
-                nextLevelXp: userGamefication ? xpToNext(userGamefication.level) : xpToNext(1),
+                level: level,
+                currentXp: xp,
+                nextLevelXp,
+                xpProgress,
             },
             totalTasks: userTasks.length,
             taskList: [
