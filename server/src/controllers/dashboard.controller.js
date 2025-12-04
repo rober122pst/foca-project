@@ -1,5 +1,6 @@
+import { AchievementService } from "../services/achievements.service.js";
+
 import { PrismaClient } from "@prisma/client";
-import { getUserAchievements } from "../services/achievements.service.js";
 import { XpService } from "../services/xp.services.js";
 
 const prisma = new PrismaClient();
@@ -30,7 +31,11 @@ export async function getOverviewData(req, res) {
         const userTasks =  userEvents.filter((e) => e.type === 'TASK'); // lista de tarefas
         const userProjects =  userEvents.filter((e) => e.type === 'PROJECT');
         const projectsCount = userProjects.length; // quantidade de projetos
-        const achievements = await getUserAchievements(prisma, userData.profile.id); // pega conquistas do jogador ordenadas por desbloqueadas e progresso
+        const achievements = await AchievementService.getUserAchievements(prisma, userData.profile.id); // pega conquistas do jogador ordenadas por desbloqueadas e progresso
+        const xp = userGamefication.totalXp;
+        const level = XpService.getLevelFromTotalXp(xp);
+        const nextLevelXp = XpService.xpToLevel(level+1);
+        const xpProgress = XpService.calculateXpProgress(xp, level);
 
         return res.json({
             stats: {
@@ -40,10 +45,10 @@ export async function getOverviewData(req, res) {
                 activeEvents: projectsCount
             },
             levelProgress: {
-                level: userGamefication?.level || 1,
-                currentXp: userGamefication?.xp || 0,
-                totalXp: userGamefication?.totalXp || 0,
-                nextLevelXp: userGamefication ? XpService.xpToNext(userGamefication.level) : XpService.xpToNext(1),
+                level: level,
+                currentXp: xp,
+                nextLevelXp,
+                xpProgress,
             },
             totalTasks: userTasks.length,
             taskList: [

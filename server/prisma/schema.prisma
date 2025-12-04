@@ -57,8 +57,6 @@ model Gamefication {
     id             String  @id @default(dbgenerated()) @db.Uuid
     profileId      String  @unique @db.Uuid
     profile        Profile @relation(fields: [profileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    level          Int     @default(1)
-    xp             Int     @default(0)
     totalXp        Int     @default(0)
     totalTimeFocus Int     @default(0)
     coins          Float   @default(0)

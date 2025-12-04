@@ -1,5 +1,6 @@
 import pkg from 'rrule';
 import prisma from "../prisma.js";
+import { AchievementService } from '../services/achievements.service.js';
 import { XpService } from "../services/xp.services.js";
 
 const { RRule } = pkg;
@@ -357,6 +358,14 @@ export default function pomodoroSocketHandler(io, socket) {
                     where: { id: sessionId },
                     data: { status: 'COMPLETED' }
                 });
+                await AchievementService.processEvent({
+                    profileId: session.profileId,
+                    type: 'POMODORO_FINISHED',
+                    data: {
+                        timestamp: new Date(),
+                        amount: 1,
+                    }
+                })
             }
 
             console.log(xpReward)

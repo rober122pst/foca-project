@@ -8,6 +8,7 @@ export default function LevelProgress({ levelProgress }) {
     const level = levelProgress?.level || 0;
     const xp = levelProgress?.currentXp || 0;
     const xpToNext = levelProgress?.nextLevelXp || 0;
+    const xpProgress = levelProgress?.xpProgress || 0;
 
     return (
         <Card className="to-items-900 from-items-700 border-none bg-linear-to-tl">
@@ -16,12 +17,12 @@ export default function LevelProgress({ levelProgress }) {
                     <div>
                         <p className="text-cream-100/90 text-sm">Progresso para o nível {level}</p>
                         <p className="text-cream-100 text-2xl font-bold">
-                            {xp} / {localeNumber(xpToNext)} XP
+                            {localeNumber(xp)} / {localeNumber(xpToNext)} XP
                         </p>
                     </div>
                     <Trophy className="text-cream-100 h-10 w-10" />
                 </div>
-                <ProgressBar progress={(xp / Math.round(xpToNext)) * 100} className="mt-3 h-2" />
+                <ProgressBar progress={Math.floor(xpProgress)} className="mt-3 h-2" />
             </CardContent>
         </Card>
     );

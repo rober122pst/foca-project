@@ -21,8 +21,7 @@ export async function getMe(req, res) {
                             picUrl: true,
                             gamefication: {
                                 select: {
-                                    level: true,
-                                    xp: true,
+                                    totalXp: true,
                                     coins: true,
                                 }
                             }

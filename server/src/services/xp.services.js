@@ -8,11 +8,42 @@ export class XpService {
      * @returns {number} Calcula quanto de Xp precisa para upar o level
      */
     static xpToNext(level) {
-        return Math.floor(200 * (1.03 ** (level - 1)) + 100 * level);
+        return Math.floor(150 + (4 * (level ** 2)));
     }
     
-    static xpToLevel(level) {
-        
+    /**
+     * 
+     * @param {number} targetLevel 
+     * @returns Total de Xp para esse level
+     */
+    static xpToLevel(targetLevel) {
+        let totalXp = 0;
+        for (let i = 1; i < targetLevel; i++) {
+            const xpForThisStep = this.xpToNext(i);
+            totalXp += Math.floor(xpForThisStep);
+        }
+
+        return totalXp;
+    }
+
+    static getLevelFromTotalXp(totalXp) {
+        let level = 1;
+        let xpAccumulated = 0;
+
+        while (true) {
+            // Calcula quanto custa ir para o próximo
+            const xpNext = this.xpToNext(level);
+            
+            // Se a soma passar do que o usuário tem, paramos aqui
+            if (xpAccumulated + xpNext > totalXp) {
+                return level;
+            }
+            
+            xpAccumulated += xpNext;
+            level++;
+            
+            if (level >= 100) return 100; // Cap máximo
+        }
     }
     
     /**
@@ -33,45 +64,29 @@ export class XpService {
 
         if (!gamefication) { console.log("Gamificação não encontrada."); return; } 
 
-        const newTotalXp = gamefication.xp + amount;
-
-        const processed = this.processLevelUp(
-            newTotalXp,
-            gamefication.level
-        );
+        const newTotalXp = gamefication.totalXp + amount;
 
         await prisma.gamefication.update({
             where: { id: gameficationId },
             data: {
-                xp: processed.remainingXp,
-                level: processed.level,
+                totalXp: newTotalXp,
             }
         });
 
         return processed;
     }
 
-    /**
-     * 
-     * @param {number} currentXp Xp atual
-     * @param {number} level 
-     * @returns {object} { level, remainingXp, xpToNext }
-     */
-    static processLevelUp(currentXp, level) {
-        let xpToNext = this.xpToNext(level);
+    static calculateXpProgress(totalXp, currentLevel) {
+        const startOfLevelXp = this.xpToLevel(currentLevel);
+        
+        const levelSize = this.xpToNext(currentLevel); 
 
-        // Vai subiindo o level até o xp ficar menor aí
-        while (currentXp >= xpToNext) {
-            console.log(level, currentXp, xpToNext);
-            level++;
-            currentXp -= xpToNext;
-            xpToNext = this.xpToNext(level);
-        }
+        const xpIntoLevel = totalXp - startOfLevelXp;
 
-        return {
-            level,
-            remainingXp: currentXp,
-            xpToNext
-        }
+        if (currentLevel >= 100) return 100;
+
+        let progress = (xpIntoLevel / levelSize) * 100;
+
+        return Math.min(100, Math.max(0, progress));
     }
 }
