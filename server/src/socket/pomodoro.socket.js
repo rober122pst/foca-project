@@ -293,6 +293,7 @@ export default function pomodoroSocketHandler(io, socket) {
     });
 
     socket.on('finish_block', async ({ sessionId, blockId }) => {
+        console.log('finalizou o bloco')
         try {
             const now = new Date();
             const block = await prisma.pomodoroBlock.findUnique({ where: { id: blockId } });
@@ -342,18 +343,18 @@ export default function pomodoroSocketHandler(io, socket) {
 
             const { id: gameficationId } = await prisma.gamefication.findUnique({
                 where: { profileId: session.profileId },
-                select: { id: true }
+                select: { id: true },
             });
 
             const xpReward = Math.floor(100 + (1.5 * (block.plannedDuration / 60)));
 
             if (block.type === 'FOCUS') {
-                await XpService.giveXp(gameficationId, xpReward, 'Bloco Finalizado')
+                await XpService.giveXp(gameficationId, xpReward, 'Bloco Finalizado');
             }
             
             const allComplete = session.pomodoroBlocks.every(b => b.endTime);
             if (allComplete) {
-                await XpService.giveXp(gameficationId, xpReward, 'Pomodoro Finalizado')
+                await XpService.giveXp(gameficationId, xpReward*2, 'Pomodoro Finalizado')
                 await prisma.pomodoroSession.update({
                     where: { id: sessionId },
                     data: { status: 'COMPLETED' }

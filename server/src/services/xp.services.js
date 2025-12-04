@@ -59,7 +59,7 @@ export class XpService {
 
         const gamefication = await prisma.gamefication.findUnique({
             where: { id: gameficationId },
-            select: { xp: true, level: true },
+            select: { totalXp: true },
         })
 
         if (!gamefication) { console.log("Gamificação não encontrada."); return; } 
@@ -73,7 +73,7 @@ export class XpService {
             }
         });
 
-        return processed;
+        return newTotalXp;
     }
 
     static calculateXpProgress(totalXp, currentLevel) {

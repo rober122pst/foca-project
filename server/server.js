@@ -6,8 +6,8 @@ import express from 'express';
 import http from 'http';
 import passport from 'passport';
 import { Server } from 'socket.io';
-import pomodoroSocketHandler from './src/socket/pomodoro.socket.js';
 import routes from './src/routes/routes.js';
+import pomodoroSocketHandler from './src/socket/pomodoro.socket.js';
 
 dotenv.config();
 
@@ -39,5 +39,5 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port http://localhost:${PORT}/`);
 });
