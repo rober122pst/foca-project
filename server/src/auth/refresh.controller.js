@@ -24,27 +24,27 @@ export async function refresh(req, res) {
     try {
         const { refreshToken } = req.body;
     
-        // Ve se tem o refresh
+        // confere se tem o refresh
         if (!refreshToken) {
-            return res.status(401).json({ message: "Tá sem o refresh token, pai" }); // Vou começar a botar mensagens diferentes kk
+            return res.status(401).json({ message: "Não possui refresh token." });
         }
     
-        // Pega lá do banco de dados
+        // Pega refresh token do banco de dados
         const stored = await prisma.refreshToken.findUnique({
             where: { token: refreshToken },
         });
     
         if (!stored) {
-            return res.status(401).json({ message: "Refresh token inválido 😂" });
+            return res.status(401).json({ message: "Refresh token inválido" });
         }
     
-        // Agora ve se tá expirado ou não
+        // confere se refresh token expirou
         if (stored.expiresAt < new Date()) {
-            await prisma.refreshToken.delete({ where: { token: refreshToken } }) // Se tá expirado tem que deletar né k
+            await prisma.refreshToken.delete({ where: { token: refreshToken } }) // deleta refresh token invalido
             return res.status(401).json({ message: "Token expirado lmao" });
         }
     
-        // Agora é pra verficar a assinatura
+        // verificação da assinatura
         try {
             jwt.verify(refreshToken, process.env.REFRESH_SECRET);
         } catch (error) {
@@ -52,14 +52,14 @@ export async function refresh(req, res) {
             return res.status(401).json({ message: "Token inválido, irmão" });
         }
     
-        // Invalida o refresh atual pra ngm roubar
+        // Invalida o refresh token atual para segurança
         await prisma.refreshToken.delete({
             where: { token: refreshToken },
         });
     
         const expiresAt = getExpirationInterval(stored.expiresAt);
     
-        // Agora cria outro
+        // cria outro refresh token
         const newRefreshToken = generateRefreshToken(expiresAt);
     
         const decoded = jwt.decode(newRefreshToken);
@@ -73,7 +73,7 @@ export async function refresh(req, res) {
             },
         });
     
-        // Gera um token novo de acesso
+        // Gera um refresh token novo de acesso
         const newAccessToken = generateToken(stored.userId);
     
         return res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });

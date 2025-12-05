@@ -66,8 +66,8 @@ export default function TimerZone({
 
             {/* Título da Tarefa Ativa */}
             <div className="mt-8 max-w-md text-center">
-                <h2 className="text-cream-100 truncate text-xl font-semibold">{eventData.title}</h2>
-                <p className="text-medium mt-1 text-sm">{eventData.description}</p>
+                <h2 className="text-cream-100 truncate text-xl font-semibold">{eventData?.title}</h2>
+                <p className="text-medium mt-1 text-sm">{eventData?.description}</p>
             </div>
         </div>
     );

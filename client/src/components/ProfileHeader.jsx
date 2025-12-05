@@ -32,7 +32,6 @@ export default function ProfileHeader({ title }) {
                 </div>
                 <Avatar className="border-items-500 h-10 w-10 overflow-hidden rounded-full border-2 sm:h-12 sm:w-12">
                     <AvatarImage src={userProf.picUrl || placeholderAvatar} />
-                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
             </div>
         </div>

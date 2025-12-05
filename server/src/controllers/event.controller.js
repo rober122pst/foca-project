@@ -6,14 +6,16 @@ import { mapWeekdaysToNumbers } from "../services/events.services.js";
 
 const prisma = new PrismaClient();
 
+// cria um novo evento ligado ao usuário logado
 export async function createEvent(req, res) {
     const userId = req.userId;
     const { title, description, type, deadline, dtstart, dtend, rrule, color, tag } = req.body;
 
     try {
-
+        // busca o perfil do usuário no banco para vincular a sessão
         const { id: profileId } = await prisma.profile.findUnique({ where: { userId }, select: { id: true } })
 
+        // salva o evento no banco de dados
         const newEvent = await prisma.event.create({
             data: {
                 id: generateId(),
@@ -37,19 +39,21 @@ export async function createEvent(req, res) {
     }
 }  
 
+// retorna uma lista de eventos do usuário (com filtros opcionais)
 export async function getEvents(req, res) {
     const userId = req.userId;
         
     try {
+        // trata o filtro de tipo enviado na URL ?type=EVENT,TASK
         const typeParam = req.query.type;
 
         let types;
 
         if (typeof typeParam === 'string') {
-            types = typeParam.split(','); // vira ['EVENT', 'TASK']
+            types = typeParam.split(','); // separa o tipo em array para busca multipla ['EVENT', 'TASK']
         }
 
-        // pega filtro de hoje ?today=true
+        // filtro para buscar somente eventos do dia
         const todayParam = req.query.today === 'true';
 
         const events = await getEventsService(prisma, {
@@ -65,16 +69,19 @@ export async function getEvents(req, res) {
     }
 }
 
+// retorna detalhes de um evento especifico
 export async function getEventById(req, res) {
     const userId = req.userId;
     const { eventId } = req.params
     
     try {
 
+        // valida se o Id informado é um Id valido
         if (!verifyUuid(eventId)) {
             return res.status(400).json({ message: "ID inválido." });
         }
 
+        // busca o evento garantindo que pertence ao usuario
         const event = await prisma.event.findFirst({ 
             where: { profile: { userId }, id: eventId },
         });
@@ -90,6 +97,7 @@ export async function getEventById(req, res) {
     }
 }
 
+// atualiza um evento existente do usuario
 export async function updateEvent(req, res) {
     const userId = req.userId;
     
@@ -100,6 +108,7 @@ export async function updateEvent(req, res) {
             return res.status(400).json({ message: "ID inválido." });
         }
 
+        // busca o perfil do usuário no banco para vincular a sessão
         const profile = await prisma.profile.findUnique({ 
             where: { userId },
             select: {
@@ -113,6 +122,7 @@ export async function updateEvent(req, res) {
 
         const profileId = profile.id;
 
+        // atualiza o evento no banco de dados
         const updateEvent = await prisma.event.update({
             where: {
                 profileId,
@@ -125,7 +135,9 @@ export async function updateEvent(req, res) {
             return res.status(404).json({ message: "Rotina não encontrada" });
         }
 
+        // Recalcula taxa de progresso semanal do evento
         const { rate } = calculateEventWeeklyPercent(updateEvent.days, updateEvent.completedDays);
+        // verifica se o usuário completou o evento no dia atual
         const { didToday: completed } = checkEventToday(updateEvent.days, updateEvent.completedDays);
 
         return res.json({
@@ -140,6 +152,7 @@ export async function updateEvent(req, res) {
     }
 }
 
+// deleta um evento específico do usuário
 export async function deleteEvent(req, res) {
         const userId = req.userId;
     
@@ -150,6 +163,7 @@ export async function deleteEvent(req, res) {
             return res.status(400).json({ message: "ID inválido." });
         }
 
+        // busca o perfil do usuário no banco para vincular a sessão
         const profile = await prisma.profile.findUnique({ 
             where: { userId },
             select: {
@@ -163,6 +177,7 @@ export async function deleteEvent(req, res) {
 
         const profileId = profile.id;
 
+        // remove o evento do banco de dados
         const result = await prisma.event.delete({ 
             where: { profileId, id: eventId },
         })

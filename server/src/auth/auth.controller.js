@@ -222,6 +222,7 @@ export async function facebookAuth(req, res) {
     res.redirect(`${process.env.CLIENT_URL}/auth/callback-handler`);
 }
 
+// Logout usando a remoção do refresh token
 export async function logout(req, res) {
     try {
         const { refreshToken } = req.body;
@@ -231,7 +232,7 @@ export async function logout(req, res) {
                 where: { token: refreshToken }
             })
         }
-
+        // retorna mensagem confirmando o logout
         return res.json({ message: 'Deslogado com sucesso' })
     } catch (error) {
         return res.json({ message: 'Deslogado com sucesso' })
