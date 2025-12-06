@@ -1,11 +1,11 @@
 import express from 'express';
-import authRoutes from '../auth/auth.routes.js';
-import dashboardRoutes from './dashboard.routes.js';
-import eventRoutes from './event.routes.js';
-import geminiRoutes from './gemini.routes.js';
-import pomodoroRoutes from './pomodoro.routes.js';
-import taskRoutes from './task.routes.js';
-import userRoutes from './user.routes.js';
+import authRoutes from '../auth/auth.events.js';
+import dashboardRoutes from './dashboard.events.js';
+import eventRoutes from './event.events.js';
+import geminiRoutes from './gemini.events.js';
+import pomodoroRoutes from './pomodoro.events.js';
+import taskRoutes from './task.events.js';
+import userRoutes from './user.events.js';
 
 const router = express.Router();
 
