@@ -33,7 +33,7 @@ export function Modal({ children, className = '', onClose }) {
                 exit={{ opacity: 0, scale: 0.7 }}
                 onClick={(e) => e.stopPropagation()}
                 onMouseDown={(e) => e.stopPropagation()}
-                className={twMerge('bg-card border-border h-full rounded-4xl border py-6', className)}
+                className={twMerge('bg-card border-border h-fit h-full rounded-4xl border py-6', className)}
             >
                 {children}
             </motion.div>

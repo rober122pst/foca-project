@@ -6,7 +6,7 @@ import express from 'express';
 import http from 'http';
 import passport from 'passport';
 import { Server } from 'socket.io';
-import routes from './src/routes/routes.js';
+import routes from './src/routes/events.js';
 import pomodoroSocketHandler from './src/socket/pomodoro.socket.js';
 
 dotenv.config();

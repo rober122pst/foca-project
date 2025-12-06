@@ -7,7 +7,6 @@ import passport from 'passport';
 
 const prisma = new PrismaClient();
 
-// login com facebook e google
 // login com google
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -19,13 +18,17 @@ async (_, __, profile, cb) => {
         console.log(profile)
         const userEmail = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
 
+        // verificar envio do email
         if (!userEmail) {
             return cb(new Error("O Google não mandou o enderaço email"));
         }
 
+        //verifica se o email já está cadastrado em uma conta
         const user = await prisma.user.findUnique({ where: { email: userEmail } });
 
+        
         if (user) {
+            //se usuario já existe e não tem conta do google, adiciona conta do google ao perfil existente
             if (!user.googleId) {
                 await prisma.user.update({
                     where: { id: user.id },
@@ -33,7 +36,8 @@ async (_, __, profile, cb) => {
                 });
             }
             return cb(null, user);
-        } else {
+        } else { 
+            //se não existe conta do usuario, cria nova conta do usuario usando dados do google
             const newPassword = await bcrypt.hash(`google-profile-${profile.id}`, 10);
             const newUser = await prisma.user.create({
                 data: {
@@ -57,6 +61,8 @@ async (_, __, profile, cb) => {
 
             return cb(null, newUser);
         }
+
+    // mensagem de erro em caso de falha no login
     } catch (error) {
         console.log(error)
         return cb(error, null);
@@ -75,13 +81,16 @@ passport.use(new FacebookStrategy({
         console.log(profile)
         const userEmail = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
 
+        // verifica envio do email
         if (!userEmail) {
             return cb(new Error("Facebook não mandou um endereço de email."));
         }
 
+        //verifica se o email já está cadastrado em uma conta
         const user = await prisma.user.findUnique({ where: { email: userEmail } });
 
         if (user) {
+            //se usuario já existe e não tem conta do facebook, adiciona conta do facebook ao perfil existente
             if (!user.facebookId) {
                 await prisma.user.update({ 
                     where: { id: user.id },
@@ -89,7 +98,8 @@ passport.use(new FacebookStrategy({
                 });
             }
             return cb(null, user);
-        } else {
+        } else { 
+            //se não existe conta do usuario, cria nova conta do usuario usando dados do facebook
             const newPassword = await bcrypt.hash(`facebook-profile-${profile.id}`, 10);
             const newUser = await prisma.user.create({
                 data: {
@@ -113,16 +123,18 @@ passport.use(new FacebookStrategy({
 
             return cb(null, newUser);
         }
+    
+    // mensagem de erro em caso de falha no login
     } catch (error) {
         console.log(error)
         return cb(error, null);
     }
 }));
-
+// Salva os dados do usuário
 passport.serializeUser((user, done) => {
     done(null, user);
 });
-
+// Recupera os dados do usuário armazenados
 passport.deserializeUser((user, done) => {
     done(null, user);
 });

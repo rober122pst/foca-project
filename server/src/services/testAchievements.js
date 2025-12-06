@@ -1,14 +1,16 @@
-// Comentários em português
-
 import { PrismaClient } from "@prisma/client";
 import { generateId } from "./generateId.service.js";
 
 const prisma = new PrismaClient();
 
+// função que executa o upsert de achievements
 async function run() {
+  
+  // id do perfil que receberá o progresso e do achievement que será atualizado
   const profileId = "019a9985-8373-7c6b-9a73-3617d608556c";
   const achiviementId = "019a9e74-c82d-73d4-b651-6c6746131307";
 
+  // faz o upsert: se existir, atualiza; se não existir, cria
   const ua = await prisma.userAchiviement.upsert({
     where: {
       // Garante que só exista 1 entry por user + achievement
