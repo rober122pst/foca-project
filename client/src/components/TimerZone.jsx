@@ -6,8 +6,10 @@ export default function TimerZone({
     circumference,
     timeLeft,
     sessionCount,
+    totalCycles,
     formatTime,
     strokeDashoffset,
+    eventData,
 }) {
     return (
         <div className="relative flex flex-col items-center justify-center py-8">
@@ -57,15 +59,15 @@ export default function TimerZone({
                     </div>
                     <div className="bg-items-900/70 text-medium mt-4 flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold">
                         <span className="bg-accent-500 h-2 w-2 rounded-full"></span>
-                        Ciclo #{sessionCount}/8
+                        Ciclo #{sessionCount}/{totalCycles}
                     </div>
                 </div>
             </div>
 
             {/* Título da Tarefa Ativa */}
             <div className="mt-8 max-w-md text-center">
-                <h2 className="text-cream-100 truncate text-xl font-semibold">Refatorar UI do Dashboard</h2>
-                <p className="text-medium mt-1 text-sm">Projeto Freelance • UX Design</p>
+                <h2 className="text-cream-100 truncate text-xl font-semibold">{eventData?.title}</h2>
+                <p className="text-medium mt-1 text-sm">{eventData?.description}</p>
             </div>
         </div>
     );

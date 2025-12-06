@@ -7,7 +7,13 @@ import { MdOutlineChat } from 'react-icons/md';
 
 export default function NavbarMobile() {
     const location = useLocation();
-    const [indicatorStyle, setIndicatorStyle] = useState({ opacity: 0, left: 0, width: 0, top: 0, height: 0 });
+    const [indicatorStyle, setIndicatorStyle] = useState({
+        opacity: 0,
+        left: 0,
+        width: 0,
+        top: 0,
+        height: 0,
+    });
     const itemsRef = useRef([]);
 
     const menuItems = [

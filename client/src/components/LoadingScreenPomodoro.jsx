@@ -22,7 +22,9 @@ const LoadingScreenPomodoro = ({ progress }) => (
                     scale: [1, 1.08, 1],
                 }}
                 transition={{ duration: 1.5, repeat: Infinity }}
-                style={{ backgroundImage: 'url(src/assets/logos/foca_logo_uncolor.svg)' }}
+                style={{
+                    backgroundImage: 'url(src/assets/logos/foca_logo_uncolor.svg)',
+                }}
             />
         </div>
 

@@ -4,15 +4,20 @@ const prisma = new PrismaClient();
 
 export async function getProfile(req, res) {
     const userId = req.userId;
+
+    // verifica se o usuário está autenticado
     if (!userId) {
         return res.status(401).json({ message: "acesso negado" });
     }
 
+    // captura de erros durante a busca
     try {
+        // busca informações do usuário, perfil e dados de gameficação com valores padrão se não existirem
         const user = await prisma.user.findUnique({ where: {userId} });
         const userProfile = await prisma.profile.findUnique({ where: {userId} });
         const userGamefication = userProfile.gamefication ?? { level: 1, xp: 0 };
 
+        // retorna ao cliente todos os dados formatados do perfil
         return res.json({
             name: user.name,
             profilePic: userProfile.picUrl,

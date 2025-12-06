@@ -3,14 +3,16 @@ import { generateId } from "../services/generateId.service.js";
 
 const prisma = new PrismaClient();
 
+// cria uma nova tarefa para o usuário autenticado
 export async function createTask(req, res) {
     const userId = req.userId;
     const { title, description, tags, deadline, priority } = req.body;
 
     try {
-
+        // busca o id do perfil associado ao usuário
         const { id: profileId } = await prisma.profile.findUnique({ where: { userId }, select: { id: true } })
 
+        // cria a tarefa no banco de dados
         const newTask = await prisma.task.create({
             data: {
                 id: generateId(),
@@ -30,12 +32,14 @@ export async function createTask(req, res) {
     }
 }  
 
+// atualiza uma tarefa existente do usuário
 export async function updateTask(req, res) {
     const userId = req.userId;
     
     try {
         const { taskId } = req.params;
         
+        // valida se o id da tarefa é válido
         if (!verifyUuid(taskId)) {
             return res.status(400).json({ message: "ID inválido." });
         }
@@ -53,6 +57,7 @@ export async function updateTask(req, res) {
 
         const profileId = profile.id;
 
+        // atualiza os dados da tarefa no banco
         const updateTask = await prisma.task.update({
             where: {
                 profileId,
@@ -69,16 +74,19 @@ export async function updateTask(req, res) {
     }
 }
 
+// deleta uma tarefa existente do usuário
 export async function deleteTask(req, res) {
         const userId = req.userId;
     
     try {
         const { taskId } = req.params;
 
+        // valida se o id da tarefa é válido
         if (!verifyUuid(taskId)) {
             return res.status(400).json({ message: "ID inválido." });
         }
 
+        // busca o perfil para confirmar propriedade da tarefa
         const profile = await prisma.task.findUnique({ 
             where: { userId },
             select: {
@@ -92,6 +100,7 @@ export async function deleteTask(req, res) {
 
         const profileId = profile.id;
 
+        // remove a tarefa do banco de dados
         const result = await prisma.task.delete({ 
             where: { profileId, id: taskId },
         })

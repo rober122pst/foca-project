@@ -41,7 +41,7 @@ function LandingPage() {
                 return /^#([A-Fa-f0-9]{3}){1,2}$/.test(t)
                     ? (3 === (i = t.substring(1).split('')).length && (i = [i[0], i[0], i[1], i[1], i[2], i[2]]),
                     {
-                          r: ((i = '0x' + i.join('')) >> 16) & 255,
+                        r: ((i = '0x' + i.join('')) >> 16) & 255,
                         g: (i >> 8) & 255,
                         b: 255 & i,
                     })
@@ -51,12 +51,12 @@ function LandingPage() {
                     function t(i, e, h) {
                         (_ccc(this, t),
                         (this.o = h),
-                            (this.r = s(i)),
+                        (this.r = s(i)),
                         (this.d = this.grd()),
                         (this.h = this.grs()),
                         (this.s = Math.abs(this.gnfr(this.o.size))),
                         this.srpgq(e),
-                            (this.vx = this.gnfr(this.o.speed.x) * this.grd()),
+                        (this.vx = this.gnfr(this.o.speed.x) * this.grd()),
                         (this.vy = this.gnfr(this.o.speed.y) * this.grd()));
                     }
                     return (
@@ -68,10 +68,10 @@ function LandingPage() {
                                     return 3 === t
                                         ? ((this.x = i.x + i.halfWidth), void (this.y = i.y))
                                         : 2 === t
-                                          ? ((this.x = i.x), void (this.y = i.y + i.halfHeight))
-                                          : 1 === t
+                                            ? ((this.x = i.x), void (this.y = i.y + i.halfHeight))
+                                            : 1 === t
                                                 ? ((this.x = i.x + i.halfWidth), void (this.y = i.y + i.halfHeight))
-                                            : ((this.x = i.x), void (this.y = i.y));
+                                                : ((this.x = i.x), void (this.y = i.y));
                                 },
                             },
                             {
@@ -124,10 +124,10 @@ function LandingPage() {
                                     (this.y += this.vy),
                                     this.x < 0
                                         ? ((this.vx *= -1), (this.x += 1))
-                                            : this.x > s && ((this.vx *= -1), (this.x -= 1)),
-                                        this.y < 0
+                                        : this.x > s && ((this.vx *= -1), (this.x -= 1)),
+                                    this.y < 0
                                         ? ((this.vy *= -1), (this.y += 1))
-                                            : this.y > e && ((this.vy *= -1), (this.y -= 1)),
+                                        : this.y > e && ((this.vy *= -1), (this.y -= 1)),
                                     t.beginPath(),
                                     this.o.blending &&
                                             'none' !== this.o.blending &&
@@ -139,7 +139,7 @@ function LandingPage() {
                                                 ? this.s / 2
                                                 : 't' === this.h
                                                     ? 0.577 * this.s
-                                                  : 's' === this.h
+                                                    : 's' === this.h
                                                         ? 0.707 * this.s
                                                         : this.s,
                                         o = t.createRadialGradient(this.x, this.y, 0.01, this.x, this.y, n);
@@ -170,9 +170,9 @@ function LandingPage() {
                     function h(i) {
                         var s = this;
                         (_ccc(this, h),
-                            (this.c = document.createElement('canvas')),
-                            (this.x = this.c.getContext('2d')),
-                            this.c.setAttribute('id', 'finisher-canvas'),
+                        (this.c = document.createElement('canvas')),
+                        (this.x = this.c.getContext('2d')),
+                        this.c.setAttribute('id', 'finisher-canvas'),
                         this.gr(i.className).appendChild(this.c));
                         var e = void 0;
                         (t.addEventListener(
@@ -227,7 +227,7 @@ function LandingPage() {
                                 key: 'init',
                                 value: function (t) {
                                     ((this.o = t),
-                                        (this.bc = s(this.o.colors.background)),
+                                    (this.bc = s(this.o.colors.background)),
                                     (this.ps = []),
                                     this.resize(),
                                     this.cp());
@@ -253,7 +253,7 @@ function LandingPage() {
                                 key: 'an',
                                 value: function () {
                                     (t.requestAnimationFrame(this.an.bind(this)),
-                                        this.x.clearRect(0, 0, this.o.c.w, this.o.c.h));
+                                    this.x.clearRect(0, 0, this.o.c.w, this.o.c.h));
                                     for (var i = 0; i < this.o.ac; i++) {
                                         this.ps[i].an(this.x, this.o.c.w, this.o.c.h);
                                     }

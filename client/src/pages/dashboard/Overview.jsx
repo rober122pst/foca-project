@@ -18,7 +18,11 @@ export default function Overview() {
     const { data, isLoading, error } = useDashboardOverview();
 
     const date = new Date()
-        .toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
+        .toLocaleDateString('pt-BR', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+        })
         .split(' ')
         .map((p, i) => (i === 0 ? p.charAt(0).toUpperCase() + p.slice(1) : p))
         .join(' ');

@@ -44,12 +44,12 @@ export default function CreateRoutineModal({ onClose }) {
                 deadline: state.deadline
                     ? new Date(
                         Date.UTC(
-                              state.deadline.getFullYear(),
+                            state.deadline.getFullYear(),
                             state.deadline.getMonth(),
-                              state.deadline.getDate(),
+                            state.deadline.getDate(),
                             state.deadlineTime.split(':').map(Number)[0] + state.deadline.getTimezoneOffset() / 60,
-                              state.deadlineTime.split(':').map(Number)[1]
-                          )
+                            state.deadlineTime.split(':').map(Number)[1]
+                        )
                     ).toISOString()
                     : null,
                 rrule: buildRRule(state.rruleConfig),
@@ -121,7 +121,7 @@ export default function CreateRoutineModal({ onClose }) {
                         state.deadlineTime.split(':').map(Number)[0] + state.deadline.getTimezoneOffset() / 60,
                         state.deadlineTime.split(':').map(Number)[1]
                     )
-                  ).toISOString()
+                ).toISOString()
                 : null,
             rrule: buildRRule(state.rruleConfig),
             tag: state.tag,
@@ -170,7 +170,13 @@ export default function CreateRoutineModal({ onClose }) {
                         Título
                         <InputText
                             value={state.title}
-                            onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'title', value: e.target.value })}
+                            onChange={(e) =>
+                                dispatch({
+                                    type: 'SET_FIELD',
+                                    field: 'title',
+                                    value: e.target.value,
+                                })
+                            }
                             placeholder="Ex.: Treinar futebol, Estudar programação..."
                             name="title"
                             autoComplete="off"
@@ -193,7 +199,11 @@ export default function CreateRoutineModal({ onClose }) {
                         <InputText
                             value={state.description}
                             onChange={(e) =>
-                                dispatch({ type: 'SET_FIELD', field: 'description', value: e.target.value })
+                                dispatch({
+                                    type: 'SET_FIELD',
+                                    field: 'description',
+                                    value: e.target.value,
+                                })
                             }
                             placeholder="Detalhes sobre essa atividade..."
                             name="description"
@@ -206,7 +216,11 @@ export default function CreateRoutineModal({ onClose }) {
                             <DayPicker
                                 value={state.dtstart}
                                 onChange={(newDate) => {
-                                    dispatch({ type: 'SET_FIELD', field: 'dtstart', value: newDate });
+                                    dispatch({
+                                        type: 'SET_FIELD',
+                                        field: 'dtstart',
+                                        value: newDate,
+                                    });
                                 }}
                             />
                         </div>
@@ -214,14 +228,22 @@ export default function CreateRoutineModal({ onClose }) {
                             <TimePicker
                                 value={state.startTime}
                                 onChange={(newTime) => {
-                                    dispatch({ type: 'SET_FIELD', field: 'startTime', value: newTime });
+                                    dispatch({
+                                        type: 'SET_FIELD',
+                                        field: 'startTime',
+                                        value: newTime,
+                                    });
                                 }}
                             />
                             <span>até</span>
                             <TimePicker
                                 value={state.endTime}
                                 onChange={(newTime) => {
-                                    dispatch({ type: 'SET_FIELD', field: 'endTime', value: newTime });
+                                    dispatch({
+                                        type: 'SET_FIELD',
+                                        field: 'endTime',
+                                        value: newTime,
+                                    });
                                 }}
                             />
                         </div>
@@ -237,13 +259,21 @@ export default function CreateRoutineModal({ onClose }) {
                                 <DayPicker
                                     value={state.deadline}
                                     onChange={(newDate) => {
-                                        dispatch({ type: 'SET_FIELD', field: 'deadline', value: newDate });
+                                        dispatch({
+                                            type: 'SET_FIELD',
+                                            field: 'deadline',
+                                            value: newDate,
+                                        });
                                     }}
                                 />
                                 <TimePicker
                                     value={state.deadlineTime}
                                     onChange={(newTime) => {
-                                        dispatch({ type: 'SET_FIELD', field: 'deadlineTime', value: newTime });
+                                        dispatch({
+                                            type: 'SET_FIELD',
+                                            field: 'deadlineTime',
+                                            value: newTime,
+                                        });
                                     }}
                                 />
                             </div>
@@ -263,7 +293,11 @@ export default function CreateRoutineModal({ onClose }) {
                                         Frequência
                                         <Select
                                             onChange={(value) =>
-                                                dispatch({ type: 'SET_RRULE', field: 'freq', value: value.value })
+                                                dispatch({
+                                                    type: 'SET_RRULE',
+                                                    field: 'freq',
+                                                    value: value.value,
+                                                })
                                             }
                                             styles={{
                                                 control: (base) => ({
@@ -359,7 +393,11 @@ export default function CreateRoutineModal({ onClose }) {
                                                     : new Date()
                                             }
                                             onChange={(newTime) => {
-                                                dispatch({ type: 'SET_RRULE', field: 'untilDate', value: newTime });
+                                                dispatch({
+                                                    type: 'SET_RRULE',
+                                                    field: 'untilDate',
+                                                    value: newTime,
+                                                });
                                             }}
                                         />
                                     </Label>

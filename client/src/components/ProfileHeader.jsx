@@ -9,7 +9,9 @@ export default function ProfileHeader({ title }) {
     const userProf = user.profile;
     const userGame = userProf.gamefication;
 
-    const formattedCoins = userGame.coins.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    const formattedCoins = userGame.coins.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+    });
 
     return (
         <div className="mb-12 flex justify-between">
@@ -30,7 +32,6 @@ export default function ProfileHeader({ title }) {
                 </div>
                 <Avatar className="border-items-500 h-10 w-10 overflow-hidden rounded-full border-2 sm:h-12 sm:w-12">
                     <AvatarImage src={userProf.picUrl || placeholderAvatar} />
-                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
             </div>
         </div>

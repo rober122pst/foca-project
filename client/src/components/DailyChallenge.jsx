@@ -11,7 +11,9 @@ export default function DailyChallenge() {
         rewardXP: 20,
     });
 
-    const formattedCoins = challenge.rewardCoins.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    const formattedCoins = challenge.rewardCoins.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+    });
 
     return (
         <Card>

@@ -10,10 +10,30 @@ export default function QuickActions() {
     const navigate = useNavigate();
 
     const actions = [
-        { icon: Timer, label: 'Iniciar Pomodoro', variant: 'default', action: () => openModal('config-pomodoro') },
-        { icon: Plus, label: 'Nova Atividade', variant: 'outline', action: () => openModal('create-routine') },
-        { icon: Sparkles, label: 'Gerar Rotina IA', variant: 'outline', action: () => openModal('create-routine-ai') },
-        { icon: Calendar, label: 'Ver Calendário', variant: 'outline', action: () => navigate('/dashboard/rotina') },
+        {
+            icon: Timer,
+            label: 'Iniciar Pomodoro',
+            variant: 'default',
+            action: () => openModal('config-pomodoro'),
+        },
+        {
+            icon: Plus,
+            label: 'Nova Atividade',
+            variant: 'outline',
+            action: () => openModal('create-routine'),
+        },
+        {
+            icon: Sparkles,
+            label: 'Gerar Rotina IA',
+            variant: 'outline',
+            action: () => openModal('create-routine-ai'),
+        },
+        {
+            icon: Calendar,
+            label: 'Ver Calendário',
+            variant: 'outline',
+            action: () => navigate('/dashboard/rotina'),
+        },
     ];
 
     return (

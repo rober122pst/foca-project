@@ -1,14 +1,16 @@
-import { PrismaClient } from "@prisma/client";
-import { getUserAchievements } from "../services/achievements.service.js";
-import { xpToNext } from "../services/xp.services.js";
+import { AchievementService } from "../services/achievements.service.js";
 
+import { PrismaClient } from "@prisma/client";
+import { XpService } from "../services/xp.services.js";
+
+// inicia o prisma para ter acesso ao banco de dados
 const prisma = new PrismaClient();
 
 export async function getOverviewData(req, res) {
     const userId = req.userId;
 
     try {
-        // Dados do usuario
+        // busca dados do usuario e outras tabelas usadas no dashboard
         const userData = await prisma.user.findUnique({
             where: { id: userId, },
             select: {
@@ -19,6 +21,7 @@ export async function getOverviewData(req, res) {
                         events: { where: { type: { in: ['TASK', 'PROJECT'] } } },
                         tasks: true,
                         userAchiviements: true,
+                        pomodorosSessions: true,
                     }
                 }
             }
@@ -29,19 +32,25 @@ export async function getOverviewData(req, res) {
         const userTasks =  userEvents.filter((e) => e.type === 'TASK'); // lista de tarefas
         const userProjects =  userEvents.filter((e) => e.type === 'PROJECT');
         const projectsCount = userProjects.length; // quantidade de projetos
-        const achievements = await getUserAchievements(prisma, userData.profile.id); // pega conquistas do jogador ordenadas por desbloqueadas e progresso
+        const achievements = await AchievementService.getUserAchievements(prisma, userData.profile.id); // pega conquistas do jogador ordenadas por desbloqueadas e progresso
+        const xp = userGamefication.totalXp; // quantidade de xp do usuario
+        const level = XpService.getLevelFromTotalXp(xp); // calcula level de acordo com XP atual
+        const nextLevelXp = XpService.xpToLevel(level+1); // progresso até proximo nivel
+        const xpProgress = XpService.calculateXpProgress(xp, level); // calcula progresso de xp até o momento
 
+        // retorna estatísticas gerais, progresso de level, tarefas e conquistas.
         return res.json({
             stats: {
                 streak: userGamefication?.streakCurrent || 0,
-                totalTimeFocused: 0, // TODO: fazer isso aqui depois
-                completedTasks: 0,
+                totalTimeFocused: userGamefication?.totalTimeFocus || 0,
+                totalSessions: userData.profile.pomodorosSessions.length,
                 activeEvents: projectsCount
             },
             levelProgress: {
-                level: userGamefication?.level || 1,
-                currentXp: userGamefication?.currentXp || 0,
-                nextLevelXp: userGamefication ? xpToNext(userGamefication.level) : xpToNext(1),
+                level: level,
+                currentXp: xp,
+                nextLevelXp,
+                xpProgress,
             },
             totalTasks: userTasks.length,
             taskList: [
@@ -49,28 +58,33 @@ export async function getOverviewData(req, res) {
             ],
             achievements: achievements,
         })
+    // caso algo dê errado, retorna erro e envia mensagem indicando o problema
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar dados do dashboard' });
         console.log(error)
     }
 }
 
+// busca e retorna todos os eventos do usuário, junto com estatisticas do dia
 export async function getEventsData(req, res) {
     const userId = req.userId;
 
     try {
+        // define o horario inicial do dia (00:00)
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
         
+        // define o horario final do dia (23:59)
         const todayEnd = new Date();
         todayEnd.setHours(23, 59, 59, 999)
 
+        // busca eventos do usuario e ordenados
         const events = await prisma.event.findMany({ 
             where: { profile: { userId } },
             orderBy: [
                 { dtstart: 'asc' },
                 { createdAt: 'asc' },
-            ],
+            ], // incluindo eventos completos do dia
             include: {
                 eventCompletions: {
                     where: {
@@ -83,10 +97,12 @@ export async function getEventsData(req, res) {
             },
         });
 
+        // quantidade total de eventos ativos
         const activeEvents = events.length;
+        // pega a maior sequência contínua (streak) entre os eventos
         const bestStreak = Math.max(...events.map(e => e.streak), 0);
 
-
+        // Retorna eventos com informações básicas e se foram concluídos hoje
         return res.json({
             stats: {
                 activeEvents,
@@ -101,6 +117,8 @@ export async function getEventsData(req, res) {
                 completed: event.eventCompletions.length > 0,
             })),
         });
+    
+    //  caso algo dê errado, retorna erro e envia mensagem indicando o problema
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar dados do dashboard' });
         console.log(error)
