@@ -1,8 +1,8 @@
 import { generateRefreshToken, generateToken } from './auth.services.js';
 
 import { PrismaClient } from '@prisma/client';
-import jwt from 'jsonwebtoken';
 import { generateId } from '../services/generateId.service.js';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
@@ -52,8 +52,8 @@ export async function refresh(req, res) {
             return res.status(401).json({ message: "Token inválido, irmão" });
         }
     
-        // Invalida o refresh token atual para segurança
-        await prisma.refreshToken.delete({
+        // Invalida o refresh atual pra ngm roubar
+        await prisma.refreshToken.deleteMany({
             where: { token: refreshToken },
         });
     
