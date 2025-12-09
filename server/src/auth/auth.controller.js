@@ -175,12 +175,12 @@ export async function googleAuth(req, res) {
     res.cookie('token', token, {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "none",
     });
     res.cookie('refreshToken', refreshToken, {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "none",
     });
     const decoded = jwt.decode(refreshToken);
     // Salva o refresh token no banco de dados
@@ -202,12 +202,12 @@ export async function facebookAuth(req, res) {
     res.cookie('token', token, {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "none",
     });
     res.cookie('refreshToken', refreshToken, {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "none",
     });
     const decoded = jwt.decode(refreshToken);
     // Salva o refresh token no banco de dados
