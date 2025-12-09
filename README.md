@@ -132,7 +132,7 @@ Projetos poderão abrir um **painel completo de organização**, inspirado na ex
 
 - [client/](./client/) — frontend React (Vite).
 - [server/](./server/) — backend Node/Express, Prisma, autenticação e lógica da aplicação.
-- [LICENSE.md](./LICENSE.md) — diagrama do fluxo do usuário (Mermaid).
+- [LICENSE.md](./LICENSE.md) — licença.
 
 ## Tech stack
 
