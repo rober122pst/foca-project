@@ -173,11 +173,13 @@ export async function googleAuth(req, res) {
     const token = generateToken(req.user.id);
     const refreshToken = generateRefreshToken('30d');
     res.cookie('token', token, {
+        domain: 'foca-project.vercel.app',
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
         sameSite: "none",
     });
     res.cookie('refreshToken', refreshToken, {
+        domain: 'foca-project.vercel.app',
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
         sameSite: "none",
