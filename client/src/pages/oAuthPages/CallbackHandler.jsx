@@ -26,6 +26,8 @@ function CallbackHandler() {
         const token = getCookie(import.meta.env.VITE_TOKEN_COOKIE);
         const refreshToken = getCookie(import.meta.env.VITE_REFRESH_TOKEN_COOKIE);
 
+        console.log(token, refreshToken);
+
         if (token && refreshToken) {
             document.cookie = `${import.meta.env.VITE_TOKEN_COOKIE}=; Max-Age=0; path=/;`;
             document.cookie = `${import.meta.env.VITE_REFRESH_TOKEN_COOKIE}=; Max-Age=0; path=/;`;
