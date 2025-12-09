@@ -1,8 +1,8 @@
 import { generateRefreshToken, generateToken } from './auth.services.js';
 
 import { PrismaClient } from '@prisma/client';
-import { generateId } from '../services/generateId.service.js';
 import jwt from 'jsonwebtoken';
+import { generateId } from '../services/generateId.service.js';
 
 const prisma = new PrismaClient();
 
@@ -53,7 +53,7 @@ export async function refresh(req, res) {
         }
     
         // Invalida o refresh atual pra ngm roubar
-        await prisma.refreshToken.deleteMany({
+        await prisma.refreshToken.delete({
             where: { token: refreshToken },
         });
     

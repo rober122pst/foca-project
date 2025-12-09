@@ -1,14 +1,78 @@
 import { ChevronDown, ChevronUp, ClockFading } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Bar, PolarArea } from 'react-chartjs-2';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 import { defaults } from 'chart.js/auto';
+import { useTimeDistributionChart } from '../hooks/chartsHooks';
 
 defaults.maintainAspectRatio = false;
 defaults.responsive = true;
 defaults.font.size = 11;
 
 export default function ChardsOverview() {
+    const { data: distribution, isPending, error } = useTimeDistributionChart();
+
+    const [chartDistributionData, setChartDistributionData] = useState({
+        labels: ['', '', '', '', ''],
+        datasets: [
+            {
+                data: [12, 24, 28, 9, 35],
+                backgroundColor: '#3d3d3d',
+                borderColor: '#282828',
+            },
+        ],
+    });
+    const [optionsDistribution, setOptionsDistribution] = useState({});
+
+    useEffect(() => {
+        console.log(distribution);
+        if (distribution) {
+            setChartDistributionData({
+                labels: distribution.map((d) => d.label),
+                datasets: [
+                    {
+                        data: distribution.map((d) => d.minutes),
+                        backgroundColor: distribution.map((d) => `${d.color}b3`),
+                        borderColor: distribution.map((d) => d.color),
+                        borderWidth: 2,
+                    },
+                ],
+            });
+
+            setOptionsDistribution({
+                scales: {
+                    r: {
+                        ticks: { display: false },
+                        grid: { display: true, color: '#827d7d80' },
+                    },
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            color: '#b6afaf',
+                        },
+                        position: 'bottom',
+                    },
+
+                    tooltip: {
+                        enabled: true, // habilita os tooltips
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleColor: '#b6afaf',
+                        bodyColor: '#b6afaf',
+                        callbacks: {
+                            label: function (context) {
+                                const value = context.raw;
+                                return `${value} min (${((value / distribution.reduce((a, b) => a + b.minutes, 0)) * 100).toFixed(1)}%)`;
+                            },
+                        },
+                    },
+                },
+            });
+        }
+    }, [distribution]);
+
     const focusTimeData = {
         totalMinutesCurrent: 309,
         totalMinutesPrevious: 280,
@@ -77,57 +141,6 @@ export default function ChardsOverview() {
                 backgroundColor: 'rgba(0,0,0,0.8)',
                 titleColor: '#b6afaf',
                 bodyColor: '#b6afaf',
-            },
-        },
-    };
-
-    const distributionData = [
-        { label: 'Estudos', value: 123, color: '#ff0546' },
-        { label: 'Trabalho', value: 50, color: '#9c173b' },
-        { label: 'Lazer', value: 35, color: '#450327' },
-        { label: 'Exercícios', value: 118, color: '#17001d' },
-        { label: 'Outros', value: 14, color: '#0098db' },
-    ];
-
-    const chartDistributionData = {
-        labels: distributionData.map((d) => d.label),
-        datasets: [
-            {
-                data: distributionData.map((d) => d.value),
-                backgroundColor: distributionData.map((d) => `${d.color}b3`),
-                borderColor: distributionData.map((d) => d.color),
-                borderWidth: 2,
-            },
-        ],
-    };
-
-    const optionsDistribution = {
-        scales: {
-            r: {
-                ticks: { display: false },
-                grid: { display: true, color: '#827d7d80' },
-            },
-        },
-        plugins: {
-            legend: {
-                display: true,
-                labels: {
-                    color: '#b6afaf',
-                },
-                position: 'bottom',
-            },
-
-            tooltip: {
-                enabled: true, // habilita os tooltips
-                backgroundColor: 'rgba(0,0,0,0.8)',
-                titleColor: '#b6afaf',
-                bodyColor: '#b6afaf',
-                callbacks: {
-                    label: function (context) {
-                        const value = context.raw;
-                        return `${value} min (${((value / distributionData.reduce((a, b) => a + b.value, 0)) * 100).toFixed(1)}%)`;
-                    },
-                },
             },
         },
     };

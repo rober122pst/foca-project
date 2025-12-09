@@ -1,5 +1,6 @@
 import express from 'express';
 import authRoutes from '../auth/auth.events.js';
+import chardRoutes from './chards.routes.js';
 import dashboardRoutes from './dashboard.events.js';
 import eventRoutes from './event.events.js';
 import geminiRoutes from './gemini.events.js';
@@ -14,6 +15,7 @@ router.use('/auth', authRoutes);
 router.use('/user/pomodoro', pomodoroRoutes)
 router.use('/user/events', eventRoutes);
 router.use('/user/tasks', taskRoutes);
+router.use('/user/chards', chardRoutes);
 router.use('/user', userRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/ai', geminiRoutes);

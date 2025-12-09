@@ -120,7 +120,7 @@ html {
     @apply from-cream-300 via-cream-200 to-cream-300 dark:from-night-800 dark:via-night-700 dark:to-night-800 animate-[shimmer_1.5s_infinite] bg-linear-300 bg-[length:200%_100%];
   }
   .bg-animated {
-    @apply from-items-700 to-items-900 via-items-500 animate-[animateBackground_10s_ease_infinite] bg-linear-to-tr bg-[size:180%_180%];
+    @apply from-items-500 via-items-900 to-items-500 animate-[animateBackground_3s_linear_infinite] bg-linear-to-r bg-size-[200%_200%];
   }
 }
 
@@ -153,11 +153,8 @@ html {
   0% {
     background-position: 0% 50%;
   }
-  50% {
-    background-position: 100% 50%;
-  }
   100% {
-    background-position: 0% 50%;
+    background-position: 200% 50%;
   }
 }
 

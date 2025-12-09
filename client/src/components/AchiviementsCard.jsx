@@ -62,11 +62,11 @@ export default function AchiviementsCard({ achievements = [] }) {
                     {achievements.map((achievement) => (
                         <div
                             key={achievement.id}
-                            className={`rounded-lg border p-3 transition-colors ${achievement.rarity === 'RARE' ? 'border-items-500' : 'border-cream-200 dark:border-night-800'} ${achievement.unlocked ? 'hover:bg-cream-200 dark:hover:bg-night-800' : 'opacity-60'}`}
+                            className={`'border-cream-200 dark:border-night-800 rounded-lg border p-3 transition-colors ${achievement.unlocked ? 'hover:bg-cream-200 dark:hover:bg-night-800' : 'opacity-60'}`}
                         >
                             <div className="flex gap-3">
                                 <div
-                                    className={`display-center h-fit shrink-0 rounded-lg p-3 ${achievement.unlocked ? `bg-items-500/20 ${achievement.rarity === 'rare' && 'shadow-items-500 animate-[rareAchiviementPulse_2.5s_infinite] shadow-[0_0_8px]'}` : 'bg-night-700'}`}
+                                    className={`display-center h-fit shrink-0 rounded-lg p-3 ${achievement.unlocked ? `bg-items-500/20 ${achievement.rarity === 'RARE' && 'shadow-items-500 animate-[rareAchiviementPulse_2.5s_infinite] shadow-[0_0_8px]'}` : 'bg-night-700'}`}
                                 >
                                     {achievement.unlocked ? (
                                         <Award className="text-items-500 size-5" />
@@ -75,7 +75,11 @@ export default function AchiviementsCard({ achievements = [] }) {
                                     )}
                                 </div>
                                 <div className="flex-1">
-                                    <p className="text-items-500 font-medium">{achievement.name}</p>
+                                    <p
+                                        className={`w-fit ${achievement.rarity === 'RARE' ? 'bg-animated bg-clip-text text-transparent' : 'text-items-500 font-medium'}`}
+                                    >
+                                        {achievement.name}
+                                    </p>
                                     <p className="dark:text-cream-100/60 text-items-950/60 mt-1 text-xs">
                                         {achievement.description}
                                     </p>

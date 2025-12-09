@@ -350,6 +350,14 @@ export default function pomodoroSocketHandler(io, socket) {
 
             if (block.type === 'FOCUS') {
                 await XpService.giveXp(gameficationId, xpReward, 'Bloco Finalizado');
+                await prisma.gamefication.update({
+                    where: { profileId: session.profileId },
+                    data: { 
+                        totalTimeFocus: {
+                            increment: Math.round(block.plannedDuration / 60),
+                        },
+                    }
+,               });
             }
             
             const allComplete = session.pomodoroBlocks.every(b => b.endTime);
